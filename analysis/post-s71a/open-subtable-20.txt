@@ -1,0 +1,13 @@
+The Open's sub-table (post-S71a, 2026-11-13): the 10 lists above 50 in matches, each row's match win against the others (60 matches a pairing, seed 91).
+
+               marduco emerald pinnacl reaperc lumencl    pall  rabble funpoli earthri minefie    mean
+marducontrol         —      52      68      70      70      48      63      70      92      92    69.4
+emeraldsnakes       48       —      57      23      58      62      38      70      62      58    53.0
+pinnacle            32      43       —      50      62      42      40      73      72      75    54.3
+reaperclio          30      77      50       —      30      67      67      67      45      40    52.4
+lumenclio           30      42      38      70       —      25      38      60      73      52    47.6
+pall                52      38      58      33      75       —      45      82      83      90    61.9
+rabble              37      62      60      33      62      55       —      45      35      42    47.8
+funpolice           30      30      27      33      40      18      55       —      85      93    45.7
+earthrise            8      38      28      55      27      17      65      15       —      53    34.1
+minefield            8      42      25      60      48      10      58       7      47       —    33.9

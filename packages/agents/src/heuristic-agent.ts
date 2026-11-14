@@ -380,7 +380,7 @@ export class HeuristicAgent implements Agent {
     }
     if (this.misfireGated(view, action, pred.view)) return -Infinity; // post-S65 (book 137): a spell that leaves its target of theirs alive and no worse is not cast
     const hosted = this.equipOnHost(view, action, pred.view);
-    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - (hosted ? 0.25 : 0) - misaim + this.wheelSpendBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.hallowAnswerBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.lockStealBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action) + this.landHitBonus(view, action);
+    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - (hosted ? 0.25 : 0) - misaim + this.wheelSpendBonus(view, action) + this.harvestSwingBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.hallowAnswerBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.lockStealBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action) + this.landHitBonus(view, action);
   }
 
   /** S46 (Vitalist — the brief's "a term, not a rule"): while we control a LIFE_GAINED payoff (the shape: a trigger on
@@ -3733,6 +3733,47 @@ export class HeuristicAgent implements Agent {
     const objs = (top.targets ?? []).filter((t) => t.kind === "object");
     return harmful && objs.length > 0 && objs.every((t) => targetSide(view, t) === view.you);
   }
+  /** Book 62 and post-S71a: the harvest's read, for the gate and the score. Before combat only, never down to the last
+   * body while behind. Open for a lethal or near-lethal alpha (half their life through their blockers: S41), or for
+   * the lifelink swing — Chris's Bodies Snakes harvested in 9 of 9 Reaper games (the AI 1 in 43), his life going
+   * 18→53, 16→42, 11→34, 20→44 against Mardu: every attacker gains its power whether it is blocked or not, so a wide
+   * team turns one body into a race. The swing wants three or more attackers, the pump adding six power or more, and
+   * eight life or more. The pump grants haste, so a creature cast this turn swings too; the mana past our untapped
+   * lands is Snakes tapped (Manaba), so that many of the smallest bodies stay home. Off: "harvestswing" (book 62's
+   * read: the S45 attackers, untapped and not sick; the half-life rule only; no score). */
+  harvestRead(view: GameView, ab: { cost: { mana?: string } }, sourceCardId: string): { open: boolean; gain: number; through: number; swing: boolean } | null {
+    const me = view.you, opp = (1 - me) as 0 | 1;
+    const preCombat = view.activePlayer === me && (view.step === "MAIN1" || view.step === "COMBAT_BEGIN");
+    const myCreatures = view.battlefield.filter((o) => o.controller === me && o.power !== null);
+    if (!preCombat || myCreatures.length < 2) return { open: false, gain: 0, through: 0, swing: false };
+    const pick = this.harvestPick(view, myCreatures.map((o) => o.id), sourceCardId);
+    const p = Math.max(0, myCreatures.find((o) => o.id === pick)?.power ?? 0);
+    const swing = !this.profile.off?.includes("harvestswing");
+    const ready = myCreatures.filter((o) => o.id !== pick && !o.cantAttack && (swing ? !o.tapped : this.canActNow(o))).map((o) => Math.max(0, o.power ?? 0) + p).sort((a, b) => b - a);
+    const untappedLands = view.battlefield.filter((o) => o.controller === me && !o.tapped && !!this.def(o.cardId)?.types.includes("Land")).length;
+    const shortfall = swing && ab.cost.mana ? Math.max(0, manaValue(parseManaCost(ab.cost.mana)) - untappedLands) : 0;
+    const attackers = ready.slice(0, Math.max(0, ready.length - shortfall));
+    const blockers = view.battlefield.filter((o) => o.controller === opp && o.power !== null && !o.tapped).length;
+    const through = attackers.slice(blockers).reduce((a, b) => a + b, 0); // their blockers stop our biggest
+    const gain = attackers.reduce((a, b) => a + b, 0);
+    const theirs = view.battlefield.filter((o) => o.controller === opp && o.power !== null).length;
+    if (myCreatures.length - 1 <= 1 && myCreatures.length - 1 < theirs) return { open: false, gain, through, swing }; // never down to the last body while behind
+    if (through >= Math.ceil(view.life[opp] * 0.5)) return { open: true, gain, through, swing }; // S41 (the planner's ruling): half, not three-fifths
+    return { open: swing && attackers.length >= 3 && p * attackers.length >= 6 && gain >= 8, gain, through, swing };
+  }
+  /** Post-S71a: the evaluator sees the harvest as a body lost and a pump that ends at cleanup; the attack it sets up is
+   * the point. An open harvest scores half the swing it buys — the life its lifelink gains (own-life weight) and the
+   * damage past their blockers (opponent-life weight) — half, for the attackers their blocks take. */
+  harvestSwingBonus(view: GameView, action: Action): number {
+    if (action.type !== "activateAbility") return 0;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.cost.sacrifice || !ab.effects.some((e) => e.type === "modifyPT" && e.scope === "creaturesYouControl" && typeof e.power === "object" && e.power.ref === "sacrificedPower")) return 0;
+    const src = view.battlefield.find((b) => b.id === action.objectId);
+    const r = src ? this.harvestRead(view, ab, src.cardId) : null;
+    if (!r?.open || !r.swing) return 0;
+    const w = this.C.weights[this.profile.archetype];
+    return 0.5 * (r.gain * w.ownLife + r.through * w.oppLife);
+  }
   /** Book 62: which creature the harvest takes — maximise the team's added power net of the body spent; the
    * source never; ties to the cheaper body. */
   private harvestPick(view: GameView, candidates: string[], sourceCardId: string): string | undefined {
@@ -3782,15 +3823,7 @@ export class HeuristicAgent implements Agent {
 
     // The harvest — before the generic branches (its cost is a creature, its payload the team).
     if (ab.cost.sacrifice && ab.effects.some((e) => e.type === "modifyPT" && e.scope === "creaturesYouControl" && typeof e.power === "object" && e.power.ref === "sacrificedPower")) {
-      if (!preCombat || myCreatures.length < 2) return true;
-      const pick = this.harvestPick(view, myCreatures.map((o) => o.id), src.cardId);
-      const p = Math.max(0, myCreatures.find((o) => o.id === pick)?.power ?? 0);
-      const attackers = myCreatures.filter((o) => o.id !== pick && this.canActNow(o) && !o.cantAttack).map((o) => Math.max(0, o.power ?? 0) + p).sort((a, b) => b - a); // S45: only who can swing this turn
-      const blockers = view.battlefield.filter((o) => o.controller === opp && o.power !== null && !o.tapped).length;
-      const through = attackers.slice(blockers).reduce((a, b) => a + b, 0); // their blockers stop our biggest
-      const theirs = view.battlefield.filter((o) => o.controller === opp && o.power !== null).length;
-      if (myCreatures.length - 1 <= 1 && myCreatures.length - 1 < theirs) return true; // never down to the last body while behind
-      return through < Math.ceil(view.life[opp] * 0.5); // S41 (the planner's ruling): half, not three-fifths — he should PLAY like the Reaper
+      return !this.harvestRead(view, ab, src.cardId)?.open;
     }
     // Reanimation with a creature as the cost (the pyre), or free (the Reeve): the best card only, and worth the body.
     if (e0.type === "returnFromGraveyard" && e0.to === "battlefield" && e0.target !== undefined) {
@@ -3893,6 +3926,20 @@ export class HeuristicAgent implements Agent {
     return Math.max(...hosts.map((h) => this.auraOnHost(view, cardId, h.id)));
   }
 
+  /** Post-S71a: the damage amounts the opponent's list can deal to a creature — targeted or to each (Bolt 3, the Kavu's
+   * 4, Pyroclasm's 2), from spells, modes and abilities. */
+  private damageReachMemo: number[] | null = null;
+  private damageReach(): number[] {
+    if (this.damageReachMemo !== null) return this.damageReachMemo;
+    const out = new Set<number>();
+    const walk = (effects: readonly Effect[] | undefined) => { for (const e of effects ?? []) if ((e.type === "damage" || e.type === "damageAll") && typeof (e as { amount?: unknown }).amount === "number") out.add((e as { amount: number }).amount); };
+    for (const { cardId } of this.profile.opponentDecklist) {
+      const d = this.def(cardId); if (!d) continue;
+      walk(d.spellEffect); for (const m of d.modes ?? []) walk(m.effects);
+      for (const a of d.abilities ?? []) { if ("effects" in a) walk(a.effects as Effect[]); if ("modes" in a) for (const m of (a as { modes?: { effects: Effect[] }[] }).modes ?? []) walk(m.effects); }
+    }
+    return (this.damageReachMemo = [...out].sort((a, b) => a - b));
+  }
   private boardValue(view: GameView, objectId: string): number {
     const o = view.battlefield.find((b) => b.id === objectId);
     return o ? objectValue(this.defs, o, this.C) : 0;
@@ -3939,6 +3986,17 @@ export class HeuristicAgent implements Agent {
         if (t.kind === "object" && t.id && cls === "helpful" && (request.source?.effects ?? []).some((e) => e.type === "addCounters" && e.kind === "+1/+1")) {
           const o = view.battlefield.find((b) => b.id === t.id);
           if (o && o.controller === view.you && (o.keywords.includes("flying") || o.keywords.includes("trample"))) s += 3;
+          // Post-S71a (Chris: "get the most valuable creatures out of Pyroclasm/Flametongue Kavu range"; his Snakes put 6% of
+          // Rage Cobra's counters on the Cobra, the AI 41%, building a 30/30 for one Doom Blade): counters that lift a body
+          // out of the reach of the opponent's damage (any numeric damage in their list) are worth the body again; once
+          // out of reach, the next ones go elsewhere. A count the stack does not state ("that many") reads as one. Off: "counterreach".
+          if (o && o.controller === view.you && o.toughness !== null && !this.profile.off?.includes("counterreach")) {
+            const n = (request.source?.effects ?? []).reduce((m, e) => (e.type === "addCounters" && e.kind === "+1/+1" ? Math.max(m, typeof e.count === "number" ? e.count : 1) : m), 0);
+            const t = o.toughness - o.damage;
+            const reach = this.damageReach();
+            if (reach.some((d) => t <= d && d < t + n)) s += this.boardValue(view, o.id);
+            else if (reach.length > 0 && t > reach[reach.length - 1]!) s -= 0.75 * this.boardValue(view, o.id); // already past all of it: the counter adds attack only, the lift saves a card
+          }
         }
         // S36 (book 53, the Angel of the Ruins): a HARMFUL effect on an opponent's aura that sits on OUR creature
         // is worth the creature it holds (Control Magic, Pacifism) — before their other artifacts and enchantments.

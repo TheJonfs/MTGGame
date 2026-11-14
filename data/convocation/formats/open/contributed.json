@@ -3082,6 +3082,165 @@
      "count": 1
     }
    ]
+  },
+  {
+   "key": "funpolice",
+   "name": "the Fun Police",
+   "title": "Five-Colour Land Destruction (W U B R G, Moxen)",
+   "archetype": "control",
+   "source": "Post-S71a (Chris, 2026-11-13): built from his Open (seed 558517, Normal) — 5–0 in the Swiss (the Writ 2–1, Mardu Control, the Tollgate, the Minefield, the Pinnacle 2–0), a quarter-final won over the Muster 2–0, the semi-final lost to the Rabble 0–2 (turns 7 and 16); 6–1 in matches, 12–3 in games. The first list built on the hybrid cycle: Terrain Collapse and Molten Rain with Vindicate at the lands, Domain Pouncer as the body, Clio and Experimental Overload, the Minefield–Helix finish, the Power and seven High Grounds. Wrath of God, the Meathook Massacre, the Jet Witch and Tormod's Crypt in the fifteen. His 75 as played. No guide.",
+   "decklist": [
+    {
+     "cardId": "demonic_tutor",
+     "count": 1
+    },
+    {
+     "cardId": "earthrise",
+     "count": 1
+    },
+    {
+     "cardId": "terrain_collapse",
+     "count": 4
+    },
+    {
+     "cardId": "time_walk",
+     "count": 1
+    },
+    {
+     "cardId": "domain_pouncer",
+     "count": 3
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "molten_rain",
+     "count": 4
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "powerstone_minefield",
+     "count": 3
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 2
+    },
+    {
+     "cardId": "experimental_overload",
+     "count": 4
+    },
+    {
+     "cardId": "black_lotus",
+     "count": 1
+    },
+    {
+     "cardId": "mox_emerald",
+     "count": 1
+    },
+    {
+     "cardId": "mox_jet",
+     "count": 1
+    },
+    {
+     "cardId": "mox_pearl",
+     "count": 1
+    },
+    {
+     "cardId": "mox_ruby",
+     "count": 1
+    },
+    {
+     "cardId": "mox_sapphire",
+     "count": 1
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "volmaw",
+     "count": 1
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "nightbower",
+     "count": 1
+    },
+    {
+     "cardId": "library_of_alexandria",
+     "count": 1
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "scrubland",
+     "count": 2
+    },
+    {
+     "cardId": "taiga",
+     "count": 1
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 1
+    },
+    {
+     "cardId": "ranksmere",
+     "count": 1
+    },
+    {
+     "cardId": "savannah",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 4
+    },
+    {
+     "cardId": "the_meathook_massacre",
+     "count": 3
+    }
+   ]
   }
  ],
  "_guides_note": "S58: a guide's rows are the author's swaps that MEASURED (open:rr --sideboarded-only <list> --guide-drop …). The Locks' planner's guide also had Essence Scatter for Absorb against creature decks (−17 against the Enchantress, −11 the Ford: Absorb's life and its reach beyond creatures were worth more) and Disenchant for the Serras (−12 the Muster and the Enchantress); both rows are out and the rules bring those cards in where they apply. Post-S59: `guidesOnly` names the guided lists whose guide is the whole plan (the rules do not run after it).",

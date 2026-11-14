@@ -1,0 +1,31 @@
+# The Open in matches (ADR-171) — 4000 best-of-three matches, 10004 games; game one on the registered sixties, games two and three sideboarded
+
+| list | matches | game one | games two and three | delta (later − game one) |
+|---|---|---|---|---|
+| **reaperclio** | 67.3 ± 4.6 | 54.8 ± 4.9 | 64.6 ± 3.8 | +9.9 |
+| **marducontrol** | 60.0 ± 4.8 | 53.0 ± 4.9 | 59.4 ± 3.9 | +6.4 |
+| **emeraldsnakes** | 59.2 ± 1.5 | 58.0 ± 1.5 | 55.0 ± 1.3 | -3.1 |
+| **mbclio** | 48.8 ± 4.9 | 49.0 ± 4.9 | 50.8 ± 3.9 | +1.8 |
+| **stampede** | 41.0 ± 4.8 | 39.5 ± 4.8 | 46.0 ± 4.0 | +6.5 |
+| **rabble** | 39.8 ± 4.8 | 40.5 ± 4.8 | 43.3 ± 3.9 | +2.8 |
+| **bantsnake** | 35.8 ± 4.7 | 35.3 ± 4.7 | 43.5 ± 4.0 | +8.3 |
+| **aerie** | 32.3 ± 4.6 | 36.8 ± 4.7 | 39.1 ± 3.9 | +2.3 |
+| **dragons** | 31.0 ± 4.5 | 38.8 ± 4.8 | 36.5 ± 3.9 | -2.3 |
+| **muster** | 30.3 ± 4.5 | 40.3 ± 4.8 | 35.5 ± 3.8 | -4.7 |
+| **wurmspeaker** | 21.8 ± 4.0 | 31.8 ± 4.6 | 29.8 ± 3.7 | -1.9 |
+
+## The pairings that move most after sideboarding (the row list's side; each is its opponent's loss)
+
+| pairing | matches | game one | games two and three | delta |
+|---|---|---|---|---|
+| reaperclio over emeraldsnakes | 67 (400) | 55 | 65 (612) | +10 |
+| bantsnake over emeraldsnakes | 36 (400) | 35 | 44 (586) | +8 |
+| stampede over emeraldsnakes | 41 (400) | 40 | 46 (611) | +6 |
+| marducontrol over emeraldsnakes | 60 (400) | 53 | 59 (611) | +6 |
+| emeraldsnakes over muster | 70 (400) | 60 | 64 (597) | +5 |
+| rabble over emeraldsnakes | 40 (400) | 41 | 43 (610) | +3 |
+| aerie over emeraldsnakes | 32 (400) | 37 | 39 (596) | +2 |
+| emeraldsnakes over dragons | 69 (400) | 61 | 64 (592) | +2 |
+| emeraldsnakes over wurmspeaker | 78 (400) | 68 | 70 (573) | +2 |
+| mbclio over emeraldsnakes | 49 (400) | 49 | 51 (616) | +2 |
+

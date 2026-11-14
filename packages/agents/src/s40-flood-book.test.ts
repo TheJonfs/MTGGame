@@ -118,6 +118,30 @@ describe("the book of shame, S40 — the flood's legends and grounds", () => {
     expect(a.scorePriorityAction(behind, act("reaper", 1))).toBe(-Infinity);
   });
 
+  it("post-S71a (Chris's Bodies Snakes): the harvest is also a lifelink swing — wide into a wall of blockers it fires; the haste counts a creature cast this turn; Snakes tapped for its mana stay home", () => {
+    const a = agent(), old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["harvestswing"] });
+    const bears: Obj[] = [1, 2, 3, 4].map((n) => ({ id: `gb${n}`, cardId: "grizzly_bears", controller: 1 as const }));
+    const snakes = (sick: boolean): Obj[] => Array.from({ length: 4 }, (_, i) => ({ id: `sn${i}`, cardId: "snake_1_1_g", controller: 0 as const, power: i === 0 ? 3 : 1, toughness: i === 0 ? 3 : 1, ...(sick ? { summoningSick: true } : {}) }));
+    const v = (nLands: number, sick = false) => mkView({ life: [20, 20], bf: [{ id: "reaper", cardId: "the_reaper", controller: 0 }, ...lands(nLands, "forest"), ...snakes(sick), ...bears] });
+    // the 3/3 onto the Reaper and three 1/1s: 7+4+4+4 swinging, none through four Bears, 19 life gained
+    expect(a.scorePriorityAction(v(3), act("reaper", 1))).toBeGreaterThan(-Infinity);
+    expect(a.scorePriorityAction(v(3), act("reaper", 1))).toBeGreaterThan(a.scorePriorityAction(v(3), { type: "pass" })); // taken, not merely allowed
+    expect(old.scorePriorityAction(v(3), act("reaper", 1))).toBe(-Infinity); // the half-their-life rule alone holds it
+    expect(a.scorePriorityAction(v(3, true), act("reaper", 1))).toBeGreaterThan(-Infinity); // sick Snakes: the pump's haste
+    expect(a.scorePriorityAction(v(1), act("reaper", 1))).toBe(-Infinity); // one land: two Snakes pay, two attackers left
+  });
+
+  it("post-S71a (Chris: out of Pyroclasm and Flametongue range): Rage Cobra's counter lifts a body out of the opponent's damage reach before it piles onto one already past it; against no damage, the best body", async () => {
+    const burn = [{ cardId: "pyroclasm", count: 4 }, { cardId: "flametongue_kavu", count: 4 }, { cardId: "mountain", count: 20 }];
+    const mk = (deck: { cardId: string; count: number }[], off: string[] = []) => new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: deck, temperature: 0.35, off });
+    const v = mkView({ bf: [{ id: "cobra", cardId: "rage_cobra", controller: 0, power: 6, toughness: 6 }, { id: "tok", cardId: "snake_1_1_g", controller: 0, power: 2, toughness: 2 }, { id: "gb", cardId: "grizzly_bears", controller: 1 }] });
+    const effects = (pool.get("rage_cobra")!.abilities![0] as { effects: unknown[] }).effects;
+    const req = { player: 0, purpose: "chooseTarget", actions: ["cobra", "tok"].map((id) => ({ type: "chooseTriggerTargets", targets: [obj(id)] })), source: { cardId: "rage_cobra", effects } } as unknown as ActionRequest;
+    expect(await mk(burn).chooseAction(v, req)).toEqual({ type: "chooseTriggerTargets", targets: [obj("tok")] }); // the 2/2 to 3/3: out of Pyroclasm
+    expect(await mk(burn, ["counterreach"]).chooseAction(v, req)).toEqual({ type: "chooseTriggerTargets", targets: [obj("cobra")] });
+    expect(await mk([{ cardId: "swamp", count: 17 }]).chooseAction(v, req)).toEqual({ type: "chooseTriggerTargets", targets: [obj("cobra")] });
+  });
+
   it("book 63 (Meliyan; the Cobra): a blocker that dies is worth its power under her; a creature that destroys what it damages trades like deathtouch", () => {
     const a = agent();
     const mk = (withMeliyan: boolean) => mkView({ active: 1, step: "DECLARE_BLOCKERS", bf: [...(withMeliyan ? [{ id: "mel", cardId: "meliyan_the_torment", controller: 0 as const }] : []), { id: "b", cardId: "grizzly_bears", controller: 0, power: 4, toughness: 4 }, { id: "att", cardId: "pelakka_wurm", controller: 1 }] });
