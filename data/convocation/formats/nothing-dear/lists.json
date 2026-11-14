@@ -1,0 +1,1518 @@
+{
+ "_comment": "Nothing Dear (S72 Part 4; Meliyan's gate — nothing above mana value four, the Power banned as in Bodies, the High Grounds one each): the field's lists. Seeds from the Open and the triads with the fewest swaps, each swap in its source line; guides carried where the source had one. Read by `pnpm open:gen`.",
+ "_shapeScale_note": "S72 (ADR-186, frozen at the field's thirteen seeds): small 18 as derived (the 36th-percentile count of toughness-two-or-less creatures); large derived 0 — six of thirteen seeds play no creature with toughness three or more, the format's shape — so frozen at ADR-186's floor of 2, which reads true against seven of the thirteen. The planner's to re-derive.",
+ "shapeScale": {
+  "small": 18,
+  "large": 2
+ },
+ "archived": {},
+ "guides": {
+  "marducontrol": [
+   {
+    "in": "tormods_crypt",
+    "n": 3,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 2,
+    "out": [
+     "revivalist"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 1,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 3,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 3,
+    "out": [
+     "soul_warden",
+     "blood_artist"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 2,
+    "out": [
+     "soul_warden",
+     "blood_artist"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "soul_warden",
+     "blood_artist"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "soul_warden",
+     "blood_artist"
+    ],
+    "when": [
+     "small"
+    ]
+   }
+  ],
+  "mbclio": [
+   {
+    "in": "pyroclasm",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach",
+     "hypnotic_specter"
+    ],
+    "when": [
+     "small",
+     "counters"
+    ]
+   },
+   {
+    "in": "control_magic",
+    "n": 3,
+    "out": [
+     "hypnotic_specter"
+    ],
+    "when": [
+     "small",
+     "counters"
+    ]
+   },
+   {
+    "in": "protocol",
+    "n": 3,
+    "out": [
+     "hypnotic_specter",
+     "dark_ritual"
+    ],
+    "when": [
+     "counters",
+     "shrinks"
+    ]
+   },
+   {
+    "in": "unearth",
+    "n": 3,
+    "out": [
+     "hypnotic_specter"
+    ],
+    "when": [
+     "killers"
+    ],
+    "unless": [
+     "small",
+     "counters"
+    ]
+   }
+  ],
+  "levy": [
+   {
+    "in": "swords_to_plowshares",
+    "n": 1,
+    "out": [
+     "shadow_summoning"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "tormods_crypt",
+    "n": 2,
+    "out": [
+     "raise_the_alarm"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 2,
+    "out": [
+     "raise_the_alarm"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   }
+  ],
+  "massocrafts": [
+   {
+    "in": "protocol",
+    "n": 4,
+    "out": [
+     "birds_of_paradise",
+     "manaba"
+    ],
+    "when": [
+     "shrinks"
+    ]
+   },
+   {
+    "in": "the_meathook_massacre",
+    "n": 2,
+    "out": [
+     "the_jet_witch",
+     "the_emerald_keeper"
+    ],
+    "when": [
+     "shrinks"
+    ]
+   }
+  ]
+ },
+ "guidesOnly": [
+  "marducontrol",
+  "mbclio",
+  "levy",
+  "massocrafts"
+ ],
+ "outRules": {},
+ "lists": [
+  {
+   "key": "muster",
+   "name": "the Muster",
+   "title": "Boros Weenie (W R)",
+   "archetype": "aggro",
+   "source": "S72 (the Nothing Dear seeds): the Muster from the Open, without the Power — the Power for three Dawnwing Marshals (Bodies' swap).",
+   "decklist": [
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 8
+    },
+    {
+     "cardId": "mountain",
+     "count": 4
+    },
+    {
+     "cardId": "secluded_steppe",
+     "count": 2
+    },
+    {
+     "cardId": "savannah_lions",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "suntail_hawk",
+     "count": 2
+    },
+    {
+     "cardId": "fencing_ace",
+     "count": 1
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 3
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "vigil_keeper",
+     "count": 3
+    },
+    {
+     "cardId": "dawnwing_marshal",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "rabble",
+   "name": "the Rabble",
+   "title": "Mono-Red Goblins (R)",
+   "archetype": "aggro",
+   "source": "S72 (the Nothing Dear seeds): the Rabble from the Open, without the Power or the top — the Power and the two Siege-Gangs (five) for two Mountains and four Boggart Brutes; its fifteen's four Ruby Tyrants (five) for a fourth Abrade and three Pyroclasms.",
+   "decklist": [
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "mountain",
+     "count": 10
+    },
+    {
+     "cardId": "goblin_grenade",
+     "count": 4
+    },
+    {
+     "cardId": "raging_goblin",
+     "count": 4
+    },
+    {
+     "cardId": "dragon_fodder",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "goblin_chieftain",
+     "count": 4
+    },
+    {
+     "cardId": "seasoned_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "hordeling_outburst",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "boggart_brute",
+     "count": 4
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "abrade",
+     "count": 4
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 4
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "thicket",
+   "name": "the Thicket",
+   "title": "Selesnya Auras (G W)",
+   "archetype": "aggro",
+   "source": "S72 (the Nothing Dear seeds): the Thicket from Abzan, without the Power — the Power for a Forest and two Spirit Links.",
+   "decklist": [
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 9
+    },
+    {
+     "cardId": "plains",
+     "count": 5
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "blurred_mongoose",
+     "count": 4
+    },
+    {
+     "cardId": "ovna_the_enchantress",
+     "count": 4
+    },
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 2
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "spirit_link",
+     "count": 3
+    },
+    {
+     "cardId": "pacifism",
+     "count": 4
+    },
+    {
+     "cardId": "angelic_destiny",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "key": "hexaura",
+   "name": "Bant Auras (working name)",
+   "title": "Bant Hexproof Auras (G w u)",
+   "archetype": "aggro",
+   "source": "S72 (the Nothing Dear seeds): Bant Auras from Bant, without the Power — the Power for a Forest, a third Harmonize and a third Pacifism; its fifteen's three Penumbra Wurms (seven) for a fourth Wall of Blossoms, Disenchant and Tormod's Crypt.",
+   "decklist": [
+    {
+     "cardId": "dungrove_elder",
+     "count": 4
+    },
+    {
+     "cardId": "gladecover_scout",
+     "count": 4
+    },
+    {
+     "cardId": "ovna_the_enchantress",
+     "count": 2
+    },
+    {
+     "cardId": "angelic_destiny",
+     "count": 3
+    },
+    {
+     "cardId": "rancor",
+     "count": 4
+    },
+    {
+     "cardId": "blanchwood_armor",
+     "count": 4
+    },
+    {
+     "cardId": "pacifism",
+     "count": 3
+    },
+    {
+     "cardId": "llanowar_elves",
+     "count": 4
+    },
+    {
+     "cardId": "birds_of_paradise",
+     "count": 2
+    },
+    {
+     "cardId": "harmonize",
+     "count": 3
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 4
+    },
+    {
+     "cardId": "forest",
+     "count": 11
+    },
+    {
+     "cardId": "savannah",
+     "count": 4
+    },
+    {
+     "cardId": "temple_garden",
+     "count": 2
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 2
+    },
+    {
+     "cardId": "plains",
+     "count": 2
+    },
+    {
+     "cardId": "island",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "disenchant",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "retribution_of_the_meek",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "tally",
+   "name": "the Tally",
+   "title": "Izzet Sparks (U R)",
+   "archetype": "aggro",
+   "source": "S72 (the Nothing Dear seeds): the Tally from Grixis, without the Power — the Power for a Mountain, a fourth Ponder and a third Counterspell.",
+   "decklist": [
+    {
+     "cardId": "volcanic_island",
+     "count": 4
+    },
+    {
+     "cardId": "steam_vents",
+     "count": 4
+    },
+    {
+     "cardId": "mountain",
+     "count": 9
+    },
+    {
+     "cardId": "island",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "forgotten_cave",
+     "count": 1
+    },
+    {
+     "cardId": "young_pyromancer",
+     "count": 4
+    },
+    {
+     "cardId": "guttersnipe",
+     "count": 4
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    },
+    {
+     "cardId": "shock",
+     "count": 4
+    },
+    {
+     "cardId": "char",
+     "count": 4
+    },
+    {
+     "cardId": "brainstorm",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 3
+    },
+    {
+     "cardId": "ponder",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "key": "emeraldsnakes",
+   "name": "Emerald Snakes",
+   "title": "Snake Keeper (G R)",
+   "archetype": "midrange",
+   "source": "S72 (the Nothing Dear seeds): Emerald Snakes as Bodies plays it (the Open's without the Power: two Forests, a third Harmonize, Rancor and Bolt) — nothing above four; its fifteen's Pelakka and Penumbra Wurms (seven) for two more Walls of Razors and two more Savage Twisters.",
+   "decklist": [
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "rage_cobra",
+     "count": 4
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "gaean_wurm",
+     "count": 4
+    },
+    {
+     "cardId": "elvish_visionary",
+     "count": 4
+    },
+    {
+     "cardId": "harmonize",
+     "count": 3
+    },
+    {
+     "cardId": "bayou",
+     "count": 2
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 4
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "volcanic_island",
+     "count": 1
+    },
+    {
+     "cardId": "forest",
+     "count": 2
+    },
+    {
+     "cardId": "rancor",
+     "count": 2
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "airship_crash",
+     "count": 2
+    },
+    {
+     "cardId": "foxglove_dose",
+     "count": 2
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 4
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "baru_wurmspeaker",
+     "count": 1
+    },
+    {
+     "cardId": "wall_of_razors",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "key": "levy",
+   "name": "the Levy",
+   "title": "Orzhov Landfall (W B)",
+   "archetype": "midrange",
+   "source": "S72 (the Nothing Dear seeds): the Levy from the Open, without the Power — the Power for a Plains, a second Nighthawk and a third Anthem; its fifteen's two Dranas (five) for two more Doom Blades.",
+   "decklist": [
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "plains",
+     "count": 6
+    },
+    {
+     "cardId": "swamp",
+     "count": 5
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 4
+    },
+    {
+     "cardId": "thawing_glaciers",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "emeria_angel",
+     "count": 4
+    },
+    {
+     "cardId": "dread_presence",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 2
+    },
+    {
+     "cardId": "isaura_the_levy",
+     "count": 2
+    },
+    {
+     "cardId": "raise_the_alarm",
+     "count": 4
+    },
+    {
+     "cardId": "shadow_summoning",
+     "count": 2
+    },
+    {
+     "cardId": "bitterblossom",
+     "count": 3
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 3
+    },
+    {
+     "cardId": "glorious_anthem",
+     "count": 3
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 1
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 2
+    },
+    {
+     "cardId": "disenchant",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    },
+    {
+     "cardId": "youthful_valkyrie",
+     "count": 1
+    },
+    {
+     "cardId": "shadow_summoning",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "key": "massocrafts",
+   "name": "Massocrafts",
+   "title": "Sultai Massacre Snakes (G B u)",
+   "archetype": "midrange",
+   "source": "S72 (the Nothing Dear seeds): Massocrafts from Sultai, without the Power — Library for a Breeding Pool, the Lotus for a Watery Grave, the rest for a second Jet Witch, two Walls of Blossoms and two Doom Blades (its fifteen kept whole for its guide); its fifteen's Drana (five) for a Tormod's Crypt.",
+   "decklist": [
+    {
+     "cardId": "birds_of_paradise",
+     "count": 4
+    },
+    {
+     "cardId": "manaba",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "reapers_forerunner",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "the_emerald_keeper",
+     "count": 4
+    },
+    {
+     "cardId": "the_meathook_massacre",
+     "count": 2
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 2
+    },
+    {
+     "cardId": "bayou",
+     "count": 4
+    },
+    {
+     "cardId": "overgrown_tomb",
+     "count": 4
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "tropical_island",
+     "count": 4
+    },
+    {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
+     "cardId": "breeding_pool",
+     "count": 4
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 3
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 2
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 2
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "the_meathook_massacre",
+     "count": 2
+    },
+    {
+     "cardId": "protocol",
+     "count": 4
+    },
+    {
+     "cardId": "mystic_snake",
+     "count": 4
+    },
+    {
+     "cardId": "seraphina_the_initiative",
+     "count": 2
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 2
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "key": "mbclio",
+   "name": "Mono-Black Clio",
+   "title": "Mono-Black Clio (B u r)",
+   "archetype": "midrange",
+   "source": "S72 (the Nothing Dear seeds): Mono-Black Clio from Grixis, without the Power or the top — Library and the Lotus for two Swamps, the rest and the three Dranas (five) for two Children of Night, three Doom Blades (Bodies' picks) and three Typhoid Rats (its fifteen kept whole for its guide).",
+   "decklist": [
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 4
+    },
+    {
+     "cardId": "hypnotic_specter",
+     "count": 4
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "dark_ritual",
+     "count": 4
+    },
+    {
+     "cardId": "dread_presence",
+     "count": 4
+    },
+    {
+     "cardId": "hymn_to_tourach",
+     "count": 4
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "tallyflame_court",
+     "count": 1
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "underground_sea",
+     "count": 4
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 4
+    },
+    {
+     "cardId": "swamp",
+     "count": 6
+    },
+    {
+     "cardId": "child_of_night",
+     "count": 2
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 3
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 3
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 3
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    },
+    {
+     "cardId": "protocol",
+     "count": 3
+    },
+    {
+     "cardId": "unearth",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "br",
+   "name": "BR Removal",
+   "title": "Rakdos Removal (B R)",
+   "archetype": "midrange",
+   "source": "S72 (the Nothing Dear seeds): BR Removal from Grixis — legal as it stands (no Power, nothing above four).",
+   "decklist": [
+    {
+     "cardId": "blood_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "swamp",
+     "count": 12
+    },
+    {
+     "cardId": "mountain",
+     "count": 7
+    },
+    {
+     "cardId": "typhoid_rats",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "child_of_night",
+     "count": 4
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "nekrataal",
+     "count": 4
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 4
+    },
+    {
+     "cardId": "reassembling_skeleton",
+     "count": 2
+    },
+    {
+     "cardId": "gravedigger",
+     "count": 2
+    },
+    {
+     "cardId": "doom_blade",
+     "count": 4
+    },
+    {
+     "cardId": "terror",
+     "count": 1
+    },
+    {
+     "cardId": "lightning_bolt",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "key": "minefield",
+   "name": "the Minefield",
+   "title": "Naya Valakut (R W G)",
+   "archetype": "control",
+   "source": "S72 (the Nothing Dear seeds): the Minefield from the Open, without the Power — Library, the Lotus and the Emerald for three Mountains, the Pearl and the Ruby for a second Sacred Foundry and Stomping Ground, Earthrise for a fourth Wrath, Balance for a fourth Savage Twister, Wheel for a Pyroclasm (from its fifteen, a third Faerie Macabre in its place).",
+   "decklist": [
+    {
+     "cardId": "powerstone_minefield",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 4
+    },
+    {
+     "cardId": "burnfallow_exuberant",
+     "count": 4
+    },
+    {
+     "cardId": "highland_ritual",
+     "count": 4
+    },
+    {
+     "cardId": "wood_elves",
+     "count": 4
+    },
+    {
+     "cardId": "savage_twister",
+     "count": 4
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 4
+    },
+    {
+     "cardId": "wall_of_blossoms",
+     "count": 4
+    },
+    {
+     "cardId": "burnfallow",
+     "count": 1
+    },
+    {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
+     "cardId": "shevelport",
+     "count": 1
+    },
+    {
+     "cardId": "taiga",
+     "count": 4
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 2
+    },
+    {
+     "cardId": "stomping_ground",
+     "count": 2
+    },
+    {
+     "cardId": "valakut_the_molten_pinnacle",
+     "count": 4
+    },
+    {
+     "cardId": "savannah",
+     "count": 1
+    },
+    {
+     "cardId": "mountain",
+     "count": 7
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 1
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "foxglove_dose",
+     "count": 4
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "tormods_crypt",
+     "count": 4
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 3
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "key": "undertow",
+   "name": "the Undertow",
+   "title": "Dimir Mill (U B)",
+   "archetype": "control",
+   "source": "S72 (the Nothing Dear seeds): the Undertow from Esper, without the Power — the Power for an Island, a fourth Counterspell and a third Essence Scatter.",
+   "decklist": [
+    {
+     "cardId": "underground_sea",
+     "count": 3
+    },
+    {
+     "cardId": "volmaw",
+     "count": 1
+    },
+    {
+     "cardId": "watery_grave",
+     "count": 4
+    },
+    {
+     "cardId": "island",
+     "count": 7
+    },
+    {
+     "cardId": "swamp",
+     "count": 3
+    },
+    {
+     "cardId": "evolving_wilds",
+     "count": 4
+    },
+    {
+     "cardId": "thawing_glaciers",
+     "count": 1
+    },
+    {
+     "cardId": "hedron_crab",
+     "count": 4
+    },
+    {
+     "cardId": "traumatizer",
+     "count": 4
+    },
+    {
+     "cardId": "tome_scour",
+     "count": 4
+    },
+    {
+     "cardId": "counterspell",
+     "count": 4
+    },
+    {
+     "cardId": "essence_scatter",
+     "count": 3
+    },
+    {
+     "cardId": "glimpse_the_unthinkable",
+     "count": 4
+    },
+    {
+     "cardId": "tidewall",
+     "count": 4
+    },
+    {
+     "cardId": "clio_lady_of_the_depths",
+     "count": 4
+    },
+    {
+     "cardId": "control_magic",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "key": "marducontrol",
+   "name": "Mardu Control",
+   "title": "Usher Midrange (W B R)",
+   "archetype": "midrange",
+   "source": "S72 (the Nothing Dear seeds): Mardu Control as Bodies plays it (the Open's without the Power: a Blood Crypt, two Kavus, a third Purge, a second Helix) — the three Ushers (five) for three Revivalists (Chris: the Usher is a side win; the Revivalist recovers the aristocrats).",
+   "decklist": [
+    {
+     "cardId": "lumen_the_hearth_fire",
+     "count": 3
+    },
+    {
+     "cardId": "restoration_angel",
+     "count": 3
+    },
+    {
+     "cardId": "phyrexian_purge",
+     "count": 3
+    },
+    {
+     "cardId": "vindicate",
+     "count": 4
+    },
+    {
+     "cardId": "the_jet_witch",
+     "count": 3
+    },
+    {
+     "cardId": "vampire_nighthawk",
+     "count": 4
+    },
+    {
+     "cardId": "blood_artist",
+     "count": 4
+    },
+    {
+     "cardId": "soul_warden",
+     "count": 4
+    },
+    {
+     "cardId": "swords_to_plowshares",
+     "count": 2
+    },
+    {
+     "cardId": "badlands",
+     "count": 4
+    },
+    {
+     "cardId": "scrubland",
+     "count": 4
+    },
+    {
+     "cardId": "plateau",
+     "count": 4
+    },
+    {
+     "cardId": "godless_shrine",
+     "count": 4
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
+    },
+    {
+     "cardId": "obsidian_observatory",
+     "count": 1
+    },
+    {
+     "cardId": "blood_crypt",
+     "count": 2
+    },
+    {
+     "cardId": "sacred_foundry",
+     "count": 1
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 2
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 2
+    },
+    {
+     "cardId": "revivalist",
+     "count": 3
+    }
+   ],
+   "sideboard": [
+    {
+     "cardId": "tormods_crypt",
+     "count": 3
+    },
+    {
+     "cardId": "faerie_macabre",
+     "count": 3
+    },
+    {
+     "cardId": "pyroclasm",
+     "count": 3
+    },
+    {
+     "cardId": "flametongue_kavu",
+     "count": 2
+    },
+    {
+     "cardId": "phyrexian_purge",
+     "count": 1
+    },
+    {
+     "cardId": "sacred_helix",
+     "count": 1
+    },
+    {
+     "cardId": "wrath_of_god",
+     "count": 2
+    }
+   ]
+  }
+ ]
+}

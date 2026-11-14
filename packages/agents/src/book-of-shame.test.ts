@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadCardPool } from "@shandalar/cards/loader";
-import type { GameView } from "@shandalar/engine";
+import type { ActionRequest, GameView } from "@shandalar/engine";
 import { readdirSync, readFileSync } from "node:fs";
 import { HeuristicAgent } from "./heuristic-agent.js";
 import { payableBy, reserveTaps } from "./reserve.js";

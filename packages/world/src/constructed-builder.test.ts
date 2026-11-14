@@ -118,7 +118,7 @@ describe("the Constructed builder (S52)", () => {
     expect(size(b.cut)).toBeGreaterThan(4);
     expect(b.check.ok).toBe(true);
     const wurm = library.find((l) => l.key === "open:wurmspeaker")!;
-    const w = buildConstructedDeck(NOTHING_DEAR_FORMAT, rating, 1, [wurm], cards);
+    const w = buildConstructedDeck(NOTHING_DEAR_FORMAT, rating, 1, [wurm], cards, { from: wurm.key }); // S72: Nothing Dear has a field of its own now — a list from outside it is repaired when named
     expect(w.cut.some((c) => manaValue(parseManaCost(d(c.cardId).manaCost)) > 4)).toBe(true);
     expect(w.check.ok).toBe(true);
     const lotus = { key: "x", archetype: "midrange" as const, decklist: [{ cardId: "black_lotus", count: 4 }, { cardId: "swamp", count: 24 }, { cardId: "vampire_nighthawk", count: 4 }, { cardId: "terror", count: 4 }] };
@@ -158,7 +158,7 @@ describe("Peasant (S62, ADR-176): a second format with its own field", () => {
     const small = Object.keys(FORMAT_FIELD.peasant!).filter((k) => count(k, (t) => t <= 2) >= p.small).length, n = Object.keys(FORMAT_FIELD.peasant!).length;
     expect(small).toBeGreaterThanOrEqual(3);
     expect(small).toBeLessThan(n); // not every Peasant deck is "small"
-    expect(sideboardTermsFor("nothing-dear").scale).toEqual(OPEN_SHAPE_SCALE); // a format without a field: the Open's
+    expect(sideboardTermsFor("nothing-sudden").scale).toEqual(OPEN_SHAPE_SCALE); // a format without a field: the Open's
   });
 });
 

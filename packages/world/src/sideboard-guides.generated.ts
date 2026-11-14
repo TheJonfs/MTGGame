@@ -2151,12 +2151,421 @@ export const SIDEBOARD_GUIDES: readonly SideboardGuide[] = [
    }
   ],
   "only": true
+ },
+ {
+  "key": "nothing-dear:marducontrol",
+  "fifteen": [
+   {
+    "cardId": "tormods_crypt",
+    "count": 3
+   },
+   {
+    "cardId": "faerie_macabre",
+    "count": 3
+   },
+   {
+    "cardId": "pyroclasm",
+    "count": 3
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 2
+   },
+   {
+    "cardId": "phyrexian_purge",
+    "count": 1
+   },
+   {
+    "cardId": "sacred_helix",
+    "count": 1
+   },
+   {
+    "cardId": "wrath_of_god",
+    "count": 2
+   }
+  ],
+  "rows": [
+   {
+    "in": "tormods_crypt",
+    "n": 3,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 2,
+    "out": [
+     "revivalist"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 1,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 3,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate",
+     "phyrexian_purge"
+    ],
+    "when": [
+     "small"
+    ],
+    "unless": [
+     "large"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "swords_to_plowshares",
+     "vindicate"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "vindicate"
+    ],
+    "when": [
+     "large"
+    ],
+    "unless": [
+     "small"
+    ]
+   },
+   {
+    "in": "pyroclasm",
+    "n": 3,
+    "out": [
+     "soul_warden",
+     "blood_artist"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 2,
+    "out": [
+     "soul_warden",
+     "blood_artist"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "wrath_of_god",
+    "n": 2,
+    "out": [
+     "soul_warden",
+     "blood_artist"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "sacred_helix",
+    "n": 1,
+    "out": [
+     "soul_warden",
+     "blood_artist"
+    ],
+    "when": [
+     "small"
+    ]
+   }
+  ],
+  "only": true
+ },
+ {
+  "key": "nothing-dear:mbclio",
+  "fifteen": [
+   {
+    "cardId": "pyroclasm",
+    "count": 3
+   },
+   {
+    "cardId": "flametongue_kavu",
+    "count": 3
+   },
+   {
+    "cardId": "control_magic",
+    "count": 3
+   },
+   {
+    "cardId": "protocol",
+    "count": 3
+   },
+   {
+    "cardId": "unearth",
+    "count": 3
+   }
+  ],
+  "rows": [
+   {
+    "in": "pyroclasm",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "flametongue_kavu",
+    "n": 3,
+    "out": [
+     "hymn_to_tourach",
+     "hypnotic_specter"
+    ],
+    "when": [
+     "small",
+     "counters"
+    ]
+   },
+   {
+    "in": "control_magic",
+    "n": 3,
+    "out": [
+     "hypnotic_specter"
+    ],
+    "when": [
+     "small",
+     "counters"
+    ]
+   },
+   {
+    "in": "protocol",
+    "n": 3,
+    "out": [
+     "hypnotic_specter",
+     "dark_ritual"
+    ],
+    "when": [
+     "counters",
+     "shrinks"
+    ]
+   },
+   {
+    "in": "unearth",
+    "n": 3,
+    "out": [
+     "hypnotic_specter"
+    ],
+    "when": [
+     "killers"
+    ],
+    "unless": [
+     "small",
+     "counters"
+    ]
+   }
+  ],
+  "only": true
+ },
+ {
+  "key": "nothing-dear:levy",
+  "fifteen": [
+   {
+    "cardId": "swords_to_plowshares",
+    "count": 1
+   },
+   {
+    "cardId": "doom_blade",
+    "count": 4
+   },
+   {
+    "cardId": "faerie_macabre",
+    "count": 2
+   },
+   {
+    "cardId": "disenchant",
+    "count": 2
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 2
+   },
+   {
+    "cardId": "wrath_of_god",
+    "count": 2
+   },
+   {
+    "cardId": "youthful_valkyrie",
+    "count": 1
+   },
+   {
+    "cardId": "shadow_summoning",
+    "count": 1
+   }
+  ],
+  "rows": [
+   {
+    "in": "swords_to_plowshares",
+    "n": 1,
+    "out": [
+     "shadow_summoning"
+    ],
+    "when": [
+     "small"
+    ]
+   },
+   {
+    "in": "tormods_crypt",
+    "n": 2,
+    "out": [
+     "raise_the_alarm"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   },
+   {
+    "in": "faerie_macabre",
+    "n": 2,
+    "out": [
+     "raise_the_alarm"
+    ],
+    "when": [
+     "graveyard"
+    ]
+   }
+  ],
+  "only": true
+ },
+ {
+  "key": "nothing-dear:massocrafts",
+  "fifteen": [
+   {
+    "cardId": "the_meathook_massacre",
+    "count": 2
+   },
+   {
+    "cardId": "protocol",
+    "count": 4
+   },
+   {
+    "cardId": "mystic_snake",
+    "count": 4
+   },
+   {
+    "cardId": "seraphina_the_initiative",
+    "count": 2
+   },
+   {
+    "cardId": "the_jet_witch",
+    "count": 2
+   },
+   {
+    "cardId": "tormods_crypt",
+    "count": 1
+   }
+  ],
+  "rows": [
+   {
+    "in": "protocol",
+    "n": 4,
+    "out": [
+     "birds_of_paradise",
+     "manaba"
+    ],
+    "when": [
+     "shrinks"
+    ]
+   },
+   {
+    "in": "the_meathook_massacre",
+    "n": 2,
+    "out": [
+     "the_jet_witch",
+     "the_emerald_keeper"
+    ],
+    "when": [
+     "shrinks"
+    ]
+   }
+  ],
+  "only": true
  }
 ];
 
 /** S62 (ADR-176): the `small` and `large` shapes' thresholds by format — the Open's as measured since S59; another
  * format's the counts at the same ranks of its own field (sideboard-ai.SHAPE_RANKS). */
-export const SHAPE_SCALES: Record<string, { small: number; large: number }> = {"open":{"small":15,"large":8},"peasant":{"small":20,"large":4},"naya":{"small":18,"large":3},"esper":{"small":10,"large":8},"mardu":{"small":18,"large":3},"grixis":{"small":15,"large":3},"jund":{"small":20,"large":3},"jeskai":{"small":12,"large":3},"sultai":{"small":14,"large":8},"abzan":{"small":18,"large":8},"temur":{"small":18,"large":2},"bant":{"small":16,"large":7},"bodies":{"small":22,"large":6}};
+export const SHAPE_SCALES: Record<string, { small: number; large: number }> = {"open":{"small":15,"large":8},"peasant":{"small":20,"large":4},"naya":{"small":18,"large":3},"esper":{"small":10,"large":8},"mardu":{"small":18,"large":3},"grixis":{"small":15,"large":3},"jund":{"small":20,"large":3},"jeskai":{"small":12,"large":3},"sultai":{"small":14,"large":8},"abzan":{"small":18,"large":8},"temur":{"small":18,"large":2},"bant":{"small":16,"large":7},"bodies":{"small":22,"large":6},"nothing-dear":{"small":18,"large":2}};
 
 /** S61 (Part 2): the out-rule adopted per list (matched by its sixty), where it measured a gain. */
 export const SIDEBOARD_OUT_RULES: readonly { key: string; sixty: { cardId: string; count: number }[]; out61: { small?: boolean; spells?: boolean; graveyard?: boolean } }[] = [
@@ -2510,5 +2919,9 @@ export const LIST_GUIDES: Record<string, string> = {
  "bant:sourworms": "bant:sourworms",
  "bodies:marducontrol": "marducontrol",
  "bodies:aerie": "esper:skies",
- "bodies:mbclio": "grixis:mbclio"
+ "bodies:mbclio": "grixis:mbclio",
+ "nothing-dear:levy": "nothing-dear:levy",
+ "nothing-dear:massocrafts": "nothing-dear:massocrafts",
+ "nothing-dear:mbclio": "grixis:mbclio",
+ "nothing-dear:marducontrol": "marducontrol"
 };

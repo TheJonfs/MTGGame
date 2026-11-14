@@ -1,0 +1,35 @@
+# The Open in matches (ADR-171) — 1920 best-of-three matches, 4792 games; game one on the registered sixties, games two and three sideboarded
+
+| list | matches | game one | games two and three | delta (later − game one) |
+|---|---|---|---|---|
+| **rabble** | 75.0 ± 6.7 | 71.3 ± 7.0 | 64.3 ± 6.1 | -7.0 |
+| **mbclio** | 70.6 ± 7.1 | 58.8 ± 7.6 | 62.8 ± 6.0 | +4.0 |
+| **emeraldsnakes** | 70.0 ± 7.1 | 68.8 ± 7.2 | 62.1 ± 6.1 | -6.7 |
+| **muster** | 63.8 ± 7.4 | 60.6 ± 7.6 | 59.1 ± 6.2 | -1.5 |
+| **levy** | 58.8 ± 7.6 | 53.8 ± 7.7 | 55.2 ± 6.2 | +1.5 |
+| **massocrafts** | 55.6 ± 7.7 | 51.9 ± 7.7 | 54.7 ± 6.3 | +2.9 |
+| **hexaura** | 51.3 ± 7.7 | 48.8 ± 7.7 | 52.5 ± 6.3 | +3.7 |
+| **thicket** | 47.4 ± 2.2 | 47.8 ± 2.2 | 48.8 ± 1.8 | +0.9 |
+| **marducontrol** | 46.3 ± 7.7 | 46.3 ± 7.7 | 48.3 ± 6.4 | +2.0 |
+| **undertow** | 45.6 ± 7.7 | 41.3 ± 7.6 | 48.1 ± 6.4 | +6.8 |
+| **minefield** | 41.3 ± 7.6 | 45.0 ± 7.7 | 44.3 ± 6.3 | -0.7 |
+| **tally** | 28.1 ± 7.0 | 40.9 ± 7.6 | 31.3 ± 6.0 | -9.6 |
+| **br** | 25.0 ± 6.7 | 38.8 ± 7.5 | 29.8 ± 5.8 | -9.0 |
+
+## The pairings that move most after sideboarding (the row list's side; each is its opponent's loss)
+
+| pairing | matches | game one | games two and three | delta |
+|---|---|---|---|---|
+| thicket over tally | 72 (160) | 59 | 69 (230) | +10 |
+| thicket over br | 75 (160) | 61 | 70 (235) | +9 |
+| thicket over rabble | 25 (160) | 29 | 36 (238) | +7 |
+| undertow over thicket | 46 (160) | 41 | 48 (233) | +7 |
+| thicket over emeraldsnakes | 30 (160) | 31 | 38 (240) | +7 |
+| mbclio over thicket | 71 (160) | 59 | 63 (250) | +4 |
+| hexaura over thicket | 51 (160) | 49 | 52 (242) | +4 |
+| massocrafts over thicket | 56 (160) | 52 | 55 (243) | +3 |
+| marducontrol over thicket | 46 (160) | 46 | 48 (234) | +2 |
+| thicket over muster | 36 (160) | 39 | 41 (242) | +2 |
+| levy over thicket | 59 (160) | 54 | 55 (248) | +1 |
+| thicket over minefield | 59 (160) | 55 | 56 (237) | +1 |
+

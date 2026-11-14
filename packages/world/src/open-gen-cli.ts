@@ -128,7 +128,7 @@ export const OPEN_FIELD: Record<string, OpenList> = Object.fromEntries(Object.en
 /** S62 (ADR-176): every format that has a field of its own lists, by format id — the Open's above, and the rest from data/convocation/formats/<id>/lists.json. */
 export const FORMAT_DECKS: Record<string, Record<string, OpenList>> = {
   open: OPEN_DECKS,
-${extras.map((x) => `  ${x.id}: {\n${x.lists.map((l) => "  " + listLine(l, !!l.archived)).join("\n")}\n  },`).join("\n")}
+${extras.map((x) => `  ${/^[a-z]\w*$/.test(x.id) ? x.id : JSON.stringify(x.id)}: {\n${x.lists.map((l) => "  " + listLine(l, !!l.archived)).join("\n")}\n  },`).join("\n")}
 };
 /** A format's lists in its field — every one not archived. */
 export const FORMAT_FIELD: Record<string, Record<string, OpenList>> = Object.fromEntries(Object.entries(FORMAT_DECKS).map(([f, ls]) => [f, Object.fromEntries(Object.entries(ls).filter(([, l]) => !l.archived))]));

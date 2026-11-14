@@ -1,0 +1,35 @@
+# The Open in matches (ADR-171) — 1920 best-of-three matches, 4785 games; game one on the registered sixties, games two and three sideboarded
+
+| list | matches | game one | games two and three | delta (later − game one) |
+|---|---|---|---|---|
+| **emeraldsnakes** | 66.3 ± 2.1 | 63.7 ± 2.2 | 59.2 ± 1.8 | -4.5 |
+| **mbclio** | 47.5 ± 7.7 | 43.1 ± 7.7 | 51.6 ± 6.2 | +8.5 |
+| **massocrafts** | 44.4 ± 7.7 | 46.9 ± 7.7 | 46.5 ± 6.2 | -0.3 |
+| **br** | 41.9 ± 7.6 | 40.6 ± 7.6 | 45.0 ± 6.3 | +4.4 |
+| **minefield** | 40.0 ± 7.6 | 39.4 ± 7.6 | 45.3 ± 6.3 | +5.9 |
+| **hexaura** | 40.0 ± 7.6 | 40.0 ± 7.6 | 46.1 ± 6.3 | +6.1 |
+| **rabble** | 38.8 ± 7.5 | 37.5 ± 7.5 | 47.2 ± 6.2 | +9.7 |
+| **thicket** | 37.5 ± 7.5 | 34.4 ± 7.4 | 44.4 ± 6.2 | +10.1 |
+| **marducontrol** | 31.3 ± 7.2 | 31.3 ± 7.2 | 40.6 ± 6.3 | +9.3 |
+| **muster** | 27.5 ± 6.9 | 38.8 ± 7.5 | 33.5 ± 6.0 | -5.3 |
+| **tally** | 23.8 ± 6.6 | 33.4 ± 7.3 | 31.7 ± 6.1 | -1.7 |
+| **undertow** | 16.9 ± 5.8 | 27.5 ± 6.9 | 27.9 ± 5.8 | +0.4 |
+| **levy** | 15.0 ± 5.5 | 22.5 ± 6.5 | 27.4 ± 5.8 | +4.9 |
+
+## The pairings that move most after sideboarding (the row list's side; each is its opponent's loss)
+
+| pairing | matches | game one | games two and three | delta |
+|---|---|---|---|---|
+| thicket over emeraldsnakes | 38 (160) | 34 | 44 (243) | +10 |
+| rabble over emeraldsnakes | 39 (160) | 38 | 47 (247) | +10 |
+| marducontrol over emeraldsnakes | 31 (160) | 31 | 41 (234) | +9 |
+| mbclio over emeraldsnakes | 48 (160) | 43 | 52 (250) | +8 |
+| hexaura over emeraldsnakes | 40 (160) | 40 | 46 (241) | +6 |
+| minefield over emeraldsnakes | 40 (160) | 39 | 45 (243) | +6 |
+| emeraldsnakes over muster | 73 (160) | 61 | 67 (236) | +5 |
+| levy over emeraldsnakes | 15 (160) | 23 | 27 (226) | +5 |
+| br over emeraldsnakes | 42 (160) | 41 | 45 (240) | +4 |
+| emeraldsnakes over tally | 76 (160) | 67 | 68 (227) | +2 |
+| undertow over emeraldsnakes | 17 (160) | 28 | 28 (233) | +0 |
+| emeraldsnakes over massocrafts | 56 (160) | 53 | 53 (245) | +0 |
+

@@ -83,14 +83,16 @@ export const ABZAN_FORMAT = constructed("abzan", "Abzan", "white, black and gree
 export const TEMUR_FORMAT = constructed("temur", "Temur", "green, blue and red. Great bodies, bounce and burn — the Unwinder sends it all home", { ...OPEN_BASE, colorsWithin: ["G", "U", "R"], manaWithin: true });
 export const BANT_FORMAT = constructed("bant", "Bant", "green, white and blue. Angels and auras, and the Sower plants a forest for every land", { ...OPEN_BASE, colorsWithin: ["G", "W", "U"], manaWithin: true });
 /** The formats that have a field of their own lists (data/convocation/formats/<id>/), a table of record and a door. */
-export const FIELD_FORMAT_IDS = ["open", "peasant", "naya", "esper", "mardu", "grixis", "jund", "jeskai", "sultai", "abzan", "temur", "bant", "bodies"] as const;
+export const FIELD_FORMAT_IDS = ["open", "peasant", "naya", "esper", "mardu", "grixis", "jund", "jeskai", "sultai", "abzan", "temur", "bant", "bodies", "nothing-dear"] as const;
 export const PAUPER_FORMAT = constructed("pauper", "Pauper", "tier 1 only — honest creatures and spells", { minCards: 60, maxTier: 1, banned: OPEN_FORMAT.rule.banned! });
 /** Post-S71a (Chris): Bodies bans the Power (POWER_IDS); the High Grounds stay restricted to one. */
 export const BODIES_FORMAT = constructed("bodies", "Bodies", "Odile's gate: twenty-four creatures in sixty, and no Power — the High Grounds one each", { ...OPEN_BASE, banned: [...OPEN_BASE.banned, ...POWER_IDS], minCreatures: 24 });
 export const NOTHING_SMALL_FORMAT = constructed("nothing-small", "Nothing Small", "Zinnia's gate: every creature's power two or more", { ...OPEN_BASE, minCreaturePower: 2 });
 export const NOTHING_SUDDEN_FORMAT = constructed("nothing-sudden", "Nothing Sudden", "Ovna's gate: no instants", { ...OPEN_BASE, bannedTypes: ["Instant"] });
 export const HALF_GROUND_FORMAT = constructed("half-ground", "Half Ground", "Isaura's gate: half the deck is land", { ...OPEN_BASE, minLandFraction: 0.5 });
-export const NOTHING_DEAR_FORMAT = constructed("nothing-dear", "Nothing Dear", "Meliyan's gate: nothing above mana value four", { ...OPEN_BASE, maxManaValue: 4 });
+/** S72 Part 4 (Chris, 2026-11-14): Nothing Dear bans the Power as Bodies does (the Lotus and the Moxen are mana value
+ * zero and would otherwise be the format); the High Grounds stay restricted to one. The door is the brief's line. */
+export const NOTHING_DEAR_FORMAT = constructed("nothing-dear", "Nothing Dear", "Meliyan's gate: nothing that costs more than four. The curve is the deck — and no Power, the High Grounds one each", { ...OPEN_BASE, banned: [...OPEN_BASE.banned, ...POWER_IDS], maxManaValue: 4 });
 /** Every Constructed format the builder passes its tests for (S52); the door offers the Open, the rest are data. */
 export const CONSTRUCTED_FORMATS: readonly ConstructedFormat[] = [OPEN_FORMAT, PEASANT_FORMAT, NAYA_FORMAT, ESPER_FORMAT, MARDU_FORMAT, GRIXIS_FORMAT, JUND_FORMAT, JESKAI_FORMAT, SULTAI_FORMAT, ABZAN_FORMAT, TEMUR_FORMAT, BANT_FORMAT, PAUPER_FORMAT, BODIES_FORMAT, NOTHING_SMALL_FORMAT, NOTHING_SUDDEN_FORMAT, HALF_GROUND_FORMAT, NOTHING_DEAR_FORMAT];
 
