@@ -1,17 +1,17 @@
 {
  "_comment": "A format's game-one means (S46): each list's win rate against the other active lists on the registered sixties. Written by `pnpm open:rr --format <id> --merge <shards> --record` — do not edit by hand. `pnpm open:gen` reads it with matches.json into the field's strength table (S63 Part 2).",
- "when": "2026-11-11",
+ "when": "2026-11-14",
  "source": "5500 games, 100 a pairing",
  "byList": {
-  "aerie": 46,
-  "bantsnake": 49,
-  "dragons": 45,
-  "emeraldsnakes": 59,
+  "aerie": 45,
+  "bantsnake": 50,
+  "dragons": 43,
+  "emeraldsnakes": 58,
   "marducontrol": 61,
   "mbclio": 59,
-  "muster": 42,
-  "rabble": 41,
-  "reaperclio": 63,
+  "muster": 43,
+  "rabble": 43,
+  "reaperclio": 65,
   "stampede": 48,
   "wurmspeaker": 35
  }

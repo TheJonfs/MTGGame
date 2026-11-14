@@ -2773,3 +2773,19 @@ describe("book of shame 169 (post-S71a, Glory Hound — a team grant with a pump
     expect(on.scorePriorityAction(declared, act)).toBeGreaterThan(on.scorePriorityAction(declared, pass));
   });
 });
+
+describe("S72 Part 3 (the mulligan read, moxkeep)", () => {
+  it("a Mox or the Lotus is a source for the low bound: one land and a Mox keeps at seven and six; no land at all still goes back; the high bound is lands only", async () => {
+    const a = agent(), old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["moxkeep"] });
+    const req = { player: 0, purpose: "mulligan", actions: [{ type: "keepHand" }, { type: "mulligan" }] } as unknown as ActionRequest;
+    const hand = (ids: string[], mulls = 0) => { const v = mkView({ hand: ids.map((cardId, i) => ({ objectId: `h${i}`, cardId })) }); (v as { mulliganCount: number }).mulliganCount = mulls; return v; };
+    const spells = ["grizzly_bears", "grizzly_bears", "lightning_bolt", "lightning_bolt", "hill_giant"];
+    expect(await a.chooseAction(hand(["mountain", "mox_ruby", ...spells]), req)).toEqual({ type: "keepHand" });
+    expect(await old.chooseAction(hand(["mountain", "mox_ruby", ...spells]), req)).toEqual({ type: "mulligan" });
+    expect(await a.chooseAction(hand(["mountain", "black_lotus", ...spells.slice(0, 4)], 1), req)).toEqual({ type: "keepHand" }); // six cards
+    expect(await a.chooseAction(hand(["mox_ruby", "mox_emerald", ...spells]), req)).toEqual({ type: "mulligan" }); // no land
+    expect(await a.chooseAction(hand(["mountain", "lightning_bolt", ...spells]), req)).toEqual({ type: "mulligan" }); // one land alone
+    expect(await a.chooseAction(hand(["mountain", "mountain", "mountain", "mountain", "mountain", "mox_ruby", "lightning_bolt"]), req)).toEqual({ type: "keepHand" }); // five lands and a Mox: the high bound is lands
+    expect(await a.chooseAction(hand(["mountain", "mountain", "mountain", "mountain", "mountain", "mountain", "mox_ruby"]), req)).toEqual({ type: "mulligan" });
+  });
+});

@@ -55,6 +55,7 @@
     "counter-log-probe": "tsx packages/world/src/counter-log-probe-cli.ts",
     "target-probe": "tsx packages/world/src/target-probe-cli.ts",
     "leak-census": "tsx packages/world/src/leak-census-cli.ts",
+    "mulligan-probe": "tsx packages/world/src/mulligan-probe-cli.ts",
     "play-diff": "tsx packages/world/src/play-diff-cli.ts",
     "sideboard:show": "tsx packages/world/src/sideboard-show-cli.ts",
     "format:census": "tsx packages/world/src/format-census-cli.ts",

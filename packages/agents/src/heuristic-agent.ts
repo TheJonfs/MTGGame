@@ -206,7 +206,12 @@ export class HeuristicAgent implements Agent {
     if (!keep || !mull) return request.actions[0]!;
     const effective = 7 - view.mulliganCount;
     const lands = view.hand.filter((c) => this.def(c.cardId)?.types.includes("Land")).length;
-    const keepIt = effective <= 5 ? true : effective === 7 ? lands >= 2 && lands <= 5 : lands >= 2;
+    // S72 Part 3 (the mulligan read, `moxkeep`): a mana artifact (a Mox, the Lotus — a noncreature artifact that makes
+    // mana) is a source for the low bound — one land and a Mox is two sources. Chris kept 37 such hands the rule sent
+    // back, across 19 runs, and won 35 of those games. Off: "moxkeep". A land is still required; the high bound stays lands only.
+    const arts = this.profile.off?.includes("moxkeep") ? 0 : view.hand.filter((c) => { const d = this.def(c.cardId); return !!d && d.types.includes("Artifact") && !d.types.includes("Creature") && (d.abilities ?? []).some((a) => a.kind === "activated" && a.effects.some((e) => e.type === "addMana")); }).length;
+    const sources = lands + arts, enough = sources >= 2 && (lands >= 1 || arts === 0);
+    const keepIt = effective <= 5 ? true : effective === 7 ? enough && lands <= 5 : enough;
     return keepIt ? keep : mull;
   }
 

@@ -1,78 +1,78 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-11-11",
+ "when": "2026-11-14",
  "matchesAPairing": 60,
  "byList": {
   "aerie": {
-   "matches": 42.3,
-   "gameOne": 44.5,
-   "later": 44.4,
-   "n": 600
-  },
-  "bantsnake": {
-   "matches": 57.8,
-   "gameOne": 52.3,
-   "later": 56.3,
-   "n": 600
-  },
-  "dragons": {
-   "matches": 38.9,
-   "gameOne": 41.7,
-   "later": 42.9,
-   "n": 600
-  },
-  "emeraldsnakes": {
-   "matches": 59.2,
-   "gameOne": 61.3,
-   "later": 53.6,
-   "n": 600
-  },
-  "marducontrol": {
-   "matches": 68.1,
-   "gameOne": 59.8,
-   "later": 63.1,
-   "n": 600
-  },
-  "mbclio": {
-   "matches": 62.1,
-   "gameOne": 61.5,
-   "later": 56.5,
-   "n": 600
-  },
-  "muster": {
-   "matches": 38.7,
-   "gameOne": 43.2,
+   "matches": 40.3,
+   "gameOne": 45.7,
    "later": 42.3,
    "n": 600
   },
+  "bantsnake": {
+   "matches": 55.7,
+   "gameOne": 51.8,
+   "later": 54.4,
+   "n": 600
+  },
+  "dragons": {
+   "matches": 39,
+   "gameOne": 40.3,
+   "later": 43.5,
+   "n": 600
+  },
+  "emeraldsnakes": {
+   "matches": 58.6,
+   "gameOne": 60.5,
+   "later": 52.9,
+   "n": 600
+  },
+  "marducontrol": {
+   "matches": 69.7,
+   "gameOne": 60.3,
+   "later": 64.1,
+   "n": 600
+  },
+  "mbclio": {
+   "matches": 62.5,
+   "gameOne": 61.3,
+   "later": 57.1,
+   "n": 600
+  },
+  "muster": {
+   "matches": 40,
+   "gameOne": 44.3,
+   "later": 43.5,
+   "n": 600
+  },
   "rabble": {
-   "matches": 39.6,
-   "gameOne": 41.8,
-   "later": 44.1,
+   "matches": 42.9,
+   "gameOne": 45,
+   "later": 45.2,
    "n": 600
   },
   "reaperclio": {
-   "matches": 66.1,
-   "gameOne": 63,
-   "later": 59.9,
+   "matches": 67.3,
+   "gameOne": 62,
+   "later": 62.2,
    "n": 600
   },
   "stampede": {
-   "matches": 48,
-   "gameOne": 44.9,
-   "later": 51.4,
+   "matches": 46.6,
+   "gameOne": 43.6,
+   "later": 50.7,
    "n": 600
   },
   "wurmspeaker": {
-   "matches": 29.3,
-   "gameOne": 36.2,
-   "later": 34.9,
+   "matches": 27.5,
+   "gameOne": 35.2,
+   "later": 33.3,
    "n": 600
   }
  },
  "byPair": {
   "aerie|bantsnake": {
-   "w": 18,
+   "w": 17,
    "n": 60
   },
   "aerie|dragons": {
@@ -80,27 +80,27 @@
    "n": 60
   },
   "aerie|emeraldsnakes": {
-   "w": 15,
-   "n": 60
-  },
-  "aerie|marducontrol": {
-   "w": 19,
-   "n": 60
-  },
-  "aerie|mbclio": {
    "w": 16,
    "n": 60
   },
+  "aerie|marducontrol": {
+   "w": 15,
+   "n": 60
+  },
+  "aerie|mbclio": {
+   "w": 17,
+   "n": 60
+  },
   "aerie|muster": {
-   "w": 27,
+   "w": 22,
    "n": 60
   },
   "aerie|rabble": {
-   "w": 28,
+   "w": 30,
    "n": 60
   },
   "aerie|reaperclio": {
-   "w": 23,
+   "w": 17,
    "n": 60
   },
   "aerie|stampede": {
@@ -112,11 +112,11 @@
    "n": 60
   },
   "bantsnake|aerie": {
-   "w": 42,
+   "w": 43,
    "n": 60
   },
   "bantsnake|dragons": {
-   "w": 39,
+   "w": 36,
    "n": 60
   },
   "bantsnake|emeraldsnakes": {
@@ -124,31 +124,31 @@
    "n": 60
   },
   "bantsnake|marducontrol": {
-   "w": 29,
+   "w": 28,
    "n": 60
   },
   "bantsnake|mbclio": {
-   "w": 16,
+   "w": 15,
    "n": 60
   },
   "bantsnake|muster": {
-   "w": 38,
-   "n": 60
-  },
-  "bantsnake|rabble": {
-   "w": 39.5,
-   "n": 60
-  },
-  "bantsnake|reaperclio": {
-   "w": 26,
-   "n": 60
-  },
-  "bantsnake|stampede": {
    "w": 39,
    "n": 60
   },
+  "bantsnake|rabble": {
+   "w": 34,
+   "n": 60
+  },
+  "bantsnake|reaperclio": {
+   "w": 25,
+   "n": 60
+  },
+  "bantsnake|stampede": {
+   "w": 34,
+   "n": 60
+  },
   "bantsnake|wurmspeaker": {
-   "w": 48,
+   "w": 50,
    "n": 60
   },
   "dragons|aerie": {
@@ -156,7 +156,7 @@
    "n": 60
   },
   "dragons|bantsnake": {
-   "w": 21,
+   "w": 24,
    "n": 60
   },
   "dragons|emeraldsnakes": {
@@ -164,27 +164,27 @@
    "n": 60
   },
   "dragons|marducontrol": {
-   "w": 7,
+   "w": 6,
    "n": 60
   },
   "dragons|mbclio": {
-   "w": 27,
+   "w": 22,
    "n": 60
   },
   "dragons|muster": {
-   "w": 29,
+   "w": 28,
    "n": 60
   },
   "dragons|rabble": {
-   "w": 29,
+   "w": 29.5,
    "n": 60
   },
   "dragons|reaperclio": {
-   "w": 21.5,
+   "w": 24.5,
    "n": 60
   },
   "dragons|stampede": {
-   "w": 26,
+   "w": 27,
    "n": 60
   },
   "dragons|wurmspeaker": {
@@ -192,7 +192,7 @@
    "n": 60
   },
   "emeraldsnakes|aerie": {
-   "w": 45,
+   "w": 44,
    "n": 60
   },
   "emeraldsnakes|bantsnake": {
@@ -204,139 +204,139 @@
    "n": 60
   },
   "emeraldsnakes|marducontrol": {
-   "w": 23,
+   "w": 27,
    "n": 60
   },
   "emeraldsnakes|mbclio": {
-   "w": 24,
-   "n": 60
-  },
-  "emeraldsnakes|muster": {
-   "w": 43,
-   "n": 60
-  },
-  "emeraldsnakes|rabble": {
-   "w": 38,
-   "n": 60
-  },
-  "emeraldsnakes|reaperclio": {
    "w": 26,
    "n": 60
   },
+  "emeraldsnakes|muster": {
+   "w": 44,
+   "n": 60
+  },
+  "emeraldsnakes|rabble": {
+   "w": 31.5,
+   "n": 60
+  },
+  "emeraldsnakes|reaperclio": {
+   "w": 25,
+   "n": 60
+  },
   "emeraldsnakes|stampede": {
-   "w": 37,
+   "w": 36,
    "n": 60
   },
   "emeraldsnakes|wurmspeaker": {
-   "w": 44,
+   "w": 43,
    "n": 60
   },
   "marducontrol|aerie": {
-   "w": 41,
+   "w": 45,
    "n": 60
   },
   "marducontrol|bantsnake": {
-   "w": 31,
+   "w": 32,
    "n": 60
   },
   "marducontrol|dragons": {
-   "w": 53,
+   "w": 54,
    "n": 60
   },
   "marducontrol|emeraldsnakes": {
-   "w": 37,
+   "w": 33,
    "n": 60
   },
   "marducontrol|mbclio": {
-   "w": 41,
+   "w": 42,
    "n": 60
   },
   "marducontrol|muster": {
-   "w": 36,
+   "w": 40,
    "n": 60
   },
   "marducontrol|rabble": {
-   "w": 41.5,
+   "w": 41,
    "n": 60
   },
   "marducontrol|reaperclio": {
-   "w": 37,
-   "n": 60
-  },
-  "marducontrol|stampede": {
-   "w": 39,
-   "n": 60
-  },
-  "marducontrol|wurmspeaker": {
-   "w": 52,
-   "n": 60
-  },
-  "mbclio|aerie": {
-   "w": 44,
-   "n": 60
-  },
-  "mbclio|bantsnake": {
-   "w": 44,
-   "n": 60
-  },
-  "mbclio|dragons": {
-   "w": 33,
-   "n": 60
-  },
-  "mbclio|emeraldsnakes": {
    "w": 36,
    "n": 60
   },
+  "marducontrol|stampede": {
+   "w": 41,
+   "n": 60
+  },
+  "marducontrol|wurmspeaker": {
+   "w": 54,
+   "n": 60
+  },
+  "mbclio|aerie": {
+   "w": 43,
+   "n": 60
+  },
+  "mbclio|bantsnake": {
+   "w": 45,
+   "n": 60
+  },
+  "mbclio|dragons": {
+   "w": 38,
+   "n": 60
+  },
+  "mbclio|emeraldsnakes": {
+   "w": 34,
+   "n": 60
+  },
   "mbclio|marducontrol": {
-   "w": 19,
+   "w": 18,
    "n": 60
   },
   "mbclio|muster": {
-   "w": 46,
+   "w": 47,
    "n": 60
   },
   "mbclio|rabble": {
-   "w": 36.5,
+   "w": 39,
    "n": 60
   },
   "mbclio|reaperclio": {
-   "w": 31,
+   "w": 26,
    "n": 60
   },
   "mbclio|stampede": {
-   "w": 30,
-   "n": 60
-  },
-  "mbclio|wurmspeaker": {
-   "w": 53,
-   "n": 60
-  },
-  "muster|aerie": {
    "w": 33,
    "n": 60
   },
+  "mbclio|wurmspeaker": {
+   "w": 52,
+   "n": 60
+  },
+  "muster|aerie": {
+   "w": 38,
+   "n": 60
+  },
   "muster|bantsnake": {
-   "w": 22,
+   "w": 21,
    "n": 60
   },
   "muster|dragons": {
-   "w": 31,
+   "w": 32,
    "n": 60
   },
   "muster|emeraldsnakes": {
-   "w": 17,
+   "w": 16,
    "n": 60
   },
   "muster|marducontrol": {
-   "w": 24,
+   "w": 20,
    "n": 60
   },
   "muster|mbclio": {
-   "w": 14,
+   "w": 13,
    "n": 60
   },
   "muster|rabble": {
-   "w": 31,
+   "w": 30,
    "n": 60
   },
   "muster|reaperclio": {
@@ -344,75 +344,75 @@
    "n": 60
   },
   "muster|stampede": {
-   "w": 24,
+   "w": 29,
    "n": 60
   },
   "muster|wurmspeaker": {
-   "w": 26,
-   "n": 60
-  },
-  "rabble|aerie": {
-   "w": 32,
-   "n": 60
-  },
-  "rabble|bantsnake": {
-   "w": 20.5,
-   "n": 60
-  },
-  "rabble|dragons": {
    "w": 31,
    "n": 60
   },
+  "rabble|aerie": {
+   "w": 30,
+   "n": 60
+  },
+  "rabble|bantsnake": {
+   "w": 26,
+   "n": 60
+  },
+  "rabble|dragons": {
+   "w": 30.5,
+   "n": 60
+  },
   "rabble|emeraldsnakes": {
-   "w": 22,
+   "w": 28.5,
    "n": 60
   },
   "rabble|marducontrol": {
-   "w": 18.5,
+   "w": 19,
    "n": 60
   },
   "rabble|mbclio": {
-   "w": 23.5,
+   "w": 21,
    "n": 60
   },
   "rabble|muster": {
-   "w": 29,
+   "w": 30,
    "n": 60
   },
   "rabble|reaperclio": {
-   "w": 14,
+   "w": 15,
    "n": 60
   },
   "rabble|stampede": {
-   "w": 18,
+   "w": 24.5,
    "n": 60
   },
   "rabble|wurmspeaker": {
-   "w": 29,
+   "w": 33,
    "n": 60
   },
   "reaperclio|aerie": {
-   "w": 37,
+   "w": 43,
    "n": 60
   },
   "reaperclio|bantsnake": {
-   "w": 34,
+   "w": 35,
    "n": 60
   },
   "reaperclio|dragons": {
-   "w": 38.5,
+   "w": 35.5,
    "n": 60
   },
   "reaperclio|emeraldsnakes": {
-   "w": 34,
+   "w": 35,
    "n": 60
   },
   "reaperclio|marducontrol": {
-   "w": 23,
+   "w": 24,
    "n": 60
   },
   "reaperclio|mbclio": {
-   "w": 29,
+   "w": 34,
    "n": 60
   },
   "reaperclio|muster": {
@@ -420,15 +420,15 @@
    "n": 60
   },
   "reaperclio|rabble": {
-   "w": 46,
+   "w": 45,
    "n": 60
   },
   "reaperclio|stampede": {
-   "w": 49,
+   "w": 47,
    "n": 60
   },
   "reaperclio|wurmspeaker": {
-   "w": 56,
+   "w": 55,
    "n": 60
   },
   "stampede|aerie": {
@@ -436,39 +436,39 @@
    "n": 60
   },
   "stampede|bantsnake": {
-   "w": 21,
+   "w": 26,
    "n": 60
   },
   "stampede|dragons": {
-   "w": 34,
+   "w": 33,
    "n": 60
   },
   "stampede|emeraldsnakes": {
-   "w": 23,
+   "w": 24,
    "n": 60
   },
   "stampede|marducontrol": {
-   "w": 21,
+   "w": 19,
    "n": 60
   },
   "stampede|mbclio": {
-   "w": 30,
+   "w": 27,
    "n": 60
   },
   "stampede|muster": {
-   "w": 36,
+   "w": 31,
    "n": 60
   },
   "stampede|rabble": {
-   "w": 42,
+   "w": 35.5,
    "n": 60
   },
   "stampede|reaperclio": {
-   "w": 11,
+   "w": 13,
    "n": 60
   },
   "stampede|wurmspeaker": {
-   "w": 39,
+   "w": 40,
    "n": 60
   },
   "wurmspeaker|aerie": {
@@ -476,7 +476,7 @@
    "n": 60
   },
   "wurmspeaker|bantsnake": {
-   "w": 12,
+   "w": 10,
    "n": 60
   },
   "wurmspeaker|dragons": {
@@ -484,31 +484,31 @@
    "n": 60
   },
   "wurmspeaker|emeraldsnakes": {
-   "w": 16,
+   "w": 17,
    "n": 60
   },
   "wurmspeaker|marducontrol": {
-   "w": 8,
+   "w": 6,
    "n": 60
   },
   "wurmspeaker|mbclio": {
-   "w": 7,
+   "w": 8,
    "n": 60
   },
   "wurmspeaker|muster": {
-   "w": 34,
+   "w": 29,
    "n": 60
   },
   "wurmspeaker|rabble": {
-   "w": 31,
+   "w": 27,
    "n": 60
   },
   "wurmspeaker|reaperclio": {
-   "w": 4,
+   "w": 5,
    "n": 60
   },
   "wurmspeaker|stampede": {
-   "w": 21,
+   "w": 20,
    "n": 60
   }
  }
