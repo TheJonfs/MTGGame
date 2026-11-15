@@ -1,0 +1,68 @@
+{
+ "only": true,
+ "rows": [
+  {
+   "in": "traumatizer",
+   "n": 4,
+   "out": [
+    "essence_scatter",
+    "tidewall"
+   ],
+   "when": [
+    "control"
+   ]
+  },
+  {
+   "in": "glimpse_the_unthinkable",
+   "n": 4,
+   "out": [
+    "tidewall",
+    "clio_lady_of_the_depths"
+   ],
+   "when": [
+    "control"
+   ]
+  },
+  {
+   "in": "vampire_nighthawk",
+   "n": 3,
+   "out": [
+    "clio_lady_of_the_depths",
+    "tidewall"
+   ],
+   "when": [
+    "control"
+   ]
+  },
+  {
+   "in": "pyroclasm",
+   "n": 4,
+   "out": [
+    "undermine",
+    "essence_scatter"
+   ],
+   "when": [
+    "small",
+    "wide"
+   ],
+   "unless": [
+    "control"
+   ]
+  },
+  {
+   "in": "vampire_nighthawk",
+   "n": 3,
+   "out": [
+    "essence_scatter",
+    "confession"
+   ],
+   "when": [
+    "small",
+    "wide"
+   ],
+   "unless": [
+    "control"
+   ]
+  }
+ ]
+}

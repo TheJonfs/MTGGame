@@ -1073,7 +1073,7 @@ export class HeuristicAgent implements Agent {
     const yard = hasYard ? this.plans.yardExileWorth(view) : 0;
     let fight = 0;
     if (hasFight) {
-      const pow = d.power ?? 0, tough = d.toughness ?? 0, touch = (d.keywords ?? []).includes("deathtouch");
+      const pow = this.profile.off?.includes("fightwait") ? d.power ?? 0 : this.enteringPower(view, d), tough = d.toughness ?? 0, touch = (d.keywords ?? []).includes("deathtouch");
       for (const o of view.battlefield) {
         if (o.controller === view.you || o.power === null || o.toughness === null) continue;
         if (!(touch ? pow > 0 : pow >= o.toughness - o.damage) || o.keywords.includes("indestructible")) continue;
@@ -1083,6 +1083,50 @@ export class HeuristicAgent implements Agent {
       }
     }
     return { yard, fight, modal: true, two: modes.every((m) => m.label.includes("; ")) };
+  }
+  /** Book 170: the power a creature of ours would have on entering — its printed power and every static P/T change on
+   * the battlefield that would cover it (Clio's −1/−0 a depth counter; an anthem). A deathtouch fighter at zero power
+   * kills nothing (book 122). */
+  private enteringPower(view: GameView, d: CardDef): number {
+    let p = d.power ?? 0;
+    for (const o of view.battlefield) for (const a of this.def(o.cardId)?.abilities ?? []) {
+      if (a.kind !== "static") continue;
+      for (const e of a.effects) {
+        if (e.type !== "modifyPT") continue;
+        const sc = (e as { scope?: string }).scope, kw = (e as { withKeyword?: string }).withKeyword;
+        if (!(sc === "allCreatures" || (sc === "creaturesYouDontControl" && o.controller !== view.you) || (sc === "creaturesYouControl" && o.controller === view.you))) continue;
+        if (kw && !(d.keywords ?? []).includes(kw as never)) continue;
+        const r = e.power as unknown as { ref?: string; kind?: string; times?: number } | number | undefined;
+        p += typeof r === "number" ? r : r && r.ref === "countersOnSelf" ? (o.counters?.[r.kind!] ?? 0) * (r.times ?? 1) : 0;
+      }
+    }
+    return p;
+  }
+  /**
+   * Book 170 (post-S72, Chris's Nothing Dear finals: Emerald Snakes flashed Reaper's Forerunner in with his Clio on the
+   * stack — the fight had no target, so two tokens, and Clio shrank them): a flash creature whose enters trigger can
+   * fight is not cast in response to an opponent's CREATURE spell the fight would kill once it lands, worth the snake
+   * (FIGHT_FLOOR) and more than the best fight on the board now. Wait for it to resolve; the window is any later
+   * priority (their end step, or in response to its own end-step trigger before a depth counter lands). Off: "fightwait".
+   * Exposed.
+   */
+  fightWaitGated(view: GameView, cardId: string): boolean {
+    if (this.profile.off?.includes("fightwait")) return false;
+    const d = this.def(cardId);
+    const ab = (d?.abilities ?? []).find((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && a.condition?.source === "self" && (a.modes ?? []).some((m) => m.effects.some((e) => e.type === "fight" && e.self)));
+    if (!d || !ab) return false;
+    const pow = this.enteringPower(view, d), touch = (d.keywords ?? []).includes("deathtouch");
+    const read = this.entersModesRead(view, cardId), now = read.fight;
+    if (read.yard > 0) return false; // book 114: a graveyard worth exiling is taken now
+    return view.stack.some((it) => {
+      if (it.controller === view.you || it.kind !== "spell") return false;
+      const c = this.def(it.cardId);
+      if (!c || !c.types.includes("Creature") || c.power === undefined || c.toughness === undefined) return false;
+      if ((c.keywords ?? []).includes("indestructible") || (c.keywords ?? []).includes("hexproof") || (c.keywords ?? []).includes("shroud")) return false;
+      if (!(touch ? pow > 0 : pow >= (c.toughness ?? 0))) return false;
+      const v = objectValue(this.defs, { id: it.id, cardId: it.cardId, controller: it.controller, tapped: false, damage: 0, attachedTo: null, power: c.power ?? 0, toughness: c.toughness ?? 0, keywords: [...(c.keywords ?? [])] } as never, this.C);
+      return v >= FIGHT_FLOOR && v > now;
+    });
   }
   /** On trial ("locksteal" — Chris's theft idea against Reaper Clio; a probe had the pilot's Protocols on Walls and
    * Birds, and Clio taken in half the games she appeared): a creature whose static shrinks every creature its
@@ -2413,6 +2457,7 @@ export class HeuristicAgent implements Agent {
     const card = view.hand.find((c) => c.objectId === action.objectId);
     const d = card ? this.def(card.cardId) : undefined;
     if (!d || !d.types.includes("Creature") || !(d.keywords ?? []).includes("flash")) return false;
+    if (this.fightWaitGated(view, card!.cardId)) return true; // book 170: the creature spell it would fight lands first
     if (view.stack.some((it) => it.controller !== view.you)) return this.protectionHeld(view, card!.cardId) && !view.battlefield.some((o) => o.controller === view.you && o.power !== null && this.creatureIsDoomed(view, o.id)); // in response to THEIRS: fine (S34, as the cantrip gate); book 130: a held protector answers only a threat to one of ours
     if (this.entersModesRead(view, card!.cardId).yard > 0) return false; // book 114: their graveyard is worth exiling now
     if (view.activePlayer !== view.you) return view.step !== "END" || this.protectionHeld(view, card!.cardId);

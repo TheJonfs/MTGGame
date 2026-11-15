@@ -2789,3 +2789,22 @@ describe("S72 Part 3 (the mulligan read, moxkeep)", () => {
     expect(await a.chooseAction(hand(["mountain", "mountain", "mountain", "mountain", "mountain", "mountain", "mox_ruby"]), req)).toEqual({ type: "mulligan" });
   });
 });
+
+describe("book of shame 170 (post-S72 — Chris's Nothing Dear finals: Reaper's Forerunner flashed in with his Clio on the stack, so two tokens)", () => {
+  it("a flash fighter waits for the creature spell it would kill to land; it answers anything else as before; under Clio's counters a deathtouch 1/1 has no power to fight with", () => {
+    const fair = agent("midrange"), old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["fightwait"] });
+    const F = Array.from({ length: 3 }, (_, i) => ({ id: `l${i}`, cardId: "forest", controller: 0 as const })), hand = [{ objectId: "h_f", cardId: "reapers_forerunner" }];
+    const castAt = (id: string) => ({ type: "castSpell" as const, objectId: id, targets: [] });
+    const spell = (cardId: string) => [{ id: "s1", kind: "spell", cardId, controller: 1 as const, targets: [] }] as never;
+    const theirs = (stack: never, extra: { id: string; cardId: string; controller: 0 | 1; counters?: Record<string, number> }[] = []) => mkView({ hand, battlefield: [...F, ...extra], activePlayer: 1, step: "MAIN1", stack });
+    expect(fair.flashTimingGated(theirs(spell("clio_lady_of_the_depths")), castAt("h_f"))).toBe(true); // Clio on the stack: wait
+    expect(old.flashTimingGated(theirs(spell("clio_lady_of_the_depths")), castAt("h_f"))).toBe(false); // the old rule: in response to anything
+    expect(fair.flashTimingGated(theirs(spell("llanowar_elves")), castAt("h_f"))).toBe(false); // an Elf is not worth the snake: respond as before
+    expect(fair.flashTimingGated(theirs(spell("lightning_bolt")), castAt("h_f"))).toBe(false); // not a creature spell
+    expect(fair.flashTimingGated(theirs(spell("clio_lady_of_the_depths"), [{ id: "o0", cardId: "serra_angel", controller: 1 }]), castAt("h_f"))).toBe(false); // a Serra standing is the better fight now
+    // Clio resolved, no counter yet: the fight is worth having; one counter on her: the snake has no power
+    const clio = (n: number) => { const v = mkView({ hand, battlefield: [...F, { id: "o0", cardId: "clio_lady_of_the_depths", controller: 1 }], activePlayer: 1, step: "END" }); return { ...v, battlefield: v.battlefield.map((o) => (o.id === "o0" ? { ...o, counters: { depth: n } } : o)) } as GameView; };
+    expect(fair.entersModesBonus(clio(0), castAt("h_f"))).toBeGreaterThan(fair.entersModesBonus(clio(1), castAt("h_f")));
+    expect(fair.entersModesBonus(clio(1), castAt("h_f"))).toBe(old.entersModesBonus(mkView({ hand, battlefield: F, activePlayer: 1, step: "END" }), castAt("h_f"))); // as an empty board: the tokens
+  });
+});

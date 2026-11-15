@@ -1,0 +1,74 @@
+[
+ {
+  "cardId": "badlands",
+  "count": 4
+ },
+ {
+  "cardId": "cairnbrand",
+  "count": 1
+ },
+ {
+  "cardId": "lonely_sandbar",
+  "count": 3
+ },
+ {
+  "cardId": "steam_vents",
+  "count": 2
+ },
+ {
+  "cardId": "tallyflame_court",
+  "count": 1
+ },
+ {
+  "cardId": "underground_sea",
+  "count": 4
+ },
+ {
+  "cardId": "volcanic_island",
+  "count": 4
+ },
+ {
+  "cardId": "volmaw",
+  "count": 1
+ },
+ {
+  "cardId": "watery_grave",
+  "count": 4
+ },
+ {
+  "cardId": "lightning_bolt",
+  "count": 4
+ },
+ {
+  "cardId": "command_of_the_depths",
+  "count": 4
+ },
+ {
+  "cardId": "confession",
+  "count": 4
+ },
+ {
+  "cardId": "counterspell",
+  "count": 4
+ },
+ {
+  "cardId": "essence_scatter",
+  "count": 4
+ },
+ {
+  "cardId": "clio_lady_of_the_depths",
+  "count": 4
+ },
+ {
+  "cardId": "tidewall",
+  "count": 4
+ },
+ {
+  "cardId": "undermine",
+  "count": 4
+ },
+ {
+  "cardId": "experimental_overload",
+  "count": 4
+ }
+]
