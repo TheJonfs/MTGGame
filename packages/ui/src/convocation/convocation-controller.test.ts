@@ -193,6 +193,20 @@ describe("the Convocation controller (S48)", () => {
     c.toPrize(); expect(c.screen.kind).toBe("prize");
   }, 300_000);
 
+  it("post-S72 — the Grand Convocation: one Constructed format, 128 seats, sixteen rounds and the Umbel; round one pairs sixty-four", () => {
+    const { c } = make();
+    c.newEvent(72, { constructed: "nothing-dear", seats: 128, rounds: 16, top8: true });
+    const e = c.event!;
+    expect(e.field).toHaveLength(128);
+    expect(e.formatId).toBe("nothing-dear");
+    expect(e).toMatchObject({ rounds: 16, top8: true });
+    expect(e.field.slice(1).every((seat) => seat.deck.reduce((n, x) => n + x.count, 0) >= 60)).toBe(true);
+    expect(new Set(e.field.slice(1).map((seat) => seat.name)).size).toBe(127); // every seat its own name
+    c.suggestDeck(); c.register();
+    expect(c.event!.round).toBe(1);
+    expect(c.event!.pairings).toHaveLength(64);
+  }, 120_000);
+
   it("S49 — the human outside the eight watches the bracket resolve and takes the standings' finish; a human who loses the quarter-final finishes fifth to eighth", async () => {
     const { c } = make();
     c.newEvent(50, { seats: 16, rounds: 5, top8: true });
