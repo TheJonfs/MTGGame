@@ -3,7 +3,7 @@ import { parseManaCost, manaValue, cardColors, type CardDef, type Effect, type R
 import type { Action, ActionRequest, Agent, GameView, PlayerId } from "@shandalar/engine";
 import { preferSide, targetSide, classifyEffects, effectsForAction, ptSign } from "./effect-classification.js";
 import { DEFAULT_CONSTANTS, deterrence, evaluate, legendLoopWorth, legendLoopWorth99, LOOP_GAIN_WORTH, LOOP_WORTH, millPerDamage, millValue, objectValue, reanimationWorth, type AiProfile, type EvalConstants } from "./evaluator.js";
-import { predictAction } from "./view-sim.js";
+import { predictAction, exchangeStaticsGain } from "./view-sim.js";
 import { viewAbilityAt } from "./granted-view.js";
 import { PlanPlay } from "./plan-play.js";
 import { payableBy, reserveTaps, type ManaSource, type Tap } from "./reserve.js";
@@ -174,7 +174,8 @@ export class HeuristicAgent implements Agent {
       if (seen.has(k)) return false;
       seen.add(k);
       const mine = oa.controller === view.you ? oa : ob, theirs = mine === oa ? ob : oa;
-      priced.set(a, { group, gain: objectValue(this.defs, theirs, this.C) - (mine.controlUntilEndOfTurn ? 0 : objectValue(this.defs, mine, this.C)) });
+      // (book 172: the statics the swap moves are in the price here too — the prune kept three Nighthawks and cut Clio)
+      priced.set(a, { group, gain: objectValue(this.defs, theirs, this.C) - (mine.controlUntilEndOfTurn ? 0 : objectValue(this.defs, mine, this.C)) + exchangeStaticsGain(view, oa.id, ob.id, this.defs, this.C) });
       return true;
     });
     if (priced.size === 0) return out;
@@ -189,8 +190,10 @@ export class HeuristicAgent implements Agent {
     return this.defs.get(cardId);
   }
 
+  private cMemo: EvalConstants | null = null;
   private get C(): EvalConstants {
-    return this.profile.constants ?? DEFAULT_CONSTANTS;
+    if (!this.profile.off?.length) return this.profile.constants ?? DEFAULT_CONSTANTS;
+    return (this.cMemo ??= { ...(this.profile.constants ?? DEFAULT_CONSTANTS), off: this.profile.off }); // book 172: the predictor reads the offs
   }
 
   private mv(cardId: string): number {
@@ -775,6 +778,20 @@ export class HeuristicAgent implements Agent {
         this.burstAsking += 1;
         try { if (this.scorePriorityAction(view, { type: "castSpell", objectId: c.objectId, targets: [] }) === -Infinity) return false; } finally { this.burstAsking -= 1; }
       }
+      // Book 172 (`burstaim` — the RUW Spells sim: 9 of 22 Highland Rituals cast into nothing, the mana "enabling" a Char
+      // the face-burn hold then kept, or a Helix whose white the Ritual's red could not pay): a single-target card is put
+      // to our own scorer too, at each target the view offers it, and enables the burst only when one of them beats
+      // passing — the question book 120 asked of the untargeted, asked of every card a burst is cast for.
+      const spec0 = (d.targets ?? [])[0] as { predicate: string; count?: number } | undefined;
+      if (spec0 && d.targets!.length === 1 && (spec0.count ?? 1) === 1 && !d.modes && !/\{X\}/.test(d.manaCost) && asked && !itselfBurst && this.burstAsking === 0 && !this.profile.off?.includes("burstaim")) {
+        const players = spec0.predicate === "anyTarget" || spec0.predicate === "player" ? [0, 1] : spec0.predicate === "opponentPlayer" ? [1 - me] : [];
+        const sets: ResolvedTarget[][] = [...view.battlefield.filter((o) => spec0.predicate !== "player" && spec0.predicate !== "opponentPlayer" && this.targetAccepts(view, spec0, o)).map((o) => [{ kind: "object" as const, id: o.id }]), ...players.map((p) => [{ kind: "player" as const, player: p as PlayerId }])];
+        this.burstAsking += 1;
+        try {
+          const pass = this.scorePriorityAction(view, { type: "pass" });
+          if (!sets.some((t) => this.scorePriorityAction(view, { type: "castSpell", objectId: c.objectId, targets: t }) > pass)) return false;
+        } finally { this.burstAsking -= 1; }
+      }
       // an X spell is the sink's business above (a tap burst), and for any other burst it is enabled only at an X of
       // one or more that the scorer would take (book 120: a Lotus cracked "for" a Savage Twister it then did not cast)
       if (/\{X\}/.test(d.manaCost) && (tapRules || (asked && action.type !== "castSpell"))) {
@@ -1002,7 +1019,10 @@ export class HeuristicAgent implements Agent {
   private targetsAbsent(view: GameView, d: CardDef): boolean {
     const specs = d.targets ?? [];
     if (specs.length === 0) return false; // untargeted spells always have a use
-    // Approximate legality from the view: any battlefield object the spec's base/anyOf predicates could accept.
+    return !specs.every((spec) => view.battlefield.some((o) => this.targetAccepts(view, spec as never, o)));
+  }
+  /** Approximate legality from the view: a battlefield object the spec's base/anyOf predicates could accept. */
+  private targetAccepts(view: GameView, spec: { predicate: string; anyOf?: { predicate: string; withKeyword?: string }[]; withKeyword?: string }, o: GameView["battlefield"][number]): boolean {
     const accepts = (spec: { predicate: string; anyOf?: { predicate: string; withKeyword?: string }[]; withKeyword?: string }, o: GameView["battlefield"][number]): boolean => {
       if (spec.anyOf) return spec.anyOf.some((alt) => accepts(alt, o));
       const dd = this.def(o.cardId);
@@ -1018,7 +1038,7 @@ export class HeuristicAgent implements Agent {
         default: return true;
       }
     };
-    return !specs.every((spec) => view.battlefield.some((o) => accepts(spec, o)));
+    return accepts(spec, o);
   }
 
   /** S17 (A6): modal choice v1 — Aether Channeler's shape. Prefer bouncing an opposing nonland
@@ -1359,6 +1379,25 @@ export class HeuristicAgent implements Agent {
     const held = view.hand.filter((c) => c.objectId !== notId && this.def(c.cardId)?.spellEffect?.some((e) => e.type === "counter")).map((c) => this.def(c.cardId)!.manaCost).sort((a, b) => manaValue(parseManaCost(a)) - manaValue(parseManaCost(b)) || a.localeCompare(b));
     return held[0] ?? null;
   }
+  /** Book 172 (`burstpay` — the RUW Spells sim: a Highland Ritual paid with Sacred Foundry left one white source under
+   * a Sacred Helix that needed two, and the Ritual's four red went unspent): a mana-burst SPELL is paid like a cast with
+   * a counter held (book 108) — the held cost is the coloured pips the burst does not make, of the dearest card in hand
+   * that has any (the card the burst is cast for). Null for anything else, or when every card's colours are the burst's. */
+  burstHold(view: GameView, pick: Action): string | null {
+    if (pick.type !== "castSpell" || this.profile.off?.includes("burstpay")) return null;
+    const d = this.def(view.hand.find((c) => c.objectId === pick.objectId)?.cardId ?? "");
+    if (!d?.spellEffect?.length || !d.spellEffect.every((e) => e.type === "addMana")) return null;
+    const made = new Set(d.spellEffect.flatMap((e) => ((e as { mana?: string }).mana ?? "").match(/[WUBRGC]/g) ?? []));
+    let best: { mv: number; pips: string[] } | null = null;
+    for (const c of view.hand) {
+      const cd = this.def(c.cardId);
+      if (c.objectId === pick.objectId || !cd || cd.types.includes("Land")) continue;
+      const pips = (cd.manaCost.match(/\{[WUBRG]\}/g) ?? []).filter((p) => !made.has(p[1]!));
+      const mv = manaValue(parseManaCost(cd.manaCost));
+      if (pips.length && (!best || mv > best.mv)) best = { mv, pips };
+    }
+    return best ? best.pips.join("") : null;
+  }
   /** S56 (book 108): the mana cost the chosen action pays — a spell's (with X) or an activated ability's. */
   private actionManaCost(view: GameView, action: Action): { cost: string; x: number } | null {
     const x = (action as { x?: number }).x ?? 0;
@@ -1371,10 +1410,10 @@ export class HeuristicAgent implements Agent {
    * hand — the lands the counter does not need — whenever some payment leaves the counter castable. Returns the first
    * tap (the rest and the cast follow at the next requests), or null to let the engine pay. Exposed for the book. */
   reservePayment(view: GameView, request: ActionRequest, pick: Action): Action | null {
-    if (this.profile.holdTricks === false || this.profile.off?.includes("counter")) return null;
     const paying = this.actionManaCost(view, pick);
     if (!paying || Object.values(view.manaPool).some((n) => n > 0)) return null;
-    const hold = this.heldCounter(view, pick.type === "castSpell" ? pick.objectId : undefined);
+    const counter = this.profile.holdTricks === false || this.profile.off?.includes("counter") ? null : this.heldCounter(view, pick.type === "castSpell" ? pick.objectId : undefined);
+    const hold = counter ?? this.burstHold(view, pick);
     if (!hold) return null;
     const taps = reserveTaps(this.manaSources(view), paying.cost, paying.x, hold);
     if (!taps || taps.length === 0) return null;
@@ -2833,10 +2872,22 @@ export class HeuristicAgent implements Agent {
     const d = card ? this.def(card.cardId) : undefined;
     if (!d || !(d.types.includes("Instant") || d.types.includes("Sorcery"))) return false;
     const effects = d.modes && action.mode !== undefined ? (d.modes[action.mode]?.effects ?? []) : (d.spellEffect ?? []);
-    const dmg = effects.reduce((n, e) => n + (e.type === "damage" && typeof e.amount === "number" && e.target !== undefined ? e.amount : 0), 0);
+    // Book 172 (`scaledburn` — the RUW Spells sim: the pilot's Sacred Helix went at a healthy face for five with four or
+    // five lands, where Chris's waited for a Highland Ritual and hit for eight to fifteen): a damage spell whose amount
+    // the mana sets (X, or the mana spent) is burn like any other, read at the X it is cast for — held at a healthy face.
+    // It also goes when it takes half their life or more (what a spell that grows is held FOR), and, if it heals us
+    // as it hits, when our own life is within the same reach (the heal is then the point: Chris's Helix at 6 against 30).
+    const scaled = !this.profile.off?.includes("scaledburn");
+    const x = (action as { x?: number }).x ?? 0, mvD = manaValue(parseManaCost(d.manaCost));
+    const amountOf = (a: unknown): number => typeof a === "number" ? a : !scaled ? 0 : a === "X" ? x : (a as { ref?: string } | undefined)?.ref === "manaSpent" ? x + mvD : 0;
+    const dmg = effects.reduce((n, e) => n + (e.type === "damage" && e.target !== undefined ? amountOf((e as { amount?: unknown }).amount) : 0), 0);
     if (dmg <= 0 || !((d.targets ?? []) as { predicate?: string }[]).some((t) => t.predicate === "anyTarget")) return false;
     const targets = (action as { targets?: ResolvedTarget[] }).targets ?? [];
     if (!targets.some((t) => t.kind === "player" && t.player === opp)) return false;
+    if (scaled && effects.some((e) => e.type === "damage" && typeof (e as { amount?: unknown }).amount !== "number")) {
+      if (dmg * 2 >= view.life[opp]) return false;
+      if (effects.some((e) => e.type === "gainLife") && view.life[me] <= reach) return false;
+    }
     return view.life[opp] > dmg && view.life[opp] > reach;
   }
 
@@ -2913,11 +2964,20 @@ export class HeuristicAgent implements Agent {
     return w > 0 ? w : 0; // (book 124: a loop that only gains is worth its passes, not the game)
   }
 
-  /** The opponent's list's burn: copies of instants and sorceries that deal a number of damage to any target. */
+  /** The opponent's list's burn: copies of instants and sorceries that deal a number of damage to any target; and
+   * (book 171, `landburn` — Chris's Grand Prix semifinal: the Witch paid 16 → 8 on its turn three against RUW Spells,
+   * whose sideboarded list read as 6.3 burn while four Valakuts and a Hearthspire did most of its damage) each copy of
+   * a land with an ability that deals a number of damage to any target, counted as one burn spell. */
   private burnAcrossMemo: number | null = null;
   burnAcross(): number {
-    if (this.burnAcrossMemo === null) this.burnAcrossMemo = this.profile.opponentDecklist.reduce((n, e) => { const d = this.def(e.cardId); return n + (d && (d.types.includes("Instant") || d.types.includes("Sorcery")) && ((d.targets ?? []) as { predicate?: string }[]).some((t) => t.predicate === "anyTarget") ? e.count * this.burnWeight(d) : 0); }, 0);
+    if (this.burnAcrossMemo === null) this.burnAcrossMemo = this.profile.opponentDecklist.reduce((n, e) => { const d = this.def(e.cardId); return n + (d && (d.types.includes("Instant") || d.types.includes("Sorcery")) && ((d.targets ?? []) as { predicate?: string }[]).some((t) => t.predicate === "anyTarget") ? e.count * this.burnWeight(d) : d && this.landBurns(d) ? e.count : 0); }, 0);
     return this.burnAcrossMemo;
+  }
+  /** Book 171: a land whose triggered or activated ability deals a fixed amount of damage to any target (Valakut,
+   * Hearthspire). Off: "landburn". Exposed for the book. */
+  landBurns(d: CardDef): boolean {
+    if (this.profile.off?.includes("landburn") || !d.types.includes("Land")) return false;
+    return (d.abilities ?? []).some((a) => (a.kind === "triggered" || a.kind === "activated") && ((a.targets ?? []) as { predicate?: string }[]).some((t) => t.predicate === "anyTarget") && a.effects.some((x) => x.type === "damage" && typeof (x as { amount?: unknown }).amount === "number"));
   }
   /** Book 164 (S71a, `digburn` — Chris's Earthrise final: the Pall paid 14 life into four Sacred Helixes, which read as
    * no burn): a burn spell's weight in book 113's count. A fixed amount counts one, as before. An X amount counts its

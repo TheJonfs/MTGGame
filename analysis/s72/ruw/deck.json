@@ -1,0 +1,70 @@
+[
+ {
+  "cardId": "brainstorm",
+  "count": 4
+ },
+ {
+  "cardId": "char",
+  "count": 4
+ },
+ {
+  "cardId": "experimental_overload",
+  "count": 4
+ },
+ {
+  "cardId": "guttersnipe",
+  "count": 4
+ },
+ {
+  "cardId": "hearthspire",
+  "count": 1
+ },
+ {
+  "cardId": "highland_ritual",
+  "count": 4
+ },
+ {
+  "cardId": "lightning_bolt",
+  "count": 4
+ },
+ {
+  "cardId": "plateau",
+  "count": 4
+ },
+ {
+  "cardId": "ponder",
+  "count": 4
+ },
+ {
+  "cardId": "sacred_foundry",
+  "count": 4
+ },
+ {
+  "cardId": "sacred_helix",
+  "count": 2
+ },
+ {
+  "cardId": "seasoned_pyromancer",
+  "count": 4
+ },
+ {
+  "cardId": "steam_vents",
+  "count": 4
+ },
+ {
+  "cardId": "tallyflame_court",
+  "count": 1
+ },
+ {
+  "cardId": "valakut_the_molten_pinnacle",
+  "count": 4
+ },
+ {
+  "cardId": "volcanic_island",
+  "count": 4
+ },
+ {
+  "cardId": "young_pyromancer",
+  "count": 4
+ }
+]

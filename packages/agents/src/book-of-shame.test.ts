@@ -1413,9 +1413,10 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
     const bears: Obj[] = [{ id: "x", cardId: "grizzly_bears", controller: 1 }];
     expect(mid.faceBurnHoldGated(v([20, 20], bears), bolt("x"))).toBe(false); // at a creature: removal, never held
     expect(mid.scorePriorityAction(v([20, 20], bears), bolt("x"))).toBeGreaterThan(mid.scorePriorityAction(v([20, 20], bears), { type: "pass" }));
-    // outside the rule (known): a VARIABLE amount (X / mana spent — Sacred Helix, Blaze) is not read; only numeric damage is
+    // a VARIABLE amount (X / mana spent — Sacred Helix, Blaze) was outside the rule; book 172 reads it at the X cast (four at twenty: held)
     const drain = mkView({ hand: [{ objectId: "h", cardId: "sacred_helix" }], battlefield: [] });
-    expect(mid.faceBurnHoldGated(drain, { type: "castSpell", objectId: "h", targets: [{ kind: "player", player: 1 }] })).toBe(false);
+    expect(mid.faceBurnHoldGated(drain, { type: "castSpell", objectId: "h", targets: [{ kind: "player", player: 1 }] })).toBe(true);
+    expect(agent("midrange").faceBurnHoldGated(drain, { type: "castSpell", objectId: "h", targets: [{ kind: "player", player: 1 }] })).toBe(true);
   });
 
   it("book of shame 89 (S50, Flametongue Kavu): the four goes at the best creature it KILLS before the biggest it only wounds; with only our own side to hit, at the one that survives or costs least; the cast waits when its trigger can only hurt us, and is worth more when it kills", async () => {
@@ -2566,11 +2567,11 @@ describe("book of shame 164 (S71a, Chris's Earthrise final: the Pall's Witch pai
 
   it("an X burn spell counts in Bolts at X four: four Helixes clear book 113's eight (they read as none before); Blaze counts 4/3; a list without X burn reads as it did", () => {
     expect((pall("earthrise") as unknown as { profile: { plan?: unknown } }).profile.plan).toBeDefined(); // the Pall plays its plan
-    expect(pall("earthrise").burnAcross()).toBeCloseTo(32 / 3, 5); // four Helixes at (4 + 4) / 3
-    expect(pall("earthrise", ["digburn"]).burnAcross()).toBe(0);
+    expect(pall("earthrise", ["landburn"]).burnAcross()).toBeCloseTo(32 / 3, 5); // four Helixes at (4 + 4) / 3 (book 171: the spells alone)
+    expect(pall("earthrise", ["digburn", "landburn"]).burnAcross()).toBe(0);
     const pin = list("pinnacle"), char = pin.find((e) => e.cardId === "char")!.count, blaze = pin.find((e) => e.cardId === "blaze")!.count;
-    expect(pall("pinnacle").burnAcross()).toBeCloseTo(char + (blaze * 4) / 3, 5);
-    expect(pall("rabble").burnAcross()).toBe(pall("rabble", ["digburn"]).burnAcross());
+    expect(pall("pinnacle", ["landburn"]).burnAcross()).toBeCloseTo(char + (blaze * 4) / 3, 5);
+    expect(pall("rabble", ["landburn"]).burnAcross()).toBe(pall("rabble", ["digburn", "landburn"]).burnAcross());
   });
 
   it("the plan's dig: against the Helix list it stops at the burn floor (the old pilot dug to five); and at a full hand, draws on the stack counted, whatever the list", () => {
@@ -2584,6 +2585,88 @@ describe("book of shame 164 (S71a, Chris's Earthrise final: the Pall's Witch pai
     expect(pall("rabble", ["digburn"]).lifeForCardsGated(at(18, 6, [held]), draw)).toBe(false);
     // a thin hand, high life: the dig goes on, as the plan says
     expect(pall("earthrise").lifeForCardsGated(at(18, 3), draw)).toBe(false);
+  });
+});
+
+describe("book of shame 171 (post-S72, Chris's Grand Prix semifinal: the Witch paid 16 → 8 on its turn three against RUW Spells' sideboarded sixty)", () => {
+  // the game-two list as registered after sideboarding: one Char, two Helixes, four Valakuts and a Hearthspire
+  const ruw = [{ cardId: "char", count: 1 }, { cardId: "sacred_helix", count: 2 }, { cardId: "valakut_the_molten_pinnacle", count: 4 }, { cardId: "hearthspire", count: 1 }, { cardId: "brainstorm", count: 4 }, { cardId: "volcanic_island", count: 4 }];
+  const mk = (off?: string[]) => new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", ruw), ...(off ? { off } : {}) });
+  const draw = { type: "activateAbility" as const, objectId: "w", abilityIndex: 0, targets: [] };
+  const v = (life: number) => mkView({ hand: Array.from({ length: 3 }, (_, i) => ({ objectId: `h${i}`, cardId: "swamp" })), battlefield: [{ id: "w", cardId: "the_jet_witch", controller: 0 }], life: [life, 20] });
+  it("a land that deals a fixed damage to any target counts as one burn spell a copy; a mana land does not", () => {
+    expect(mk().landBurns(pool.get("valakut_the_molten_pinnacle")!)).toBe(true);
+    expect(mk().landBurns(pool.get("hearthspire")!)).toBe(true);
+    expect(mk().landBurns(pool.get("volcanic_island")!)).toBe(false);
+    expect(mk().burnAcross()).toBeCloseTo(1 + 16 / 3 + 5, 5); // Char, two Helixes at 8/3, five burning lands
+    expect(mk(["landburn"]).burnAcross()).toBeCloseTo(1 + 16 / 3, 5); // the old read: under eight
+  });
+  it("the burn floor holds against the list: at ten, two to pay, the Witch does not draw (the old pilot did)", () => {
+    expect(mk().lifeForCardsGated(v(10), draw)).toBe(true);
+    expect(mk(["landburn"]).lifeForCardsGated(v(10), draw)).toBe(false);
+    expect(mk().lifeForCardsGated(v(16), draw)).toBe(false); // fourteen after paying: above the floor
+  });
+});
+
+describe("book of shame 172 (post-S72, the RUW Spells sim — three pilot leaks Chris's Grand Prix run did not have)", () => {
+  const land = (id: string, n: number) => Array.from({ length: n }, (_, i) => ({ id: `${id}${i}`, cardId: id, controller: 0 as const }));
+  it("scaledburn: a damage spell the mana sizes is held at a healthy face like any burn — unless it takes half their life, or heals us within reach", () => {
+    const a = agent(), helix = (x: number) => ({ type: "castSpell" as const, objectId: "hx", targets: [{ kind: "player" as const, player: 1 as const }], x });
+    const v = (me: number, them: number) => mkView({ hand: [{ objectId: "hx", cardId: "sacred_helix" }], battlefield: land("plateau", 6), life: [me, them] });
+    expect(a.faceBurnHoldGated(v(20, 18), helix(1))).toBe(true); // five at eighteen: held
+    expect(a.faceBurnHoldGated(v(20, 18), helix(5))).toBe(false); // nine: half their life
+    expect(a.faceBurnHoldGated(v(6, 18), helix(1))).toBe(false); // we are within reach: the heal is the point
+    expect(a.faceBurnHoldGated(v(20, 7), helix(1))).toBe(false); // they are within reach
+    const blaze = { type: "castSpell" as const, objectId: "bz", targets: [{ kind: "player" as const, player: 1 as const }], x: 3 };
+    expect(a.faceBurnHoldGated(mkView({ hand: [{ objectId: "bz", cardId: "blaze" }], life: [6, 18] }), blaze)).toBe(true); // no heal on Blaze
+    (a as unknown as { profile: { off: string[] } }).profile.off = ["scaledburn"];
+    expect(a.faceBurnHoldGated(v(20, 18), helix(1))).toBe(false); // the old pilot: an X amount read as no burn
+  });
+  it("burstaim: a Ritual is not cast for a Char that has nothing worth hitting at a healthy face; it is for one that kills a creature", () => {
+    const a = agent(), rit = { type: "castSpell" as const, objectId: "rit", targets: [] };
+    const hand = [{ objectId: "rit", cardId: "highland_ritual" }, { objectId: "ch", cardId: "char" }];
+    // four Mountains, two of them tapped (a Bolt cast before it — the sim's game): two to pay, four made
+    const lands = land("mountain", 4).map((o, i) => ({ ...o, tapped: i < 2 }));
+    // their board empty, ours a Young Pyromancer: Char's only targets are our own creature and a healthy face (the sim's games)
+    const empty = mkView({ hand, battlefield: [...lands, { id: "yp", cardId: "young_pyromancer", controller: 0 }], life: [20, 19] });
+    const bear = mkView({ hand, battlefield: [...lands, { id: "gb", cardId: "grizzly_bears", controller: 1 }], life: [20, 19] });
+    expect(a.scorePriorityAction(empty, rit)).toBe(-Infinity);
+    expect(a.scorePriorityAction(bear, rit)).toBeGreaterThan(-Infinity);
+    (a as unknown as { profile: { off: string[] } }).profile.off = ["burstaim"];
+    expect(a.scorePriorityAction(empty, rit)).toBeGreaterThan(-Infinity); // the old pilot: Char "enabled", then held
+  });
+  it("exchangestatic: an exchange is priced with the statics it moves — Clio taken turns her lock on its owner, and beats taking the Nighthawk", () => {
+    const mk = (off?: string[]) => new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, ...(off ? { off } : {}) });
+    const ex = (y: string) => ({ type: "castSpell" as const, objectId: "c", targets: [{ kind: "object" as const, id: "t1" }, { kind: "object" as const, id: y }] });
+    const v = mkView({ hand: [{ objectId: "c", cardId: "correspondence" }], battlefield: [...land("volcanic_island", 3), { id: "t1", cardId: "grizzly_bears", controller: 0 }, { id: "t2", cardId: "grizzly_bears", controller: 0 }, { id: "t3", cardId: "grizzly_bears", controller: 0 }, { id: "cl", cardId: "clio_lady_of_the_depths", controller: 1 }, { id: "vn", cardId: "vampire_nighthawk", controller: 1 }, { id: "tr", cardId: "typhoid_rats", controller: 1 }] });
+    const clio = v.battlefield.find((o) => o.id === "cl")!; (clio as { counters?: Record<string, number> }).counters = { depth: 2 };
+    for (const o of v.battlefield) if (o.controller === 0 && o.power !== null) o.power -= 2; // her lock as the view shows it
+    expect(mk().scorePriorityAction(v, ex("cl"))).toBeGreaterThan(mk().scorePriorityAction(v, ex("vn")));
+    expect(mk(["exchangestatic"]).scorePriorityAction(v, ex("cl"))).toBeLessThan(mk(["exchangestatic"]).scorePriorityAction(v, ex("vn"))); // the old pilot took the Nighthawk
+  });
+  it("burstpay: a Ritual cast for a Sacred Helix is paid with the lands the Helix's white does not need (the sim: Sacred Foundry paid, the Helix left one white source)", () => {
+    const a = agent(), old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["burstpay"] });
+    const lands = [{ id: "sf", cardId: "sacred_foundry", controller: 0 as const }, { id: "sv", cardId: "steam_vents", controller: 0 as const }, { id: "vi", cardId: "volcanic_island", controller: 0 as const }, { id: "pl", cardId: "plateau", controller: 0 as const }];
+    const v = mkView({ hand: [{ objectId: "rit", cardId: "highland_ritual" }, { objectId: "hx", cardId: "sacred_helix" }], battlefield: lands });
+    const cast = { type: "castSpell" as const, objectId: "rit", targets: [] };
+    const taps = lands.flatMap((l) => (pool.get(l.cardId)!.abilities ?? []).flatMap((ab) => ab.kind === "activated" && ab.cost.tap && !ab.cost.mana ? ab.effects.flatMap((e) => ((e as { mana?: string }).mana ?? "").match(/[WUBRG]/g) ?? []).map((color) => ({ type: "tapForMana" as const, objectId: l.id, color })) : []));
+    const request = { purpose: "priority" as const, player: 0 as const, actions: [{ type: "pass" as const }, cast, ...taps] };
+    expect(a.burstHold(v, cast)).toBe("{W}{W}");
+    const first = a.reservePayment(v, request as never, cast) as { objectId: string } | null;
+    expect(first).not.toBeNull();
+    expect(["sv", "vi"]).toContain(first!.objectId); // a land without white pays first
+    expect(old.reservePayment(v, request as never, cast)).toBeNull(); // the old pilot: the engine's payment
+  });
+  it("exchangestatic: the prune that keeps three swaps for full scoring prices the statics too — Clio is not cut for three bigger bodies (the sim: three Nighthawk swaps kept, Clio's cut)", () => {
+    const mk = (off?: string[]) => new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, ...(off ? { off } : {}) });
+    const theirs = ["clio_lady_of_the_depths", "serra_angel", "dread_presence", "vampire_nighthawk", "hypnotic_specter"];
+    const v = mkView({ hand: [{ objectId: "c", cardId: "correspondence" }], battlefield: [...land("volcanic_island", 3), ...["t1", "t2", "t3"].map((id) => ({ id, cardId: "grizzly_bears", controller: 0 as const })), ...theirs.map((cardId, i) => ({ id: `o${i}`, cardId, controller: 1 as const }))] });
+    (v.battlefield.find((o) => o.id === "o0") as { counters?: Record<string, number> }).counters = { depth: 2 };
+    for (const o of v.battlefield) if (o.controller === 0 && o.power !== null) o.power -= 2;
+    const swaps = theirs.map((_, i) => ({ type: "castSpell" as const, objectId: "c", targets: [{ kind: "object" as const, id: "t1" }, { kind: "object" as const, id: `o${i}` }] }));
+    const kept = (a: HeuristicAgent) => (a as unknown as { pruneExchanges: (v: GameView, x: typeof swaps) => typeof swaps }).pruneExchanges(v, swaps).map((x) => x.targets[1]!.id);
+    expect(kept(mk())).toContain("o0");
+    expect(kept(mk(["exchangestatic"]))).not.toContain("o0");
   });
 });
 

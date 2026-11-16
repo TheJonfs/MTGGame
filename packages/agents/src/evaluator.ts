@@ -51,6 +51,8 @@ export interface EvalConstants {
   deterrence: { weight: number; wallFraction: number };
   /** ADR-060.2 posture: hold tricks unless behind by more than this (mana units). */
   posture: { behindThreshold: number };
+  /** Book 172: the profile's off-switches, carried to the predictor (view-sim) for the rules that live there. */
+  off?: readonly string[];
 }
 
 export const DEFAULT_TEMPERATURE = 0.35;

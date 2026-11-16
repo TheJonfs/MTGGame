@@ -193,7 +193,9 @@ const takeRemovalCredit = (): number => { const c = removalCredit; removalCredit
  * killing Clio looked like killing any 2/4. Its statics are undone on the creatures that remain: an anthem's bonus
  * leaves its controller's creatures, a debuff leaves the opponent's (Clio: −1/−0 a depth counter, read off the view's
  * counters). Shape-keyed on the static modifyPT's scope; literal amounts and counters-on-self. */
-function revertStatics(view: GameView, gone: GameView["battlefield"][number], defs: Map<string, CardDef>): void {
+/** Book 172: `sign` +1 applies the statics (a permanent arriving under its controller), −1 reverts them (leaving — the
+ * book 96 removal, which alone earns the growing lock's removal credit). */
+function revertStatics(view: GameView, gone: GameView["battlefield"][number], defs: Map<string, CardDef>, sign: 1 | -1 = -1): void {
   for (const a of defs.get(gone.cardId)?.abilities ?? []) {
     if (a.kind !== "static") continue;
     for (const e of a.effects) {
@@ -216,11 +218,34 @@ function revertStatics(view: GameView, gone: GameView["battlefield"][number], de
         if (x.subtype && !(defs.get(o.cardId)?.subtypes ?? []).includes(x.subtype)) continue;
         if (x.withKeyword && !o.keywords.includes(x.withKeyword)) continue;
         if (x.withoutKeyword && o.keywords.includes(x.withoutKeyword)) continue;
-        o.power -= p; o.toughness -= t;
-        if (growP && p < 0 === (o.controller !== gone.controller)) removalCredit += 0.4 * growP; // only a lock on the remover's side is a saving
+        o.power += sign * p; o.toughness += sign * t;
+        if (sign < 0 && growP && p < 0 === (o.controller !== gone.controller)) removalCredit += 0.4 * growP; // only a lock on the remover's side is a saving
       }
     }
   }
+}
+
+/** Book 172 (`exchangestatic` — Chris's Grand Prix: his Correspondence took Clio and the lock turned on her owner; the
+ * pilot's took a Vampire Nighthawk in 11 of 12 casts): what an exchange does through the swapped permanents' statics —
+ * a lord or a lock leaves one side's creatures and covers the other's. The board after the swap with the statics
+ * reverted and re-applied under the new controllers, against the same swap with them left as they stood: each
+ * creature's change in worth, ours added and theirs taken away. Zero for permanents without such statics. */
+export function exchangeStaticsGain(view: GameView, aId: string, bId: string, defs: Map<string, CardDef>, constants: EvalConstants): number {
+  if (constants.off?.includes("exchangestatic")) return 0;
+  const me = view.you;
+  const swapped = (withStatics: boolean): GameView => {
+    const v = clone(view);
+    const a = v.battlefield.find((o) => o.id === aId)!, b = v.battlefield.find((o) => o.id === bId)!;
+    if (withStatics) { revertStatics(v, a, defs, -1); revertStatics(v, b, defs, -1); }
+    const ca = a.controller; a.controller = b.controller; b.controller = ca;
+    if (withStatics) { revertStatics(v, a, defs, 1); revertStatics(v, b, defs, 1); }
+    return v;
+  };
+  const credit = removalCredit;
+  const worth = (v: GameView) => v.battlefield.reduce((n, o) => n + (o.power === null ? 0 : (o.controller === me ? 1 : -1) * objectValue(defs, o, constants)), 0);
+  const gain = worth(swapped(true)) - worth(swapped(false));
+  removalCredit = credit;
+  return gain;
 }
 
 let predSeq = 0;
@@ -971,7 +996,7 @@ function applyEffect(
       // Mountain against a dual, and the pilot spent the card on lands in its upkeep): what we gain, less what we give
       // (nothing for a borrowed one), less the card itself. A swap of like for like is then a loss, as it is.
       const gain = objectValue(defs, theirs, constants) - (mine.controlUntilEndOfTurn ? 0 : objectValue(defs, mine, constants));
-      return gain - EXCHANGE_CARD_WORTH;
+      return gain + exchangeStaticsGain(view, a.id, b.id, defs, constants) - EXCHANGE_CARD_WORTH;
     }
     case "searchLibrary":
       return 0.5;

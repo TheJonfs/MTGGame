@@ -1,0 +1,109 @@
+{
+ "only": true,
+ "rows": [
+  {
+   "in": "correspondence",
+   "n": 4,
+   "out": [
+    "lightning_bolt"
+   ],
+   "when": [
+    "shrinks"
+   ],
+   "unless": [
+    "control"
+   ]
+  },
+  {
+   "in": "powerstone_minefield",
+   "n": 3,
+   "out": [
+    "young_pyromancer"
+   ],
+   "when": [
+    "shrinks"
+   ],
+   "unless": [
+    "control"
+   ]
+  },
+  {
+   "in": "terrain_collapse",
+   "n": 4,
+   "out": [
+    "young_pyromancer",
+    "char"
+   ],
+   "when": [
+    "shrinks"
+   ],
+   "unless": [
+    "control"
+   ]
+  },
+  {
+   "in": "correspondence",
+   "n": 4,
+   "out": [
+    "young_pyromancer",
+    "lightning_bolt"
+   ],
+   "when": [
+    "sweepers"
+   ]
+  },
+  {
+   "in": "terrain_collapse",
+   "n": 4,
+   "out": [
+    "guttersnipe",
+    "char"
+   ],
+   "when": [
+    "sweepers"
+   ]
+  },
+  {
+   "in": "flametongue_kavu",
+   "n": 4,
+   "out": [
+    "guttersnipe"
+   ],
+   "when": [
+    "hexproof"
+   ]
+  },
+  {
+   "in": "flametongue_kavu",
+   "n": 4,
+   "out": [
+    "char"
+   ],
+   "when": [
+    "creatureDeck",
+    "control"
+   ],
+   "unless": [
+    "shrinks",
+    "sweepers",
+    "hexproof",
+    "counters"
+   ]
+  },
+  {
+   "in": "powerstone_minefield",
+   "n": 3,
+   "out": [
+    "young_pyromancer"
+   ],
+   "when": [
+    "small",
+    "wide"
+   ],
+   "unless": [
+    "shrinks",
+    "hexproof"
+   ]
+  }
+ ]
+}
