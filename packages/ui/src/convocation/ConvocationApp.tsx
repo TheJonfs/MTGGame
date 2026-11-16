@@ -19,10 +19,12 @@ const COUNT: Record<number, string> = { 8: "eight", 15: "fifteen", 16: "sixteen"
 const DAY = ["", "one", "two", "three", "four", "five", "six"];
 const PIP: Record<string, string> = { W: "white", U: "blue", B: "black", R: "red", G: "green" };
 
-/** A seat's portrait; without one (S53: 38 portraits for 127 seats), its initials — "you" only for the player. */
+/** A seat's portrait; a faceless AI seat (S53: 31 faces for 127 seats) gets the default opponent art; "you" only for the player. */
 function Face({ slug, size = 56, name }: { slug?: string | undefined; size?: number; /** a faceless AI seat's name, for its initials */ name?: string }) {
   const initials = name ? name.split(/\s+/).filter((w) => /^[A-Z]/.test(w)).slice(0, 2).map((w) => w[0]).join("") : "you";
-  return slug ? <img src={`/portraits/${slug}.png`} alt="" style={{ width: size, height: size, objectFit: "cover", borderRadius: 6, border: "1.5px solid var(--ink)" }} /> : <div style={{ width: size, height: size, borderRadius: 6, border: "1.5px solid var(--ink)", display: "grid", placeItems: "center", fontFamily: "var(--serif)", fontSize: name ? size / 2.6 : undefined }}>{initials}</div>;
+  // Post-GP (Chris): a faceless AI seat shows the battle's default opponent art, so the pre-match card and the match agree.
+  const src = slug ? `/portraits/${slug}.png` : name ? "/portrait-opponent.png" : null;
+  return src ? <img src={src} alt="" style={{ width: size, height: size, objectFit: "cover", borderRadius: 6, border: "1.5px solid var(--ink)" }} /> : <div style={{ width: size, height: size, borderRadius: 6, border: "1.5px solid var(--ink)", display: "grid", placeItems: "center", fontFamily: "var(--serif)", fontSize: name ? size / 2.6 : undefined }}>{initials}</div>;
 }
 function Pips({ colors }: { colors: string }) {
   return <span style={{ display: "inline-flex", gap: 2, verticalAlign: -2 }}>{[...colors].map((c) => <img key={c} src={`/icons/mana-${PIP[c] ?? "colorless"}.svg`} alt={c} style={{ width: 13, height: 13 }} />)}</span>;

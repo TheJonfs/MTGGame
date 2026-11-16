@@ -147,10 +147,7 @@ export function newSealedEvent(opts: NewEventOptions, deps: EventDeps): Convocat
     const strength = seatStrength(opts.seed, s), nr = new WorldRng(sub(opts.seed, 14, s));
     const b = buildLimitedDeck(pool, limitedView(deps.rating), deps.cards, { pairChoice: { seed: sub(opts.seed, 11, s), top: 3 }, ...(strength.noise ? { noise: () => strength.noise * gauss(nr) } : {}) }); // post-S52: the Limited score; S53 (ADR-154): the field varies its pair; S54 (ADR-158): its builder's noise
     const colors = b.colors.join("") + (b.splash ?? "");
-    const fits = opts.faces.filter((f) => !usedFaces.has(f.portrait) && [...f.colors].some((c) => b.colors.includes(c as never)));
-    const open = fits.length ? fits : opts.faces.filter((f) => !usedFaces.has(f.portrait));
-    const face = open.length ? open[rng.int(open.length)]!.portrait : undefined;
-    if (face) usedFaces.add(face);
+    const face = pickFace(opts.faces, usedFaces, b.colors.join(""), rng, s);
     field.push({ name: names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`, ...(face ? { face } : {}), human: false, pool, deck: b.deck, sideboard: b.sideboard, colors, archetype: b.avgMv <= 2.6 ? "aggro" : "midrange", ...strength });
   }
   if (opts.top8 && seats < 8) throw new Error("event: a Top 8 needs eight seats");
@@ -177,10 +174,7 @@ export function newConstructedEvent(opts: Omit<NewEventOptions, "format"> & { fo
     const b = buildConstructedDeck(format, deps.rating, sub(opts.seed, 8, s), opts.library, deps.cards, { tinker: strength.builder, lists: strength.lists, exclude: cappedLists(drawn, seats) }); // S54: the seat's builder; S55: its list draw; post-S58: the cap
     drawn.set(b.from, (drawn.get(b.from) ?? 0) + 1);
     const colors = deckColors(b.deck, deps.cards);
-    const fits = opts.faces.filter((f) => !used.has(f.portrait) && [...f.colors].some((c) => colors.includes(c)));
-    const open = fits.length ? fits : opts.faces.filter((f) => !used.has(f.portrait));
-    const face = open.length ? open[rng.int(open.length)]!.portrait : undefined;
-    if (face) used.add(face);
+    const face = pickFace(opts.faces, used, colors, rng, s);
     field.push({ name: names[(s - 1) % Math.max(1, names.length)] ?? `Seat ${s + 1}`, ...(face ? { face } : {}), human: false, pool: [], deck: b.deck, sideboard: seatSideboard(b.deck, format, deps, b.from, opts.library), list: b.from, tinker: b.tinker, colors, archetype: b.archetype, ...strength });
   }
   return { version: EVENT_SAVE_VERSION, seed: opts.seed, formatId: format.id, rounds, difficulty: opts.difficulty ?? "standard", phase: "build", round: 0, field, pairings: [], results: [], ...(opts.top8 ? { top8: true } : {}) };
@@ -254,15 +248,23 @@ export function newDraftEvent(opts: NewEventOptions, deps: EventDeps): Convocati
 /** A draft pod's size: eight seats pass three packs. */
 export const DRAFT_POD = 8;
 /** An AI seat once its picks are known: its pool, its deck by the Limited builder, a face by its colours. */
+/** A seat's face: an unused one in its colours, else any unused one (one rng draw, as before); post-GP (Chris), once
+ * every portrait is taken they recycle — one in the seat's colours, else any, by the seat's index (no rng draw, so an
+ * event that never ran out is unchanged). */
+function pickFace(faces: readonly { portrait: string; colors: string }[], used: Set<string>, colors: string, rng: WorldRng, n: number): string | undefined {
+  const inColours = (f: { colors: string }) => [...f.colors].some((c) => colors.includes(c));
+  const fits = faces.filter((f) => !used.has(f.portrait) && inColours(f));
+  const open = fits.length ? fits : faces.filter((f) => !used.has(f.portrait));
+  if (open.length) { const face = open[rng.int(open.length)]!.portrait; used.add(face); return face; }
+  const again = faces.filter(inColours), pool = again.length ? again : faces;
+  return pool.length ? pool[n % pool.length]!.portrait : undefined;
+}
 function builtSeat(seat: EventSeat, picks: string[], deps: Pick<EventDeps, "cards" | "rating">, faces: readonly { portrait: string; colors: string }[], used: Set<string>, rng: WorldRng, opts: Parameters<typeof buildLimitedDeck>[3] = {}, noiseSeed?: number): EventSeat {
   // S54 (ADR-158): a noisy builder misjudges its cards — its rating read with the seat's σ, seeded
   const noisy = seat.noise && noiseSeed !== undefined ? (() => { const nr = new WorldRng(noiseSeed); return { noise: () => seat.noise! * gauss(nr) }; })() : {};
   const b = buildLimitedDeck(picks, limitedView(deps.rating), deps.cards, { ...opts, ...noisy });
   if (seat.face) return { ...seat, pool: picks, deck: b.deck, sideboard: b.sideboard, colors: b.colors.join("") + (b.splash ?? ""), archetype: b.avgMv <= 2.6 ? "aggro" : "midrange" }; // S53: one face for the whole event
-  const fits = faces.filter((f) => !used.has(f.portrait) && [...f.colors].some((c) => b.colors.includes(c as never)));
-  const open = fits.length ? fits : faces.filter((f) => !used.has(f.portrait));
-  const face = open.length ? open[rng.int(open.length)]!.portrait : undefined;
-  if (face) used.add(face);
+  const face = pickFace(faces, used, b.colors.join(""), rng, Math.abs(noiseSeed ?? used.size)); // the seat's own seed stands in for its index
   return { ...seat, ...(face ? { face } : {}), pool: picks, deck: b.deck, sideboard: b.sideboard, colors: b.colors.join("") + (b.splash ?? ""), archetype: b.avgMv <= 2.6 ? "aggro" : "midrange" };
 }
 /** A pack round's packs — one a seat, from the event's seed and the round. */

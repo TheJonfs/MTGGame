@@ -202,6 +202,7 @@ describe("the Convocation controller (S48)", () => {
     expect(e).toMatchObject({ rounds: 16, top8: true });
     expect(e.field.slice(1).every((seat) => seat.deck.reduce((n, x) => n + x.count, 0) >= 60)).toBe(true);
     expect(new Set(e.field.slice(1).map((seat) => seat.name)).size).toBe(127); // every seat its own name
+    expect(e.field.slice(1).every((seat) => !!seat.face)).toBe(true); // post-GP (Chris): the portraits recycle once each is taken
     c.suggestDeck(); c.register();
     expect(c.event!.round).toBe(1);
     expect(c.event!.pairings).toHaveLength(64);
