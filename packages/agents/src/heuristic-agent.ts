@@ -336,6 +336,7 @@ export class HeuristicAgent implements Agent {
     if (this.selfCounterGated(view, action)) return -Infinity; // post-S43: Mystic Snake with only our own spell to hit
     if (this.spellPayoffHoldGated(view, action)) return -Infinity; // S45: hold the cheap spell for the Guttersnipe / Pyromancer in hand
     if (this.faceBurnHoldGated(view, action)) return -Infinity; // post-S49 (book 88): removal is not thrown at a healthy face
+    if (this.alreadyAnsweredGated(view, action)) return -Infinity; // book 173: nothing aimed at what our own stack already takes
     if (this.burnKillsGated(view, action)) return -Infinity; // S68 (Part 2): a burn spell at a creature only when it kills
     if (this.burnHoldGated(view, action)) return -Infinity; // book 160: no burn spell at a 1/1 with nothing left to give
     if (this.sweepWaitGated(view, action)) return -Infinity; // S69 (book 147): a sweeper waits for a board worth it
@@ -3586,6 +3587,31 @@ export class HeuristicAgent implements Agent {
    * 6 left them alive — Shocks on Nighthawk and Drana, a Bolt on Drana): a burn spell is aimed at an opposing
    * creature only when it kills — alone, or with what is already committed (combat damage once blocks are declared,
    * our pings and spells on the stack). The face, or holding, is scored as ever. Exposed. */
+  /** Book 173 (`doubleaim` — Chris's Jeskai Convocation: Control Magic on his Young Pyromancer, then a Lightning Bolt at
+   * it in response, which killed it and left the Aura nothing to enchant; a Flametongue Kavu's trigger at a 1/1 token,
+   * then Swords to Plowshares at the same token): a spell or ability whose every opposing object target is already
+   * ANSWERED by an item of ours on the stack is not put there. Answered: one of our stack items targets it and destroys,
+   * exiles, bounces or takes it (an Aura that steals what it enchants), or our pending damage at it reaches its
+   * toughness. Exposed for the book. */
+  alreadyAnsweredGated(view: GameView, action: Action): boolean {
+    if ((action.type !== "castSpell" && action.type !== "activateAbility") || this.profile.off?.includes("doubleaim")) return false;
+    const me = view.you;
+    const objs = ((action as { targets?: ResolvedTarget[] }).targets ?? []).filter((t): t is Extract<ResolvedTarget, { kind: "object" }> => t.kind === "object").map((t) => view.battlefield.find((o) => o.id === t.id)).filter((o): o is GameView["battlefield"][number] => !!o && o.controller !== me);
+    if (objs.length === 0) return false;
+    const TAKES = new Set(["destroy", "exile", "bounce", "gainControl"]);
+    const answered = (o: GameView["battlefield"][number]): boolean => {
+      for (const it of view.stack) {
+        if (it.controller !== me || !(it.targets ?? []).some((t) => t.kind === "object" && t.id === o.id)) continue;
+        const d = this.def(it.cardId); if (!d) continue;
+        const effs = it.kind === "spell"
+          ? [...(d.spellEffect ?? []), ...(d.subtypes?.includes("Aura") ? (d.abilities ?? []).flatMap((a) => (a.kind === "static" ? a.effects.filter((e) => (e as { scope?: string }).scope === "attached") : [])) : [])]
+          : (d.abilities ?? []).flatMap((a) => (a.kind === "activated" || a.kind === "triggered" ? a.effects : []));
+        if (effs.some((e) => TAKES.has(e.type))) return true;
+      }
+      return o.toughness !== null && this.pendingDamageAt(view, o.id, me) >= o.toughness - o.damage;
+    };
+    return objs.every(answered);
+  }
   burnKillsGated(view: GameView, action: Action): boolean {
     if (action.type !== "castSpell" || this.profile.off?.includes("burnkills")) return false;
     const card = view.hand.find((h) => h.objectId === action.objectId)?.cardId, d = card ? this.def(card) : undefined;

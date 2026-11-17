@@ -2670,6 +2670,34 @@ describe("book of shame 172 (post-S72, the RUW Spells sim — three pilot leaks 
   });
 });
 
+describe("book of shame 173 (post-S72, Chris's Jeskai Convocation: two answers for one creature)", () => {
+  const yp = { id: "yp", cardId: "young_pyromancer", controller: 1 as const }, tok = { id: "tk", cardId: "grizzly_bears", controller: 1 as const }, gb = { id: "gb", cardId: "grizzly_bears", controller: 1 as const };
+  const at = (objectId: string, id: string) => ({ type: "castSpell" as const, objectId, targets: [{ kind: "object" as const, id }] });
+  const withStack = (hand: { objectId: string; cardId: string }[], item: { id: string; kind: string; cardId: string; target: string }) => {
+    const v = mkView({ hand, battlefield: [yp, tok, gb, { id: "m", cardId: "mountain", controller: 0 }, { id: "p", cardId: "plains", controller: 0 }] });
+    v.stack = [{ id: item.id, kind: item.kind, cardId: item.cardId, controller: 0, targets: [{ kind: "object", id: item.target }] } as never];
+    return v;
+  };
+  it("doubleaim: no Bolt at the Pyromancer our Control Magic is already taking; a Bolt at another creature is untouched", () => {
+    const a = agent(), v = withStack([{ objectId: "lb", cardId: "lightning_bolt" }], { id: "s1", kind: "spell", cardId: "control_magic", target: "yp" });
+    expect(a.alreadyAnsweredGated(v, at("lb", "yp"))).toBe(true);
+    expect(a.alreadyAnsweredGated(v, at("lb", "gb"))).toBe(false);
+    const old = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["doubleaim"] });
+    expect(old.alreadyAnsweredGated(v, at("lb", "yp"))).toBe(false);
+  });
+  it("doubleaim: no Swords to Plowshares at the creature our Flametongue Kavu's trigger is already killing; nor a Control Magic at it", () => {
+    const a = agent(), v = withStack([{ objectId: "sp", cardId: "swords_to_plowshares" }, { objectId: "cm", cardId: "control_magic" }], { id: "s1", kind: "ability", cardId: "flametongue_kavu", target: "tk" });
+    expect(a.alreadyAnsweredGated(v, at("sp", "tk"))).toBe(true);
+    expect(a.alreadyAnsweredGated(v, at("cm", "tk"))).toBe(true);
+    expect(a.alreadyAnsweredGated(v, at("sp", "gb"))).toBe(false);
+  });
+  it("doubleaim: a Bolt that does not kill is no answer — a second burn spell to finish the creature is still allowed", () => {
+    const a = agent(), v = withStack([{ objectId: "lb", cardId: "lightning_bolt" }], { id: "s1", kind: "spell", cardId: "shock", target: "yp" });
+    v.battlefield.find((o) => o.id === "yp")!.toughness = 4;
+    expect(a.alreadyAnsweredGated(v, at("lb", "yp"))).toBe(false);
+  });
+});
+
 describe("book of shame 165 (post-S71a, Correspondence — the exchange is read as the board it leaves)", () => {
   const study = pool; // Correspondence installed ({U/R}{U/R}, post-S71a)
   const a = new HeuristicAgent(1, study, { archetype: "midrange", opponentDecklist: [{ cardId: "serra_angel", count: 4 }], temperature: 0.35 });
