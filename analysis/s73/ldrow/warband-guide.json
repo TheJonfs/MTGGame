@@ -1,0 +1,26 @@
+{
+ "rows": [
+  {
+   "in": "molten_rain",
+   "n": 2,
+   "out": [
+    "goblin_piker",
+    "flametongue_kavu"
+   ],
+   "when": [
+    "landdeck"
+   ]
+  },
+  {
+   "in": "terrain_collapse",
+   "n": 2,
+   "out": [
+    "goblin_piker",
+    "flametongue_kavu"
+   ],
+   "when": [
+    "landdeck"
+   ]
+  }
+ ]
+}

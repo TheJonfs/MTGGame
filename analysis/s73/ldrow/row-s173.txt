@@ -1,0 +1,5 @@
+## open:warband landdeck row (2 Molten Rain, 2 Terrain Collapse when landdeck) seed 173
+matches 43.5 -> 44.2  +0.7 +/- 0.9   | game one 46.3 -> 46.3  +0.0 +/- 0.0   | later 45.2 -> 46.0  +0.9 +/- 2.1 (unpaired)   | n 3040
+by opponent: minefield 34->38 (+4), funpolice 51->55 (+4), sweep 52->55 (+3), lumenclio 48->51 (+2), pinnacle 49->52 (+2), earthrise 31->32 (+1), wurmspeaker 72->72 (+0), writ 42->42 (+0), tollgate 39->39 (+0), reaperclio 13->13 (+0), rabble 26->26 (+0), pall 49->49 (+0), muster 46->46 (+0), marducontrol 27->27 (+0), levy 70->70 (+0), kiln 56->56 (+0), depths 45->45 (+0), countersnake 39->39 (+0), emeraldsnakes 37->33 (-4)
+pairings lost clear of error: none
+ADR-168: below (estimate +0.7, lower bound -0.1)

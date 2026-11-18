@@ -1,0 +1,1644 @@
+
+===== game 15 round14.0:open:marducontrol vs Maude Brackwater — LOST in 16 turns =====
+--- T0 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+   ME   CLEANUP keepHand
+   THEM CLEANUP keepHand
+--- T1 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+      hand: Highland Ritual, Highland Ritual, Plateau, Valakut, the Molten Pinnacle, Valakut, the Molten Pinnacle, Wheel of Fortune, Wood Elves
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+--- T2 (theirs) life 20-20 | lands 1/0 | me:  | them: 
+   THEM MAIN1  land Plateau
+   THEM MAIN1  cast Mox Pearl
+--- T3 (MINE) life 20-20 | lands 1/1 | me:  | them: Mox Pearl
+      hand: Highland Ritual, Highland Ritual, Plateau, Valakut, the Molten Pinnacle, Wheel of Fortune, Wood Elves
+      hand: Burnfallow, Highland Ritual, Highland Ritual, Plateau, Valakut, the Molten Pinnacle, Wheel of Fortune, Wood Elves
+   ME   MAIN1  land Plateau
+      hand: Burnfallow, Highland Ritual, Highland Ritual, Valakut, the Molten Pinnacle, Wheel of Fortune, Wood Elves
+   ME   MAIN1  activate Highland Ritual#0
+   ME   MAIN1  searchPick
+--- T4 (theirs) life 20-20 | lands 2/1 | me:  | them: Mox Pearl
+   THEM MAIN1  land Plateau
+   THEM MAIN1  cast Soul Warden
+--- T5 (MINE) life 20-20 | lands 2/2 | me:  | them: Mox Pearl, Soul Warden 1/1
+      hand: Burnfallow, Highland Ritual, Taiga, Valakut, the Molten Pinnacle, Wheel of Fortune, Wood Elves
+      hand: Burnfallow, Highland Ritual, Sacred Helix, Taiga, Valakut, the Molten Pinnacle, Wheel of Fortune, Wood Elves
+   ME   MAIN1  land Taiga
+      hand: Burnfallow, Highland Ritual, Sacred Helix, Valakut, the Molten Pinnacle, Wheel of Fortune, Wood Elves
+   ME   MAIN1  cast Wood Elves
+   ME   MAIN1  searchPick
+      hand: Burnfallow, Highland Ritual, Sacred Helix, Valakut, the Molten Pinnacle, Wheel of Fortune
+--- T6 (theirs) life 20-21 | lands 4/2 | me: Wood Elves 1/1 | them: Mox Pearl, Soul Warden 1/1
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  acceptOptional
+   THEM MAIN1  cast Wall of Reverence
+   THEM MAIN1  cast Mox Jet
+   THEM END    chooseTriggerTargets → their Soul Warden
+   THEM END    acceptOptional
+--- T7 (MINE) life 20-21 | lands 4/3 | me: Wood Elves 1/1 | them: Mox Pearl, Soul Warden 1/1, Wall of Reverence 1/6, Mox Jet
+      hand: Burnfallow, Highland Ritual, Sacred Helix, Valakut, the Molten Pinnacle, Wall of Blossoms, Wheel of Fortune
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Burnfallow, Highland Ritual, Sacred Helix, Wall of Blossoms, Wheel of Fortune
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Burnfallow, Highland Ritual, Sacred Helix, Wheel of Fortune
+      hand: Burnfallow, Hearthspire, Highland Ritual, Sacred Helix, Wheel of Fortune
+   ME   MAIN1  activate Highland Ritual#0
+   ME   MAIN1  searchPick
+--- T8 (theirs) life 20-22 | lands 5/3 | me: Wood Elves 1/1, Wall of Blossoms 0/4 | them: Mox Pearl, Soul Warden 1/1, Wall of Reverence 1/6, Mox Jet
+   THEM MAIN1  cast The Usher
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  land Scrubland
+   THEM END    chooseTriggerTargets → their The Usher
+   THEM END    acceptOptional
+--- T9 (MINE) life 20-28 | lands 5/4 | me: Wood Elves 1/1, Wall of Blossoms 0/4 | them: Mox Pearl, Soul Warden 1/1, Wall of Reverence 1/6, Mox Jet, The Usher 5/5
+      hand: Burnfallow, Hearthspire, Plateau, Sacred Helix, Wheel of Fortune
+      hand: Burnfallow, Hearthspire, Plateau, Sacred Helix, Wall of Blossoms, Wheel of Fortune
+   ME   MAIN1  land Plateau
+      hand: Burnfallow, Hearthspire, Sacred Helix, Wall of Blossoms, Wheel of Fortune
+   ME   MAIN1  cast Sacred Helix → their The Usher
+--- T10 (theirs) life 24-30 | lands 6/4 | me: Wood Elves 1/1, Wall of Blossoms 0/4 | them: Mox Pearl, Soul Warden 1/1, Wall of Reverence 1/6, Mox Jet
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  declineOptional
+   THEM MAIN1  cast Vindicate → my Wood Elves
+   THEM MAIN1  cast Blood Artist
+   THEM END    chooseTriggerTargets → their Blood Artist
+   THEM END    acceptOptional
+--- T11 (MINE) life 24-31 | lands 6/5 | me: Wall of Blossoms 0/4 | them: Mox Pearl, Soul Warden 1/1, Wall of Reverence 1/6, Mox Jet, Blood Artist 0/1
+      hand: Burnfallow, Hearthspire, Wall of Blossoms, Wheel of Fortune
+      hand: Burnfallow, Hearthspire, Sacred Helix, Wall of Blossoms, Wheel of Fortune
+   ME   MAIN1  land Burnfallow
+      hand: Hearthspire, Sacred Helix, Wall of Blossoms, Wheel of Fortune
+   ME   MAIN1  activate my Burnfallow#2
+   ME   MAIN1  sacrifice
+   ME   MAIN1  searchPick
+   ME   MAIN1  searchPick
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Hearthspire, Sacred Helix, Wheel of Fortune
+      hand: Hearthspire, Sacred Helix, Taiga, Wheel of Fortune
+--- T12 (theirs) life 24-32 | lands 8/5 | me: Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Mox Pearl, Soul Warden 1/1, Wall of Reverence 1/6, Mox Jet, Blood Artist 0/1
+   THEM MAIN1  cast Lumen, the Hearth Fire
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms {stack: Soul Warden}
+   THEM END    chooseTriggerTargets → their Blood Artist
+   THEM END    acceptOptional
+--- T13 (MINE) life 24-33 | lands 8/5 | me: Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Mox Pearl, Soul Warden 1/1, Wall of Reverence 1/6, Mox Jet, Blood Artist 0/1, Lumen, the Hearth Fire 3/4
+      hand: Hearthspire, Sacred Helix, Taiga, Wheel of Fortune, Wood Elves
+   ME   MAIN1  land Taiga
+   ME   MAIN1  chooseTriggerTargets → their Wall of Reverence
+   ME   MAIN1  chooseTriggerTargets → their Wall of Reverence {stack: Valakut, the Molten Pinnacle}
+      hand: Hearthspire, Sacred Helix, Wheel of Fortune, Wood Elves
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   THEM MAIN1  chooseTriggerTargets → ME
+   ME   MAIN1  cast Sacred Helix → their Lumen, the Hearth Fire {stack: Blood Artist}
+      hand: Hearthspire, Wheel of Fortune, Wood Elves
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Blood Artist}
+   ME   MAIN1  cast Wood Elves
+      hand: Hearthspire, Wheel of Fortune
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → their Blood Artist
+   ME   MAIN1  chooseTriggerTargets → their Soul Warden {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   THEM MAIN1  chooseTriggerTargets → ME
+--- T14 (theirs) life 24-38 | lands 10/5 | me: Wall of Blossoms 0/4, Wall of Blossoms 0/4, Wood Elves 1/1 | them: Mox Pearl, Mox Jet
+   THEM MAIN1  land Plateau
+--- T15 (MINE) life 24-38 | lands 10/6 | me: Wall of Blossoms 0/4, Wall of Blossoms 0/4, Wood Elves 1/1 | them: Mox Pearl, Mox Jet
+      hand: Hearthspire, Powerstone Minefield, Wheel of Fortune
+   ME   MAIN1  land Hearthspire
+      hand: Powerstone Minefield, Wheel of Fortune
+   ME   MAIN1  activate my Burnfallow#2
+   ME   MAIN1  sacrifice
+   ME   MAIN1  searchPick
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   ME   MAIN1  cast Powerstone Minefield
+      hand: Wheel of Fortune
+   ME   MAIN1  cast Wheel of Fortune
+      hand: Burnfallow Exuberant, Burnfallow Exuberant, Mox Emerald, Mox Pearl, Plateau, Powerstone Minefield, Wood Elves
+   ME   MAIN1  cast Mox Emerald
+      hand: Burnfallow Exuberant, Burnfallow Exuberant, Mox Pearl, Plateau, Powerstone Minefield, Wood Elves
+   ME   MAIN1  cast Mox Pearl
+      hand: Burnfallow Exuberant, Burnfallow Exuberant, Plateau, Powerstone Minefield, Wood Elves
+   ME   DECLARE_ATTACKERS attack my Wood Elves
+--- T16 (theirs) life 24-26 | lands 12/6 | me: Wall of Blossoms 0/4, Wall of Blossoms 0/4, Powerstone Minefield, Mox Emerald, Mox Pearl | them: Mox Pearl, Mox Jet
+   THEM MAIN1  cast The Usher
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   THEM MAIN1  keepLegend
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   THEM MAIN1  keepLegend
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   THEM MAIN1  keepLegend
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   THEM MAIN1  keepLegend
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   THEM MAIN1  keepLegend
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   THEM MAIN1  keepLegend
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+
+===== game 16 round14.1:open:marducontrol vs Maude Brackwater — WON in 43 turns =====
+--- T0 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+   ME   CLEANUP mulligan
+   ME   CLEANUP keepHand
+   ME   CLEANUP bottomCard
+   THEM CLEANUP mulligan
+   THEM CLEANUP keepHand
+   THEM CLEANUP bottomCard
+--- T1 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+      hand: Highland Ritual, Mountain, Sacred Helix, Taiga, Valakut, the Molten Pinnacle, Wood Elves
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+--- T2 (theirs) life 20-20 | lands 1/0 | me:  | them: 
+   THEM MAIN1  land Scrubland
+   THEM MAIN1  cast Soul Warden
+   THEM MAIN1  cast Black Lotus
+   THEM MAIN1  activate their Black Lotus#0
+   THEM MAIN1  cast Glorious Anthem
+--- T3 (MINE) life 20-20 | lands 1/1 | me:  | them: Soul Warden 2/2, Glorious Anthem
+      hand: Highland Ritual, Mountain, Sacred Helix, Taiga, Wood Elves
+      hand: Highland Ritual, Mountain, Mox Ruby, Sacred Helix, Taiga, Wood Elves
+   ME   MAIN1  land Taiga
+      hand: Highland Ritual, Mountain, Mox Ruby, Sacred Helix, Wood Elves
+   ME   MAIN1  cast Mox Ruby
+      hand: Highland Ritual, Mountain, Sacred Helix, Wood Elves
+   ME   MAIN1  cast Wood Elves
+   ME   MAIN1  searchPick
+      hand: Highland Ritual, Mountain, Sacred Helix
+--- T4 (theirs) life 20-21 | lands 3/1 | me: Mox Ruby, Wood Elves 1/1 | them: Soul Warden 2/2, Glorious Anthem
+   THEM MAIN1  cast Soul Warden
+   THEM MAIN1  land Plateau
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+--- T5 (MINE) life 18-22 | lands 3/2 | me: Mox Ruby, Wood Elves 1/1 | them: Soul Warden 2/2, Glorious Anthem, Soul Warden 2/2
+      hand: Faerie Macabre, Highland Ritual, Mountain, Sacred Helix
+   ME   MAIN1  activate Highland Ritual#0
+      hand: Faerie Macabre, Mountain, Sacred Helix
+   ME   MAIN1  searchPick
+      hand: Faerie Macabre, Mountain, Plateau, Sacred Helix
+   ME   MAIN1  land Plateau
+      hand: Faerie Macabre, Mountain, Sacred Helix
+--- T6 (theirs) life 18-22 | lands 4/2 | me: Mox Ruby, Wood Elves 1/1 | them: Soul Warden 2/2, Glorious Anthem, Soul Warden 2/2
+   THEM MAIN1  cast Soul Warden
+   THEM MAIN1  land Plateau
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   ME   DECLARE_BLOCKERS block their Soul Warden with my Wood Elves
+--- T7 (MINE) life 16-24 | lands 4/3 | me: Mox Ruby | them: Soul Warden 2/2, Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2
+      hand: Faerie Macabre, Mountain, Sacred Helix, Wall of Blossoms
+   ME   MAIN1  land Mountain
+      hand: Faerie Macabre, Sacred Helix, Wall of Blossoms
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Faerie Macabre, Sacred Helix
+      hand: Faerie Macabre, Sacred Helix, Wall of Blossoms
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Faerie Macabre, Sacred Helix
+      hand: Faerie Macabre, Sacred Helix, Taiga
+--- T8 (theirs) life 16-30 | lands 5/3 | me: Mox Ruby, Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Soul Warden 2/2, Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2
+   THEM MAIN1  land Badlands
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   ME   DECLARE_BLOCKERS block their Soul Warden with my Wall of Blossoms
+   ME   DECLARE_BLOCKERS block their Soul Warden with my Wall of Blossoms
+--- T9 (MINE) life 14-30 | lands 5/4 | me: Mox Ruby, Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Soul Warden 2/2, Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2
+      hand: Faerie Macabre, Hearthspire, Sacred Helix, Taiga
+   ME   MAIN1  land Hearthspire
+      hand: Faerie Macabre, Sacred Helix, Taiga
+   ME   MAIN1  activate my Hearthspire#2 → their Soul Warden
+--- T10 (theirs) life 16-30 | lands 6/4 | me: Mox Ruby, Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Soul Warden 2/2, Glorious Anthem, Soul Warden 2/2
+   THEM MAIN1  cast Vampire Nighthawk
+--- T11 (MINE) life 16-32 | lands 6/4 | me: Mox Ruby, Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Soul Warden 2/2, Glorious Anthem, Soul Warden 2/2, Vampire Nighthawk 3/4
+      hand: Faerie Macabre, Sacred Helix, Taiga, Tormod's Crypt
+   ME   MAIN1  land Taiga
+      hand: Faerie Macabre, Sacred Helix, Tormod's Crypt
+   ME   MAIN1  cast Tormod's Crypt
+      hand: Faerie Macabre, Sacred Helix
+   ME   MAIN1  cast Sacred Helix → their Vampire Nighthawk
+      hand: Faerie Macabre
+--- T12 (theirs) life 24-32 | lands 7/4 | me: Mox Ruby, Wall of Blossoms 0/4, Wall of Blossoms 0/4, Tormod's Crypt | them: Soul Warden 2/2, Glorious Anthem, Soul Warden 2/2
+--- T13 (MINE) life 24-32 | lands 7/4 | me: Mox Ruby, Wall of Blossoms 0/4, Wall of Blossoms 0/4, Tormod's Crypt | them: Soul Warden 2/2, Glorious Anthem, Soul Warden 2/2
+      hand: Faerie Macabre, Valakut, the Molten Pinnacle
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Faerie Macabre
+--- T14 (theirs) life 24-32 | lands 8/4 | me: Mox Ruby, Wall of Blossoms 0/4, Wall of Blossoms 0/4, Tormod's Crypt | them: Soul Warden 2/2, Glorious Anthem, Soul Warden 2/2
+   THEM MAIN1  cast Vampire Nighthawk
+   ME   MAIN1  activate my Hearthspire#2 → their Soul Warden {stack: Soul Warden < Soul Warden}
+--- T15 (MINE) life 26-34 | lands 8/4 | me: Mox Ruby, Wall of Blossoms 0/4, Wall of Blossoms 0/4, Tormod's Crypt | them: Soul Warden 2/2, Glorious Anthem, Vampire Nighthawk 3/4
+      hand: Faerie Macabre, Sacred Helix
+   ME   MAIN1  cast Sacred Helix → their Vampire Nighthawk
+      hand: Faerie Macabre
+--- T16 (theirs) life 35-34 | lands 8/4 | me: Mox Ruby, Wall of Blossoms 0/4, Wall of Blossoms 0/4, Tormod's Crypt | them: Soul Warden 2/2, Glorious Anthem
+   THEM MAIN1  land Obsidian Observatory
+   THEM MAIN1  cast The Usher
+   ME   MAIN1  activate my Tormod's Crypt#0 → THEM {stack: The Usher}
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  orderTrigger
+--- T17 (MINE) life 33-38 | lands 8/5 | me: Mox Ruby, Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Soul Warden 2/2, Glorious Anthem, The Usher 6/6
+      hand: Faerie Macabre, Mountain
+   ME   MAIN1  land Mountain
+   ME   MAIN1  chooseTriggerTargets → their The Usher
+   ME   MAIN1  chooseTriggerTargets → their The Usher {stack: Valakut, the Molten Pinnacle}
+      hand: Faerie Macabre
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   ME   MAIN1  activate my Hearthspire#2 → their Soul Warden {stack: The Usher}
+--- T18 (theirs) life 33-40 | lands 9/5 | me: Mox Ruby, Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Glorious Anthem
+   THEM MAIN1  cast Wrath of God
+--- T19 (MINE) life 33-40 | lands 9/5 | me: Mox Ruby | them: Glorious Anthem
+      hand: Faerie Macabre, Powerstone Minefield
+   ME   MAIN1  cast Powerstone Minefield
+      hand: Faerie Macabre
+--- T20 (theirs) life 33-40 | lands 9/5 | me: Mox Ruby, Powerstone Minefield | them: Glorious Anthem
+--- T21 (MINE) life 33-40 | lands 9/5 | me: Mox Ruby, Powerstone Minefield | them: Glorious Anthem
+      hand: Faerie Macabre, Powerstone Minefield
+   ME   MAIN2  cast Powerstone Minefield
+      hand: Faerie Macabre
+--- T22 (theirs) life 33-40 | lands 9/5 | me: Mox Ruby, Powerstone Minefield, Powerstone Minefield | them: Glorious Anthem
+   THEM MAIN1  cast Lumen, the Hearth Fire
+   THEM DECLARE_ATTACKERS attack their Lumen, the Hearth Fire
+--- T23 (MINE) life 29-44 | lands 9/5 | me: Mox Ruby, Powerstone Minefield, Powerstone Minefield | them: Glorious Anthem, Lumen, the Hearth Fire 4/5
+      hand: Faerie Macabre, Library of Alexandria
+   ME   MAIN1  land Library of Alexandria
+      hand: Faerie Macabre
+--- T24 (theirs) life 29-44 | lands 10/5 | me: Mox Ruby, Powerstone Minefield, Powerstone Minefield | them: Glorious Anthem, Lumen, the Hearth Fire 4/5
+   THEM MAIN1  cast Vindicate → my Powerstone Minefield
+   THEM DECLARE_ATTACKERS attack their Lumen, the Hearth Fire
+   ME   DECLARE_ATTACKERS activate my Hearthspire#2 → THEM {stack: Powerstone Minefield}
+--- T25 (MINE) life 27-46 | lands 10/5 | me: Mox Ruby, Powerstone Minefield | them: Glorious Anthem, Lumen, the Hearth Fire 4/5
+      hand: Burnfallow Exuberant, Faerie Macabre
+   ME   MAIN1  cast Burnfallow Exuberant
+      hand: Faerie Macabre
+   THEM MAIN1  cast Swords to Plowshares → my Burnfallow Exuberant {stack: Burnfallow Exuberant}
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → their Lumen, the Hearth Fire
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   ME   MAIN1  activate my Hearthspire#2 → their Lumen, the Hearth Fire
+--- T26 (theirs) life 30-43 | lands 11/5 | me: Mox Ruby, Powerstone Minefield | them: Glorious Anthem
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  declineOptional
+--- T27 (MINE) life 30-43 | lands 11/6 | me: Mox Ruby, Powerstone Minefield | them: Glorious Anthem
+      hand: Balance, Faerie Macabre
+--- T28 (theirs) life 30-43 | lands 11/6 | me: Mox Ruby, Powerstone Minefield | them: Glorious Anthem
+   THEM MAIN1  land Scrubland
+   ME   END    activate my Hearthspire#2 → THEM
+--- T29 (MINE) life 32-41 | lands 11/7 | me: Mox Ruby, Powerstone Minefield | them: Glorious Anthem
+      hand: Balance, Faerie Macabre, Powerstone Minefield
+   ME   MAIN1  cast Powerstone Minefield
+      hand: Balance, Faerie Macabre
+--- T30 (theirs) life 32-41 | lands 11/7 | me: Mox Ruby, Powerstone Minefield, Powerstone Minefield | them: Glorious Anthem
+   THEM MAIN1  land Badlands
+   ME   END    activate my Hearthspire#2 → THEM
+--- T31 (MINE) life 34-39 | lands 11/8 | me: Mox Ruby, Powerstone Minefield, Powerstone Minefield | them: Glorious Anthem
+      hand: Balance, Faerie Macabre, Wheel of Fortune
+--- T32 (theirs) life 34-39 | lands 11/8 | me: Mox Ruby, Powerstone Minefield, Powerstone Minefield | them: Glorious Anthem
+   THEM MAIN1  cast Wall of Reverence
+   ME   END    activate my Hearthspire#2 → THEM {stack: Wall of Reverence}
+   THEM END    acceptOptional
+--- T33 (MINE) life 36-39 | lands 11/8 | me: Mox Ruby, Powerstone Minefield, Powerstone Minefield | them: Glorious Anthem, Wall of Reverence 2/7
+      hand: Balance, Faerie Macabre, Faerie Macabre, Wheel of Fortune
+--- T34 (theirs) life 36-39 | lands 11/8 | me: Mox Ruby, Powerstone Minefield, Powerstone Minefield | them: Glorious Anthem, Wall of Reverence 2/7
+   THEM MAIN1  land Scrubland
+   ME   END    activate my Hearthspire#2 → THEM {stack: Wall of Reverence}
+   THEM END    acceptOptional
+--- T35 (MINE) life 38-39 | lands 11/9 | me: Mox Ruby, Powerstone Minefield, Powerstone Minefield | them: Glorious Anthem, Wall of Reverence 2/7
+      hand: Balance, Faerie Macabre, Faerie Macabre, Tormod's Crypt, Wheel of Fortune
+   ME   MAIN1  cast Tormod's Crypt
+      hand: Balance, Faerie Macabre, Faerie Macabre, Wheel of Fortune
+   ME   MAIN1  cast Wheel of Fortune
+      hand: Balance, Faerie Macabre, Faerie Macabre
+      hand: Mountain, Mox Pearl, Taiga, Valakut, the Molten Pinnacle, Valakut, the Molten Pinnacle, Wall of Blossoms, Wood Elves
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Mountain, Mox Pearl, Taiga, Valakut, the Molten Pinnacle, Wall of Blossoms, Wood Elves
+   ME   MAIN1  cast Mox Pearl
+      hand: Mountain, Taiga, Valakut, the Molten Pinnacle, Wall of Blossoms, Wood Elves
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Mountain, Taiga, Valakut, the Molten Pinnacle, Wood Elves
+      hand: Highland Ritual, Mountain, Taiga, Valakut, the Molten Pinnacle, Wood Elves
+--- T36 (theirs) life 38-39 | lands 12/9 | me: Mox Ruby, Powerstone Minefield, Powerstone Minefield, Tormod's Crypt, Mox Pearl, Wall of Blossoms 0/4 | them: Glorious Anthem, Wall of Reverence 2/7
+   THEM MAIN1  cast Lumen, the Hearth Fire
+   THEM MAIN1  cast Vindicate → my Powerstone Minefield
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms {stack: Vindicate}
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  declineOptional
+   THEM MAIN1  cast Blood Artist
+   THEM END    chooseTriggerTargets → their Wall of Reverence
+   ME   END    activate my Hearthspire#2 → their Blood Artist {stack: Wall of Reverence}
+   THEM END    chooseTriggerTargets → ME {stack: Wall of Reverence}
+   THEM END    acceptOptional
+--- T37 (MINE) life 39-42 | lands 12/10 | me: Mox Ruby, Powerstone Minefield, Tormod's Crypt, Mox Pearl, Wall of Blossoms 0/4 | them: Glorious Anthem, Wall of Reverence 2/7, Lumen, the Hearth Fire 4/5
+      hand: Highland Ritual, Mountain, Powerstone Minefield, Taiga, Valakut, the Molten Pinnacle, Wood Elves
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Highland Ritual, Mountain, Powerstone Minefield, Taiga, Wood Elves
+   ME   MAIN1  cast Powerstone Minefield
+      hand: Highland Ritual, Mountain, Taiga, Wood Elves
+   ME   MAIN1  cast Wood Elves
+      hand: Highland Ritual, Mountain, Taiga
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → their Lumen, the Hearth Fire
+   ME   MAIN1  chooseTriggerTargets → their Lumen, the Hearth Fire {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T38 (theirs) life 39-36 | lands 14/10 | me: Mox Ruby, Powerstone Minefield, Tormod's Crypt, Mox Pearl, Wall of Blossoms 0/4, Powerstone Minefield, Wood Elves 1/1 | them: Glorious Anthem, Wall of Reverence 2/7
+   THEM MAIN1  cast Phyrexian Purge
+   THEM MAIN1  chooseVariableTarget
+   THEM MAIN1  land Swamp
+   THEM MAIN1  cast Demonic Tutor
+   THEM MAIN1  searchPick
+   THEM MAIN1  cast The Usher
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   ME   MAIN1  activate my Tormod's Crypt#0 → THEM {stack: The Usher}
+   THEM END    chooseTriggerTargets → their Wall of Reverence
+   ME   END    activate my Hearthspire#2 → THEM {stack: Wall of Reverence}
+   THEM END    acceptOptional
+--- T39 (MINE) life 41-33 | lands 14/11 | me: Mox Ruby, Powerstone Minefield, Mox Pearl, Wall of Blossoms 0/4, Powerstone Minefield | them: Glorious Anthem, Wall of Reverence 2/7, The Usher 6/6
+      hand: Burnfallow Exuberant, Highland Ritual, Mountain, Taiga
+   ME   MAIN1  land Taiga
+   ME   MAIN1  chooseTriggerTargets → their The Usher
+   ME   MAIN1  chooseTriggerTargets → their The Usher {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+      hand: Burnfallow Exuberant, Highland Ritual, Mountain
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   ME   MAIN1  cast Burnfallow Exuberant
+      hand: Highland Ritual, Mountain
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T40 (theirs) life 39-17 | lands 16/11 | me: Mox Ruby, Powerstone Minefield, Mox Pearl, Wall of Blossoms 0/4, Powerstone Minefield, Burnfallow Exuberant 1/1 | them: Glorious Anthem, Wall of Reverence 2/7
+   THEM MAIN1  cast Lumen, the Hearth Fire
+   THEM MAIN1  land Scrubland
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Burnfallow Exuberant
+   THEM END    chooseTriggerTargets → their Wall of Reverence
+   ME   END    activate my Hearthspire#2 → THEM {stack: Wall of Reverence}
+   THEM END    acceptOptional
+--- T41 (MINE) life 41-17 | lands 16/12 | me: Mox Ruby, Powerstone Minefield, Mox Pearl, Wall of Blossoms 0/4, Powerstone Minefield, Burnfallow Exuberant 1/1 | them: Glorious Anthem, Wall of Reverence 2/7, Lumen, the Hearth Fire 4/5
+      hand: Highland Ritual, Mountain, Plateau
+   ME   MAIN1  land Plateau
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+      hand: Highland Ritual, Mountain
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T42 (theirs) life 41-5 | lands 17/12 | me: Mox Ruby, Powerstone Minefield, Mox Pearl, Wall of Blossoms 0/4, Powerstone Minefield, Burnfallow Exuberant 1/1 | them: Glorious Anthem, Wall of Reverence 2/7, Lumen, the Hearth Fire 4/5
+   THEM MAIN1  land Plateau
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Burnfallow Exuberant
+   THEM MAIN1  cast Mox Jet
+   THEM END    chooseTriggerTargets → their Lumen, the Hearth Fire
+   ME   END    activate my Hearthspire#2 → THEM {stack: Wall of Reverence}
+   THEM END    acceptOptional
+--- T43 (MINE) life 43-7 | lands 17/13 | me: Mox Ruby, Powerstone Minefield, Mox Pearl, Wall of Blossoms 0/4, Powerstone Minefield, Burnfallow Exuberant 1/1 | them: Glorious Anthem, Wall of Reverence 2/7, Lumen, the Hearth Fire 4/5, Mox Jet
+      hand: Burnfallow Exuberant, Highland Ritual, Mountain
+   ME   MAIN1  land Mountain
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+      hand: Burnfallow Exuberant, Highland Ritual
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+
+===== game 17 round14.2:open:marducontrol vs Maude Brackwater — WON in 28 turns =====
+--- T0 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+   ME   CLEANUP keepHand
+   THEM CLEANUP keepHand
+--- T1 (theirs) life 20-20 | lands 0/0 | me:  | them: 
+   THEM MAIN1  land Scrubland
+--- T2 (MINE) life 20-20 | lands 0/1 | me:  | them: 
+      hand: Black Lotus, Burnfallow, Mountain, Mox Pearl, Powerstone Minefield, Taiga, Tormod's Crypt, Wall of Blossoms
+   ME   MAIN1  land Taiga
+      hand: Black Lotus, Burnfallow, Mountain, Mox Pearl, Powerstone Minefield, Tormod's Crypt, Wall of Blossoms
+   ME   MAIN1  cast Mox Pearl
+      hand: Black Lotus, Burnfallow, Mountain, Powerstone Minefield, Tormod's Crypt, Wall of Blossoms
+   ME   MAIN1  cast Tormod's Crypt
+      hand: Black Lotus, Burnfallow, Mountain, Powerstone Minefield, Wall of Blossoms
+   ME   MAIN1  cast Black Lotus
+      hand: Burnfallow, Mountain, Powerstone Minefield, Wall of Blossoms
+   ME   MAIN1  activate my Black Lotus#0
+   ME   MAIN1  cast Powerstone Minefield
+      hand: Burnfallow, Mountain, Wall of Blossoms
+--- T3 (theirs) life 20-20 | lands 1/1 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield | them: 
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  declineOptional
+--- T4 (MINE) life 20-20 | lands 1/2 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield | them: 
+      hand: Burnfallow, Mountain, Taiga, Wall of Blossoms
+   ME   MAIN1  land Taiga
+      hand: Burnfallow, Mountain, Wall of Blossoms
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Burnfallow, Mountain
+      hand: Burnfallow, Mountain, Sacred Helix
+--- T5 (theirs) life 20-20 | lands 2/2 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4 | them: 
+   THEM MAIN1  land Scrubland
+   THEM MAIN1  cast Glorious Anthem
+--- T6 (MINE) life 20-20 | lands 2/3 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4 | them: Glorious Anthem
+      hand: Burnfallow, Mountain, Mox Ruby, Sacred Helix
+   ME   MAIN1  land Mountain
+      hand: Burnfallow, Mox Ruby, Sacred Helix
+   ME   MAIN1  cast Mox Ruby
+      hand: Burnfallow, Sacred Helix
+--- T7 (theirs) life 20-20 | lands 3/3 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby | them: Glorious Anthem
+   THEM MAIN1  cast Soul Warden
+--- T8 (MINE) life 20-20 | lands 3/3 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby | them: Glorious Anthem, Soul Warden 2/2
+      hand: Burnfallow, Mountain, Sacred Helix
+   ME   MAIN1  land Mountain
+      hand: Burnfallow, Sacred Helix
+--- T9 (theirs) life 20-20 | lands 4/3 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby | them: Glorious Anthem, Soul Warden 2/2
+   THEM MAIN1  cast Soul Warden
+   THEM MAIN2  cast Demonic Tutor
+   THEM MAIN2  searchPick
+   THEM MAIN2  land Sacred Foundry
+   THEM MAIN2  declineOptional
+--- T10 (MINE) life 20-21 | lands 4/4 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2
+      hand: Burnfallow, Sacred Helix, Sacred Helix
+   ME   MAIN1  land Burnfallow
+      hand: Sacred Helix, Sacred Helix
+--- T11 (theirs) life 20-21 | lands 5/4 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2
+   THEM MAIN1  cast Lumen, the Hearth Fire
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms {stack: Soul Warden < Soul Warden}
+--- T12 (MINE) life 20-23 | lands 5/4 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5
+      hand: Library of Alexandria, Sacred Helix, Sacred Helix
+   ME   MAIN1  land Library of Alexandria
+      hand: Sacred Helix, Sacred Helix
+--- T13 (theirs) life 20-23 | lands 6/4 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms
+   THEM MAIN2  cast Blood Artist
+--- T14 (MINE) life 20-25 | lands 6/4 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2
+      hand: Plateau, Sacred Helix, Sacred Helix
+   ME   MAIN1  land Plateau
+      hand: Sacred Helix, Sacred Helix
+--- T15 (theirs) life 20-25 | lands 7/4 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms
+   THEM MAIN2  cast Mox Ruby
+   THEM MAIN2  cast The Usher
+   THEM MAIN2  orderTrigger
+   ME   END    cast Sacred Helix → their The Usher
+      hand: Sacred Helix
+   THEM END    orderTrigger
+   THEM END    chooseTriggerTargets → ME
+--- T16 (MINE) life 26-30 | lands 7/4 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2, Mox Ruby
+      hand: Sacred Helix, Wall of Blossoms
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Sacred Helix
+      hand: Sacred Helix, Savannah
+   ME   MAIN1  land Savannah
+      hand: Sacred Helix
+--- T17 (theirs) life 26-32 | lands 8/4 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby, Wall of Blossoms 0/4 | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2, Mox Ruby
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms
+   THEM MAIN1  land Cairnbrand
+--- T18 (MINE) life 26-32 | lands 8/5 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby, Wall of Blossoms 0/4 | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2, Mox Ruby
+      hand: Sacred Foundry, Sacred Helix
+--- T19 (theirs) life 26-32 | lands 8/5 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby, Wall of Blossoms 0/4 | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2, Mox Ruby
+   THEM MAIN1  cast Wall of Reverence
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms {stack: Wall of Reverence}
+   ME   MAIN1  cast Sacred Helix → their Wall of Reverence {stack: Soul Warden < Soul Warden}
+      hand: Sacred Foundry
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Soul Warden < Soul Warden}
+--- T20 (MINE) life 35-35 | lands 8/5 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby, Wall of Blossoms 0/4 | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2, Mox Ruby
+      hand: Earthrise, Sacred Foundry
+   ME   MAIN1  cast Earthrise
+      hand: Sacred Foundry
+   ME   MAIN1  searchPick
+   ME   MAIN1  searchPick
+   ME   MAIN2  land Sacred Foundry
+   ME   MAIN2  declineOptional
+   ME   MAIN2  chooseTriggerTargets → THEM
+   ME   MAIN2  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+      hand: 
+   ME   MAIN2  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN2  acceptOptional
+--- T21 (theirs) life 35-29 | lands 11/5 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby, Wall of Blossoms 0/4 | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2, Mox Ruby
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms
+--- T22 (MINE) life 35-29 | lands 11/5 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby, Wall of Blossoms 0/4 | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2, Mox Ruby
+      hand: Taiga
+   ME   MAIN1  land Taiga
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+      hand: 
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T23 (theirs) life 35-23 | lands 12/5 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby, Wall of Blossoms 0/4 | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2, Mox Ruby
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms
+   ME   END    activate my Burnfallow#2
+   ME   END    sacrifice
+   ME   END    searchPick
+   ME   END    searchPick
+   ME   END    chooseTriggerTargets → THEM
+   ME   END    chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   END    chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   END    chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   END    acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   END    acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   END    acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   END    acceptOptional
+--- T24 (MINE) life 35-11 | lands 13/5 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby, Wall of Blossoms 0/4 | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2, Mox Ruby
+      hand: Plateau
+   ME   MAIN1  land Plateau
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+      hand: 
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T25 (theirs) life 35-5 | lands 14/5 | me: Mox Pearl, Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby, Wall of Blossoms 0/4 | them: Glorious Anthem, Soul Warden 2/2, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2, Mox Ruby
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms
+   THEM MAIN1  land Plateau
+   THEM MAIN1  activate their Cairnbrand#2 → The Usher (in their graveyard)
+   THEM MAIN1  sacrifice
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Cairnbrand}
+   ME   MAIN1  activate my Tormod's Crypt#0 → THEM {stack: Cairnbrand < Blood Artist}
+--- T26 (MINE) life 34-6 | lands 14/6 | me: Mox Pearl, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby, Wall of Blossoms 0/4 | them: Glorious Anthem, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2, Mox Ruby
+      hand: Wood Elves
+   ME   MAIN1  cast Wood Elves
+      hand: 
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T27 (theirs) life 34-1 | lands 15/6 | me: Mox Pearl, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby, Wall of Blossoms 0/4, Wood Elves 1/1 | them: Glorious Anthem, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2, Mox Ruby
+   THEM MAIN1  land Blood Crypt
+   THEM DECLARE_ATTACKERS attack their Lumen, the Hearth Fire
+--- T28 (MINE) life 30-5 | lands 15/7 | me: Mox Pearl, Powerstone Minefield, Wall of Blossoms 0/4, Mox Ruby, Wall of Blossoms 0/4, Wood Elves 1/1 | them: Glorious Anthem, Soul Warden 2/2, Lumen, the Hearth Fire 4/5, Blood Artist 1/2, Mox Ruby
+      hand: Wood Elves
+   ME   MAIN1  cast Wood Elves
+      hand: 
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+
+===== game 20 round16.0:open:marducontrol vs Kester Ravensworth — WON in 13 turns =====
+--- T0 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+   ME   CLEANUP keepHand
+   THEM CLEANUP keepHand
+--- T1 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+      hand: Balance, Highland Ritual, Plateau, Powerstone Minefield, Taiga, Valakut, the Molten Pinnacle, Wrath of God
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+--- T2 (theirs) life 20-20 | lands 1/0 | me:  | them: 
+   THEM MAIN1  land Badlands
+   THEM MAIN1  cast Black Lotus
+--- T3 (MINE) life 20-20 | lands 1/1 | me:  | them: Black Lotus
+      hand: Balance, Highland Ritual, Plateau, Powerstone Minefield, Taiga, Wrath of God
+      hand: Balance, Highland Ritual, Mox Emerald, Plateau, Powerstone Minefield, Taiga, Wrath of God
+   ME   MAIN1  land Plateau
+      hand: Balance, Highland Ritual, Mox Emerald, Powerstone Minefield, Taiga, Wrath of God
+   ME   MAIN1  cast Mox Emerald
+      hand: Balance, Highland Ritual, Powerstone Minefield, Taiga, Wrath of God
+   ME   MAIN1  activate Highland Ritual#0 {stack: Mox Emerald}
+   ME   MAIN1  searchPick {stack: Mox Emerald}
+      hand: Balance, Powerstone Minefield, Sacred Foundry, Taiga, Wrath of God
+--- T4 (theirs) life 20-20 | lands 2/1 | me: Mox Emerald | them: Black Lotus
+   THEM MAIN1  land Scrubland
+   THEM MAIN1  activate their Black Lotus#0
+   THEM MAIN1  cast The Usher
+--- T5 (MINE) life 20-20 | lands 2/2 | me: Mox Emerald | them: The Usher 5/5
+      hand: Balance, Powerstone Minefield, Sacred Foundry, Taiga, Wall of Blossoms, Wrath of God
+   ME   MAIN1  land Sacred Foundry
+   ME   MAIN1  acceptOptional
+      hand: Balance, Powerstone Minefield, Taiga, Wall of Blossoms, Wrath of God
+   ME   MAIN1  cast Wrath of God
+--- T6 (theirs) life 16-22 | lands 3/2 | me: Mox Emerald | them: 
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  declineOptional
+   THEM MAIN1  cast Soul Warden
+--- T7 (MINE) life 16-22 | lands 3/3 | me: Mox Emerald | them: Soul Warden 1/1
+      hand: Balance, Powerstone Minefield, Taiga, Wall of Blossoms
+      hand: Balance, Powerstone Minefield, Taiga, Wall of Blossoms, Wood Elves
+   ME   MAIN1  land Taiga
+      hand: Balance, Powerstone Minefield, Wall of Blossoms, Wood Elves
+   ME   MAIN1  cast Wood Elves
+      hand: Balance, Powerstone Minefield, Wall of Blossoms
+   ME   MAIN1  searchPick
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Balance, Powerstone Minefield
+      hand: Balance, Powerstone Minefield, Valakut, the Molten Pinnacle
+--- T8 (theirs) life 16-24 | lands 5/3 | me: Mox Emerald, Wood Elves 1/1, Wall of Blossoms 0/4 | them: Soul Warden 1/1
+   THEM MAIN1  cast Vindicate → my Wood Elves
+   THEM MAIN1  land Badlands
+--- T9 (MINE) life 16-24 | lands 5/4 | me: Mox Emerald, Wall of Blossoms 0/4 | them: Soul Warden 1/1
+      hand: Balance, Powerstone Minefield, Valakut, the Molten Pinnacle, Valakut, the Molten Pinnacle
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Balance, Powerstone Minefield, Valakut, the Molten Pinnacle
+   ME   MAIN1  cast Powerstone Minefield
+      hand: Balance, Valakut, the Molten Pinnacle
+--- T10 (theirs) life 16-24 | lands 6/4 | me: Mox Emerald, Wall of Blossoms 0/4, Powerstone Minefield | them: Soul Warden 1/1
+   THEM MAIN1  cast The Jet Witch
+   THEM MAIN1  activate their The Jet Witch#0 {stack: Soul Warden}
+   THEM MAIN1  activate their The Jet Witch#0 {stack: Soul Warden}
+   THEM MAIN1  activate their The Jet Witch#0 {stack: Soul Warden < The Jet Witch}
+   THEM MAIN1  activate their The Jet Witch#0 {stack: Soul Warden < The Jet Witch < The Jet Witch}
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  acceptOptional
+   THEM MAIN1  cast Blood Artist
+   THEM MAIN1  activate their The Jet Witch#0 {stack: Blood Artist}
+   THEM MAIN1  activate their The Jet Witch#0 {stack: Blood Artist < The Jet Witch}
+--- T11 (MINE) life 16-12 | lands 6/5 | me: Mox Emerald, Wall of Blossoms 0/4, Powerstone Minefield | them: Soul Warden 1/1, The Jet Witch 2/2, Blood Artist 0/1
+      hand: Balance, Powerstone Minefield, Valakut, the Molten Pinnacle
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Balance, Powerstone Minefield
+   ME   MAIN1  cast Powerstone Minefield
+      hand: Balance
+--- T12 (theirs) life 16-12 | lands 7/5 | me: Mox Emerald, Wall of Blossoms 0/4, Powerstone Minefield, Powerstone Minefield | them: Soul Warden 1/1, The Jet Witch 2/2, Blood Artist 0/1
+   THEM MAIN1  cast Shadow Summoning
+   THEM MAIN1  cast Vampire Nighthawk
+   THEM MAIN1  activate their The Jet Witch#0 {stack: Vampire Nighthawk}
+   THEM MAIN1  land Plateau
+   THEM MAIN1  cast Soul Warden
+   THEM MAIN1  activate their The Jet Witch#0 {stack: Soul Warden}
+   THEM MAIN1  activate their The Jet Witch#0 {stack: Soul Warden}
+--- T13 (MINE) life 16-10 | lands 7/6 | me: Mox Emerald, Wall of Blossoms 0/4, Powerstone Minefield, Powerstone Minefield | them: Soul Warden 1/1, The Jet Witch 2/2, Blood Artist 0/1, Spirit Token 1/1, Spirit Token 1/1, Vampire Nighthawk 2/3, Soul Warden 1/1
+      hand: Balance, Wall of Blossoms
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Balance
+      hand: Balance, Earthrise
+   ME   MAIN1  cast Earthrise
+      hand: Balance
+   ME   MAIN1  searchPick
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+
+===== game 21 round16.1:open:marducontrol vs Kester Ravensworth — LOST in 21 turns =====
+--- T0 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+   ME   CLEANUP keepHand
+   THEM CLEANUP keepHand
+--- T1 (theirs) life 20-20 | lands 0/0 | me:  | them: 
+      hand: Earthrise, Faerie Macabre, Mountain, Plateau, Plateau, Powerstone Minefield, Taiga
+   THEM MAIN1  land Badlands
+   THEM MAIN1  cast Mox Ruby
+   THEM MAIN1  cast Blood Artist
+--- T2 (MINE) life 20-20 | lands 0/1 | me:  | them: Mox Ruby, Blood Artist 0/1
+      hand: Burnfallow Exuberant, Earthrise, Faerie Macabre, Mountain, Plateau, Plateau, Powerstone Minefield, Taiga
+   ME   MAIN1  land Taiga
+      hand: Burnfallow Exuberant, Earthrise, Faerie Macabre, Mountain, Plateau, Plateau, Powerstone Minefield
+--- T3 (theirs) life 20-20 | lands 1/1 | me:  | them: Mox Ruby, Blood Artist 0/1
+   THEM MAIN1  land Scrubland
+   THEM MAIN1  cast Soul Warden
+--- T4 (MINE) life 20-20 | lands 1/2 | me:  | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1
+      hand: Burnfallow Exuberant, Earthrise, Faerie Macabre, Mountain, Plateau, Plateau, Powerstone Minefield, Taiga
+   ME   MAIN1  land Plateau
+      hand: Burnfallow Exuberant, Earthrise, Faerie Macabre, Mountain, Plateau, Powerstone Minefield, Taiga
+   ME   MAIN1  cast Earthrise
+      hand: Burnfallow Exuberant, Faerie Macabre, Mountain, Plateau, Powerstone Minefield, Taiga
+   ME   MAIN1  searchPick
+   ME   MAIN1  searchPick
+--- T5 (theirs) life 20-20 | lands 4/2 | me:  | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  declineOptional
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+--- T6 (MINE) life 19-20 | lands 4/3 | me:  | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1
+      hand: Burnfallow Exuberant, Faerie Macabre, Mountain, Plateau, Powerstone Minefield, Taiga, Wood Elves
+   ME   MAIN1  land Plateau
+      hand: Burnfallow Exuberant, Faerie Macabre, Mountain, Powerstone Minefield, Taiga, Wood Elves
+   ME   MAIN1  cast Powerstone Minefield
+      hand: Burnfallow Exuberant, Faerie Macabre, Mountain, Taiga, Wood Elves
+--- T7 (theirs) life 19-20 | lands 5/3 | me: Powerstone Minefield | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1
+   THEM MAIN1  cast Vampire Nighthawk
+   THEM MAIN1  land Plateau
+--- T8 (MINE) life 19-21 | lands 5/4 | me: Powerstone Minefield | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1, Vampire Nighthawk 2/3
+      hand: Burnfallow, Burnfallow Exuberant, Faerie Macabre, Mountain, Taiga, Wood Elves
+   ME   MAIN1  land Taiga
+      hand: Burnfallow, Burnfallow Exuberant, Faerie Macabre, Mountain, Wood Elves
+   ME   MAIN1  cast Burnfallow Exuberant
+      hand: Burnfallow, Faerie Macabre, Mountain, Wood Elves
+   ME   MAIN1  searchPick
+   ME   MAIN1  cast Wood Elves
+      hand: Burnfallow, Faerie Macabre, Mountain
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → their Vampire Nighthawk
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   THEM MAIN1  chooseTriggerTargets → ME
+--- T9 (theirs) life 18-21 | lands 8/4 | me: Powerstone Minefield, Burnfallow Exuberant 1/1, Wood Elves 1/1 | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1
+   THEM MAIN1  cast The Usher
+   THEM MAIN1  orderTrigger
+   THEM DECLARE_ATTACKERS attack their Vampire Nighthawk
+   THEM END    orderTrigger
+   THEM END    chooseTriggerTargets → ME
+--- T10 (MINE) life 13-28 | lands 8/4 | me: Powerstone Minefield, Burnfallow Exuberant 1/1, Wood Elves 1/1 | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1, The Usher 5/5
+      hand: Burnfallow, Faerie Macabre, Mountain, Wood Elves
+   ME   MAIN1  land Mountain
+   ME   MAIN1  chooseTriggerTargets → their The Usher
+   ME   MAIN1  chooseTriggerTargets → their The Usher {stack: Valakut, the Molten Pinnacle}
+      hand: Burnfallow, Faerie Macabre, Wood Elves
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  chooseTriggerTargets → ME
+   ME   MAIN1  cast Wood Elves
+      hand: Burnfallow, Faerie Macabre
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T11 (theirs) life 10-26 | lands 10/4 | me: Powerstone Minefield, Burnfallow Exuberant 1/1, Wood Elves 1/1, Wood Elves 1/1 | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1
+   THEM DRAW   cast Sacred Helix → ME
+--- T12 (MINE) life 5-31 | lands 10/4 | me: Powerstone Minefield, Burnfallow Exuberant 1/1, Wood Elves 1/1, Wood Elves 1/1 | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1
+      hand: Burnfallow, Faerie Macabre, Mountain
+   ME   MAIN1  land Mountain
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+      hand: Burnfallow, Faerie Macabre
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T13 (theirs) life 5-25 | lands 11/4 | me: Powerstone Minefield, Burnfallow Exuberant 1/1, Wood Elves 1/1, Wood Elves 1/1 | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1
+   THEM DRAW   cast Swords to Plowshares → my Wood Elves
+   THEM MAIN1  cast Phyrexian Purge
+   THEM MAIN1  chooseVariableTarget
+   THEM MAIN1  chooseVariableTarget
+   THEM MAIN1  chooseTriggerTargets → ME
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Blood Artist}
+--- T14 (MINE) life 4-21 | lands 11/4 | me: Powerstone Minefield | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1
+      hand: Burnfallow, Faerie Macabre, Tormod's Crypt
+   ME   MAIN1  cast Tormod's Crypt
+      hand: Burnfallow, Faerie Macabre
+   ME   MAIN1  land Burnfallow
+      hand: Faerie Macabre
+   ME   MAIN1  activate my Burnfallow#2
+   ME   MAIN1  sacrifice
+   ME   MAIN1  searchPick
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T15 (theirs) life 4-9 | lands 13/4 | me: Powerstone Minefield, Tormod's Crypt | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1
+   THEM MAIN1  cast Blood Artist
+--- T16 (MINE) life 4-10 | lands 13/4 | me: Powerstone Minefield, Tormod's Crypt | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1, Blood Artist 0/1
+      hand: Faerie Macabre, Wall of Blossoms
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Faerie Macabre
+      hand: Faerie Macabre, Mox Ruby
+   ME   MAIN1  cast Mox Ruby
+      hand: Faerie Macabre
+--- T17 (theirs) life 4-11 | lands 13/4 | me: Powerstone Minefield, Tormod's Crypt, Wall of Blossoms 0/4, Mox Ruby | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1, Blood Artist 0/1
+   THEM MAIN1  cast Soul Warden
+--- T18 (MINE) life 4-12 | lands 13/4 | me: Powerstone Minefield, Tormod's Crypt, Wall of Blossoms 0/4, Mox Ruby | them: Mox Ruby, Blood Artist 0/1, Soul Warden 1/1, Blood Artist 0/1, Soul Warden 1/1
+      hand: Faerie Macabre, Tormod's Crypt
+   ME   MAIN1  cast Tormod's Crypt
+      hand: Faerie Macabre
+   THEM MAIN1  cast Restoration Angel {stack: Tormod's Crypt}
+   THEM MAIN1  orderTrigger {stack: Tormod's Crypt}
+   THEM MAIN1  chooseTriggerTargets → their Blood Artist {stack: Tormod's Crypt}
+   THEM MAIN1  acceptOptional {stack: Tormod's Crypt}
+--- T19 (theirs) life 4-16 | lands 13/4 | me: Powerstone Minefield, Tormod's Crypt, Wall of Blossoms 0/4, Mox Ruby, Tormod's Crypt | them: Mox Ruby, Soul Warden 1/1, Blood Artist 0/1, Soul Warden 1/1, Restoration Angel 3/4, Blood Artist 0/1
+   THEM MAIN1  cast Lumen, the Hearth Fire
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms {stack: Soul Warden < Soul Warden}
+   THEM DECLARE_ATTACKERS attack their Restoration Angel
+--- T20 (MINE) life 1-18 | lands 13/4 | me: Powerstone Minefield, Tormod's Crypt, Wall of Blossoms 0/4, Mox Ruby, Tormod's Crypt | them: Mox Ruby, Soul Warden 1/1, Blood Artist 0/1, Soul Warden 1/1, Restoration Angel 3/4, Blood Artist 0/1, Lumen, the Hearth Fire 3/4
+      hand: Faerie Macabre, Valakut, the Molten Pinnacle
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Faerie Macabre
+--- T21 (theirs) life 1-18 | lands 14/4 | me: Powerstone Minefield, Tormod's Crypt, Wall of Blossoms 0/4, Mox Ruby, Tormod's Crypt | them: Mox Ruby, Soul Warden 1/1, Blood Artist 0/1, Soul Warden 1/1, Restoration Angel 3/4, Blood Artist 0/1, Lumen, the Hearth Fire 3/4
+   THEM MAIN1  land Badlands
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms
+   THEM DECLARE_ATTACKERS attack their Restoration Angel
+   ME   DECLARE_ATTACKERS activate my Burnfallow#2 {stack: Powerstone Minefield}
+   ME   DECLARE_ATTACKERS sacrifice {stack: Powerstone Minefield}
+
+===== game 22 round16.2:open:marducontrol vs Kester Ravensworth — WON in 41 turns =====
+--- T0 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+   ME   CLEANUP mulligan
+   ME   CLEANUP keepHand
+   ME   CLEANUP bottomCard
+   THEM CLEANUP mulligan
+   THEM CLEANUP keepHand
+   THEM CLEANUP bottomCard
+--- T1 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+      hand: Burnfallow Exuberant, Plateau, Taiga, Tormod's Crypt, Valakut, the Molten Pinnacle, Wall of Blossoms
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Burnfallow Exuberant, Plateau, Taiga, Tormod's Crypt, Wall of Blossoms
+   ME   MAIN1  cast Tormod's Crypt
+      hand: Burnfallow Exuberant, Plateau, Taiga, Wall of Blossoms
+--- T2 (theirs) life 20-20 | lands 1/0 | me: Tormod's Crypt | them: 
+   THEM MAIN1  land Sacred Foundry
+   THEM MAIN1  acceptOptional
+   THEM MAIN1  cast Soul Warden
+--- T3 (MINE) life 20-18 | lands 1/1 | me: Tormod's Crypt | them: Soul Warden 1/1
+      hand: Burnfallow Exuberant, Plateau, Powerstone Minefield, Taiga, Wall of Blossoms
+   ME   MAIN1  land Taiga
+      hand: Burnfallow Exuberant, Plateau, Powerstone Minefield, Wall of Blossoms
+   ME   MAIN1  cast Burnfallow Exuberant
+      hand: Plateau, Powerstone Minefield, Wall of Blossoms
+   ME   MAIN1  searchPick
+--- T4 (theirs) life 20-19 | lands 3/1 | me: Tormod's Crypt, Burnfallow Exuberant 1/1 | them: Soul Warden 1/1
+   THEM UPKEEP cast Swords to Plowshares → my Burnfallow Exuberant
+   THEM MAIN1  land Plateau
+   THEM MAIN1  cast Black Lotus
+   THEM MAIN1  activate their Black Lotus#0
+   THEM MAIN1  cast Blood Artist
+   THEM MAIN1  cast Blood Artist
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+--- T5 (MINE) life 20-21 | lands 3/2 | me: Tormod's Crypt | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1
+      hand: Burnfallow, Plateau, Powerstone Minefield, Wall of Blossoms
+   ME   MAIN1  land Plateau
+      hand: Burnfallow, Powerstone Minefield, Wall of Blossoms
+   ME   MAIN1  cast Powerstone Minefield
+      hand: Burnfallow, Wall of Blossoms
+--- T6 (theirs) life 20-21 | lands 4/2 | me: Tormod's Crypt, Powerstone Minefield | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1
+   THEM MAIN1  land Plateau
+--- T7 (MINE) life 20-21 | lands 4/3 | me: Tormod's Crypt, Powerstone Minefield | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1
+      hand: Burnfallow, Plateau, Wall of Blossoms
+   ME   MAIN1  land Plateau
+      hand: Burnfallow, Wall of Blossoms
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Burnfallow
+      hand: Burnfallow, Faerie Macabre
+--- T8 (theirs) life 20-22 | lands 5/3 | me: Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1
+   THEM MAIN1  cast Soul Warden
+--- T9 (MINE) life 20-23 | lands 5/3 | me: Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1
+      hand: Burnfallow, Faerie Macabre, Plateau
+   ME   MAIN1  land Plateau
+      hand: Burnfallow, Faerie Macabre
+--- T10 (theirs) life 20-23 | lands 6/3 | me: Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1
+   THEM MAIN1  land Scrubland
+   THEM MAIN1  cast Lumen, the Hearth Fire
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms {stack: Soul Warden < Soul Warden}
+--- T11 (MINE) life 20-25 | lands 6/4 | me: Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1, Lumen, the Hearth Fire 3/4
+      hand: Burnfallow, Faerie Macabre, Mountain
+   ME   MAIN1  land Burnfallow
+      hand: Faerie Macabre, Mountain
+   ME   MAIN1  activate my Burnfallow#2
+   ME   MAIN1  sacrifice
+   ME   MAIN1  searchPick
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → their Lumen, the Hearth Fire
+   ME   MAIN1  chooseTriggerTargets → their Lumen, the Hearth Fire {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   THEM MAIN1  chooseTriggerTargets → ME
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Blood Artist}
+--- T12 (theirs) life 18-27 | lands 8/4 | me: Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1
+   THEM MAIN1  land Scrubland
+--- T13 (MINE) life 18-27 | lands 8/5 | me: Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1
+      hand: Faerie Macabre, Highland Ritual, Mountain
+   ME   MAIN1  land Mountain
+   ME   MAIN1  chooseTriggerTargets → THEM
+      hand: Faerie Macabre, Highland Ritual
+   ME   MAIN1  acceptOptional
+--- T14 (theirs) life 18-24 | lands 9/5 | me: Tormod's Crypt, Powerstone Minefield, Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1
+   THEM MAIN1  cast Vindicate → my Powerstone Minefield
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   ME   DECLARE_BLOCKERS block their Soul Warden with my Wall of Blossoms
+--- T15 (MINE) life 17-24 | lands 9/5 | me: Tormod's Crypt, Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1
+      hand: Faerie Macabre, Highland Ritual, Taiga
+   ME   MAIN1  land Taiga
+   ME   MAIN1  chooseTriggerTargets → THEM
+      hand: Faerie Macabre, Highland Ritual
+   ME   MAIN1  acceptOptional
+--- T16 (theirs) life 17-21 | lands 10/5 | me: Tormod's Crypt, Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1
+   THEM MAIN1  cast The Usher
+   THEM MAIN1  orderTrigger
+   ME   MAIN1  activate my Tormod's Crypt#0 → THEM {stack: The Usher < Soul Warden < Soul Warden}
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   ME   DECLARE_BLOCKERS block their Soul Warden with my Wall of Blossoms
+--- T17 (MINE) life 16-23 | lands 10/5 | me: Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1, The Usher 5/5
+      hand: Faerie Macabre, Highland Ritual, Valakut, the Molten Pinnacle
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Faerie Macabre, Highland Ritual
+--- T18 (theirs) life 16-23 | lands 11/5 | me: Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1, The Usher 5/5
+   THEM MAIN1  cast Vampire Nighthawk
+   ME   MAIN1  activate my Burnfallow#2 {stack: Vampire Nighthawk}
+   ME   MAIN1  sacrifice {stack: Vampire Nighthawk}
+   ME   MAIN1  searchPick {stack: Vampire Nighthawk}
+   ME   MAIN1  chooseTriggerTargets → their The Usher {stack: Vampire Nighthawk}
+   ME   MAIN1  chooseTriggerTargets → their The Usher {stack: Vampire Nighthawk < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Vampire Nighthawk < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Vampire Nighthawk}
+   THEM MAIN1  orderTrigger {stack: Vampire Nighthawk}
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Vampire Nighthawk}
+   THEM MAIN1  orderTrigger {stack: Vampire Nighthawk < Blood Artist}
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Vampire Nighthawk < Blood Artist}
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   ME   DECLARE_BLOCKERS block their Soul Warden with my Wall of Blossoms
+--- T19 (MINE) life 11-29 | lands 11/5 | me: Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1, Vampire Nighthawk 2/3
+      hand: Faerie Macabre, Highland Ritual, Sacred Helix
+   ME   MAIN1  cast Highland Ritual
+      hand: Faerie Macabre, Sacred Helix
+   ME   MAIN1  cast Sacred Helix → THEM
+      hand: Faerie Macabre
+--- T20 (theirs) life 28-12 | lands 11/5 | me: Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1, Vampire Nighthawk 2/3
+   THEM MAIN1  cast Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Vampire Nighthawk
+--- T21 (MINE) life 24-16 | lands 11/5 | me: Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1, Vampire Nighthawk 2/3, Soul Warden 1/1
+      hand: Faerie Macabre, Valakut, the Molten Pinnacle
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Faerie Macabre
+--- T22 (theirs) life 24-16 | lands 12/5 | me: Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1, Vampire Nighthawk 2/3, Soul Warden 1/1
+   THEM MAIN1  cast Mox Pearl
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Vampire Nighthawk
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   ME   DECLARE_BLOCKERS block their Soul Warden with my Wall of Blossoms
+--- T23 (MINE) life 20-18 | lands 12/5 | me: Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1, Vampire Nighthawk 2/3, Soul Warden 1/1, Mox Pearl
+      hand: Faerie Macabre, Savannah
+   ME   MAIN1  land Savannah
+      hand: Faerie Macabre
+--- T24 (theirs) life 20-18 | lands 13/5 | me: Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1, Vampire Nighthawk 2/3, Soul Warden 1/1, Mox Pearl
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  declineOptional
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Vampire Nighthawk
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   ME   DECLARE_BLOCKERS block their Soul Warden with my Wall of Blossoms
+--- T25 (MINE) life 16-20 | lands 13/6 | me: Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1, Vampire Nighthawk 2/3, Soul Warden 1/1, Mox Pearl
+      hand: Faerie Macabre, Highland Ritual
+--- T26 (theirs) life 16-20 | lands 13/6 | me: Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1, Vampire Nighthawk 2/3, Soul Warden 1/1, Mox Pearl
+   THEM MAIN1  cast Mox Ruby
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Vampire Nighthawk
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   ME   DECLARE_BLOCKERS block their Soul Warden with my Wall of Blossoms
+--- T27 (MINE) life 12-22 | lands 13/6 | me: Wall of Blossoms 0/4 | them: Soul Warden 1/1, Blood Artist 0/1, Blood Artist 0/1, Soul Warden 1/1, Vampire Nighthawk 2/3, Soul Warden 1/1, Mox Pearl, Mox Ruby
+      hand: Faerie Macabre, Highland Ritual, Mox Ruby
+   ME   MAIN1  cast Mox Ruby
+      hand: Faerie Macabre, Highland Ritual
+   ME   MAIN1  activate Highland Ritual#0
+      hand: Faerie Macabre
+   ME   MAIN1  searchPick
+      hand: Faerie Macabre, Stomping Ground
+   ME   MAIN1  land Stomping Ground
+   ME   MAIN1  declineOptional
+   ME   MAIN1  chooseTriggerTargets → their Vampire Nighthawk
+   ME   MAIN1  chooseTriggerTargets → their Blood Artist {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → their Blood Artist {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+      hand: Faerie Macabre
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Blood Artist}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T28 (theirs) life 9-25 | lands 14/6 | me: Wall of Blossoms 0/4, Mox Ruby | them: Soul Warden 1/1, Soul Warden 1/1, Soul Warden 1/1, Mox Pearl, Mox Ruby
+   THEM MAIN1  cast Mox Jet
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   ME   DECLARE_BLOCKERS block their Soul Warden with my Wall of Blossoms
+--- T29 (MINE) life 7-25 | lands 14/6 | me: Wall of Blossoms 0/4, Mox Ruby | them: Soul Warden 1/1, Soul Warden 1/1, Soul Warden 1/1, Mox Pearl, Mox Ruby, Mox Jet
+      hand: Black Lotus, Faerie Macabre
+   ME   MAIN1  cast Black Lotus
+      hand: Faerie Macabre
+--- T30 (theirs) life 7-25 | lands 14/6 | me: Wall of Blossoms 0/4, Mox Ruby, Black Lotus | them: Soul Warden 1/1, Soul Warden 1/1, Soul Warden 1/1, Mox Pearl, Mox Ruby, Mox Jet
+   THEM MAIN1  land Blood Crypt
+   THEM MAIN1  declineOptional
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   THEM DECLARE_ATTACKERS attack their Soul Warden
+   ME   DECLARE_BLOCKERS block their Soul Warden with my Wall of Blossoms
+--- T31 (MINE) life 5-25 | lands 14/7 | me: Wall of Blossoms 0/4, Mox Ruby, Black Lotus | them: Soul Warden 1/1, Soul Warden 1/1, Soul Warden 1/1, Mox Pearl, Mox Ruby, Mox Jet
+      hand: Faerie Macabre, Wood Elves
+   ME   MAIN1  cast Wood Elves
+      hand: Faerie Macabre
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → their Soul Warden
+   ME   MAIN1  chooseTriggerTargets → their Soul Warden {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → their Soul Warden {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T32 (theirs) life 5-28 | lands 15/7 | me: Wall of Blossoms 0/4, Mox Ruby, Black Lotus, Wood Elves 1/1 | them: Mox Pearl, Mox Ruby, Mox Jet
+   THEM MAIN1  land Plateau
+--- T33 (MINE) life 5-28 | lands 15/8 | me: Wall of Blossoms 0/4, Mox Ruby, Black Lotus, Wood Elves 1/1 | them: Mox Pearl, Mox Ruby, Mox Jet
+      hand: Balance, Faerie Macabre
+   ME   DECLARE_ATTACKERS attack my Wood Elves
+--- T34 (theirs) life 5-27 | lands 15/8 | me: Wall of Blossoms 0/4, Mox Ruby, Black Lotus, Wood Elves 1/1 | them: Mox Pearl, Mox Ruby, Mox Jet
+   THEM MAIN1  cast Blood Artist
+--- T35 (MINE) life 5-27 | lands 15/8 | me: Wall of Blossoms 0/4, Mox Ruby, Black Lotus, Wood Elves 1/1 | them: Mox Pearl, Mox Ruby, Mox Jet, Blood Artist 0/1
+      hand: Balance, Faerie Macabre, Valakut, the Molten Pinnacle
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Balance, Faerie Macabre
+   ME   DECLARE_ATTACKERS attack my Wood Elves
+--- T36 (theirs) life 5-26 | lands 16/8 | me: Wall of Blossoms 0/4, Mox Ruby, Black Lotus, Wood Elves 1/1 | them: Mox Pearl, Mox Ruby, Mox Jet, Blood Artist 0/1
+   THEM MAIN1  cast The Usher
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   ME   MAIN1  activate Faerie Macabre#0 → The Usher (in their graveyard), Vampire Nighthawk (in their graveyard) {stack: The Usher}
+      hand: Balance
+--- T37 (MINE) life 5-26 | lands 16/8 | me: Wall of Blossoms 0/4, Mox Ruby, Black Lotus, Wood Elves 1/1 | them: Mox Pearl, Mox Ruby, Mox Jet, Blood Artist 0/1, The Usher 5/5
+      hand: Balance, Sacred Helix
+   ME   DRAW   cast Sacred Helix → their The Usher
+      hand: Balance
+   THEM DRAW   orderTrigger
+   THEM DRAW   chooseTriggerTargets → ME
+   ME   DECLARE_ATTACKERS attack my Wood Elves
+--- T38 (theirs) life 19-28 | lands 16/8 | me: Wall of Blossoms 0/4, Mox Ruby, Black Lotus, Wood Elves 1/1 | them: Mox Pearl, Mox Ruby, Mox Jet, Blood Artist 0/1
+   THEM MAIN1  land Badlands
+--- T39 (MINE) life 19-28 | lands 16/9 | me: Wall of Blossoms 0/4, Mox Ruby, Black Lotus, Wood Elves 1/1 | them: Mox Pearl, Mox Ruby, Mox Jet, Blood Artist 0/1
+      hand: Balance, Burnfallow Exuberant
+   ME   MAIN1  cast Burnfallow Exuberant
+      hand: Balance
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   ME   DECLARE_ATTACKERS attack my Burnfallow Exuberant
+   ME   DECLARE_ATTACKERS attack my Wood Elves
+--- T40 (theirs) life 19-14 | lands 17/9 | me: Wall of Blossoms 0/4, Mox Ruby, Black Lotus, Wood Elves 1/1, Burnfallow Exuberant 1/1 | them: Mox Pearl, Mox Ruby, Mox Jet, Blood Artist 0/1
+   THEM MAIN1  cast Vampire Nighthawk
+--- T41 (MINE) life 19-14 | lands 17/9 | me: Wall of Blossoms 0/4, Mox Ruby, Black Lotus, Wood Elves 1/1, Burnfallow Exuberant 1/1 | them: Mox Pearl, Mox Ruby, Mox Jet, Blood Artist 0/1, Vampire Nighthawk 2/3
+      hand: Balance, Sacred Helix
+   ME   DRAW   activate my Black Lotus#0
+   ME   DRAW   cast Sacred Helix → THEM
+
+===== game 23 bracket16.0:open:marducontrol vs Kester Ravensworth — LOST in 12 turns =====
+--- T0 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+   ME   CLEANUP keepHand
+   THEM CLEANUP keepHand
+--- T1 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+      hand: Earthrise, Hearthspire, Mountain, Mountain, Powerstone Minefield, Savage Twister, Wall of Blossoms
+   ME   MAIN1  land Hearthspire
+      hand: Earthrise, Mountain, Mountain, Powerstone Minefield, Savage Twister, Wall of Blossoms
+--- T2 (theirs) life 20-20 | lands 1/0 | me:  | them: 
+   THEM MAIN1  land Scrubland
+--- T3 (MINE) life 20-20 | lands 1/1 | me:  | them: 
+      hand: Earthrise, Mountain, Mountain, Powerstone Minefield, Savage Twister, Wall of Blossoms, Wood Elves
+   ME   MAIN1  land Mountain
+      hand: Earthrise, Mountain, Powerstone Minefield, Savage Twister, Wall of Blossoms, Wood Elves
+--- T4 (theirs) life 20-20 | lands 2/1 | me:  | them: 
+   THEM MAIN1  land Badlands
+   THEM MAIN1  cast Mox Pearl
+   THEM MAIN1  cast Vindicate → my Mountain
+--- T5 (MINE) life 20-20 | lands 1/2 | me:  | them: Mox Pearl
+      hand: Earthrise, Mountain, Powerstone Minefield, Savage Twister, Valakut, the Molten Pinnacle, Wall of Blossoms, Wood Elves
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Earthrise, Mountain, Powerstone Minefield, Savage Twister, Wall of Blossoms, Wood Elves
+--- T6 (theirs) life 20-20 | lands 2/2 | me:  | them: Mox Pearl
+   THEM MAIN1  land Plateau
+--- T7 (MINE) life 20-20 | lands 2/3 | me:  | them: Mox Pearl
+      hand: Earthrise, Highland Ritual, Mountain, Powerstone Minefield, Savage Twister, Wall of Blossoms, Wood Elves
+   ME   DRAW   activate Highland Ritual#0
+   ME   DRAW   searchPick
+      hand: Earthrise, Mountain, Powerstone Minefield, Savage Twister, Stomping Ground, Wall of Blossoms, Wood Elves
+   ME   MAIN1  land Stomping Ground
+   ME   MAIN1  declineOptional
+--- T8 (theirs) life 20-20 | lands 3/3 | me:  | them: Mox Pearl
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  declineOptional
+--- T9 (MINE) life 20-20 | lands 3/4 | me:  | them: Mox Pearl
+      hand: Earthrise, Mountain, Powerstone Minefield, Savage Twister, Wall of Blossoms, Wood Elves
+      hand: Earthrise, Mountain, Plateau, Powerstone Minefield, Savage Twister, Wall of Blossoms, Wood Elves
+   ME   MAIN1  land Plateau
+      hand: Earthrise, Mountain, Powerstone Minefield, Savage Twister, Wall of Blossoms, Wood Elves
+   ME   MAIN1  cast Wood Elves
+      hand: Earthrise, Mountain, Powerstone Minefield, Savage Twister, Wall of Blossoms
+   ME   MAIN1  searchPick
+   ME   MAIN1  cast Earthrise
+   ME   MAIN1  searchPick
+   ME   MAIN1  searchPick
+--- T10 (theirs) life 20-20 | lands 7/4 | me: Wood Elves 1/1 | them: Mox Pearl
+   THEM MAIN1  cast The Usher
+   THEM MAIN1  land Cairnbrand
+--- T11 (MINE) life 20-20 | lands 7/5 | me: Wood Elves 1/1 | them: Mox Pearl, The Usher 5/5
+      hand: Mountain, Powerstone Minefield, Savage Twister, Wall of Blossoms
+      hand: Mountain, Mountain, Powerstone Minefield, Savage Twister, Wall of Blossoms
+   ME   MAIN1  land Mountain
+      hand: Mountain, Powerstone Minefield, Savage Twister, Wall of Blossoms
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Mountain, Powerstone Minefield, Savage Twister
+      hand: Mountain, Powerstone Minefield, Savage Twister, Wrath of God
+   ME   MAIN1  cast Wrath of God
+      hand: Mountain, Powerstone Minefield, Savage Twister
+--- T12 (theirs) life 14-26 | lands 8/5 | me:  | them: Mox Pearl
+   THEM MAIN1  cast The Usher
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   THEM MAIN1  keepLegend
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   THEM MAIN1  keepLegend
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   THEM MAIN1  keepLegend
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   THEM MAIN1  keepLegend
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+
+===== game 24 bracket16.1:open:marducontrol vs Kester Ravensworth — WON in 17 turns =====
+--- T0 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+   ME   CLEANUP keepHand
+   THEM CLEANUP mulligan
+   THEM CLEANUP keepHand
+   THEM CLEANUP bottomCard
+--- T1 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+      hand: Burnfallow Exuberant, Mox Emerald, Savannah, Taiga, Valakut, the Molten Pinnacle, Valakut, the Molten Pinnacle, Wood Elves
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Burnfallow Exuberant, Mox Emerald, Savannah, Taiga, Valakut, the Molten Pinnacle, Wood Elves
+   ME   MAIN1  cast Mox Emerald
+      hand: Burnfallow Exuberant, Savannah, Taiga, Valakut, the Molten Pinnacle, Wood Elves
+--- T2 (theirs) life 20-20 | lands 1/0 | me: Mox Emerald | them: 
+   THEM MAIN1  land Plateau
+--- T3 (MINE) life 20-20 | lands 1/1 | me: Mox Emerald | them: 
+      hand: Burnfallow Exuberant, Savannah, Taiga, Valakut, the Molten Pinnacle, Wheel of Fortune, Wood Elves
+   ME   MAIN1  land Taiga
+      hand: Burnfallow Exuberant, Savannah, Valakut, the Molten Pinnacle, Wheel of Fortune, Wood Elves
+   ME   MAIN1  cast Burnfallow Exuberant
+      hand: Savannah, Valakut, the Molten Pinnacle, Wheel of Fortune, Wood Elves
+   ME   MAIN1  searchPick
+   ME   DECLARE_ATTACKERS attack my Burnfallow Exuberant
+--- T4 (theirs) life 20-19 | lands 3/1 | me: Mox Emerald, Burnfallow Exuberant 1/1 | them: 
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  acceptOptional
+   THEM MAIN1  cast Shadow Summoning
+--- T5 (MINE) life 20-17 | lands 3/2 | me: Mox Emerald, Burnfallow Exuberant 1/1 | them: Spirit Token 1/1, Spirit Token 1/1
+      hand: Savannah, Valakut, the Molten Pinnacle, Valakut, the Molten Pinnacle, Wheel of Fortune, Wood Elves
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Savannah, Valakut, the Molten Pinnacle, Wheel of Fortune, Wood Elves
+   ME   MAIN1  cast Wood Elves
+      hand: Savannah, Valakut, the Molten Pinnacle, Wheel of Fortune
+   ME   MAIN1  searchPick
+   ME   DECLARE_ATTACKERS attack my Burnfallow Exuberant
+--- T6 (theirs) life 20-16 | lands 5/2 | me: Mox Emerald, Burnfallow Exuberant 1/1, Wood Elves 1/1 | them: Spirit Token 1/1, Spirit Token 1/1
+   THEM MAIN1  land Badlands
+--- T7 (MINE) life 20-16 | lands 5/3 | me: Mox Emerald, Burnfallow Exuberant 1/1, Wood Elves 1/1 | them: Spirit Token 1/1, Spirit Token 1/1
+      hand: Savannah, Tormod's Crypt, Valakut, the Molten Pinnacle, Wheel of Fortune
+   ME   MAIN1  cast Tormod's Crypt
+      hand: Savannah, Valakut, the Molten Pinnacle, Wheel of Fortune
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Savannah, Wheel of Fortune
+   ME   MAIN1  cast Wheel of Fortune
+      hand: Savannah
+      hand: Burnfallow Exuberant, Mountain, Plateau, Plateau, Taiga, Valakut, the Molten Pinnacle, Wall of Blossoms
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Burnfallow Exuberant, Mountain, Plateau, Plateau, Taiga, Valakut, the Molten Pinnacle
+      hand: Burnfallow Exuberant, Mountain, Plateau, Plateau, Taiga, Valakut, the Molten Pinnacle, Wall of Blossoms
+   ME   DECLARE_ATTACKERS attack my Burnfallow Exuberant
+   ME   DECLARE_ATTACKERS attack my Wood Elves
+   THEM DECLARE_BLOCKERS block my Wood Elves with their Spirit Token
+   THEM DECLARE_BLOCKERS block my Burnfallow Exuberant with their Spirit Token
+--- T8 (theirs) life 20-16 | lands 6/3 | me: Mox Emerald, Tormod's Crypt, Wall of Blossoms 0/4 | them: 
+   THEM MAIN1  land Sacred Foundry
+   THEM MAIN1  declineOptional
+   THEM MAIN1  cast Mox Pearl
+   THEM MAIN1  cast Vindicate → my Sacred Foundry
+   THEM MAIN1  cast Mox Jet
+--- T9 (MINE) life 20-16 | lands 5/4 | me: Mox Emerald, Tormod's Crypt, Wall of Blossoms 0/4 | them: Mox Pearl, Mox Jet
+      hand: Burnfallow Exuberant, Mountain, Plateau, Plateau, Sacred Helix, Taiga, Valakut, the Molten Pinnacle, Wall of Blossoms
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Burnfallow Exuberant, Mountain, Plateau, Plateau, Sacred Helix, Taiga, Wall of Blossoms
+   ME   MAIN1  cast Burnfallow Exuberant
+      hand: Mountain, Plateau, Plateau, Sacred Helix, Taiga, Wall of Blossoms
+   ME   MAIN1  searchPick
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Mountain, Plateau, Plateau, Sacred Helix, Taiga
+      hand: Mountain, Plateau, Plateau, Sacred Helix, Shevelport, Taiga
+   ME   DECLARE_ATTACKERS attack my Burnfallow Exuberant
+--- T10 (theirs) life 20-15 | lands 7/4 | me: Mox Emerald, Tormod's Crypt, Wall of Blossoms 0/4, Burnfallow Exuberant 1/1, Wall of Blossoms 0/4 | them: Mox Pearl, Mox Jet
+   THEM MAIN1  cast The Usher
+   THEM MAIN1  chooseTriggerTargets → Wood Elves (in my graveyard)
+--- T11 (MINE) life 18-17 | lands 7/4 | me: Mox Emerald, Tormod's Crypt, Wall of Blossoms 0/4, Burnfallow Exuberant 1/1, Wall of Blossoms 0/4 | them: Mox Pearl, Mox Jet, The Usher 5/5
+      hand: Black Lotus, Mountain, Plateau, Plateau, Sacred Helix, Shevelport, Taiga
+   ME   MAIN1  land Plateau
+      hand: Black Lotus, Mountain, Plateau, Sacred Helix, Shevelport, Taiga
+   ME   MAIN1  cast Black Lotus
+      hand: Mountain, Plateau, Sacred Helix, Shevelport, Taiga
+--- T12 (theirs) life 18-17 | lands 8/4 | me: Mox Emerald, Tormod's Crypt, Wall of Blossoms 0/4, Burnfallow Exuberant 1/1, Wall of Blossoms 0/4, Black Lotus | them: Mox Pearl, Mox Jet, The Usher 5/5
+   THEM MAIN1  cast The Usher
+   THEM MAIN1  keepLegend
+   THEM MAIN1  orderTrigger
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   ME   MAIN1  activate my Black Lotus#0 {stack: The Usher < The Usher < The Usher}
+   ME   MAIN1  cast Sacred Helix → their The Usher {stack: The Usher < The Usher < The Usher}
+      hand: Mountain, Plateau, Shevelport, Taiga
+   ME   MAIN1  activate my Tormod's Crypt#0 → THEM {stack: The Usher < The Usher < The Usher < The Usher}
+--- T13 (MINE) life 24-23 | lands 8/4 | me: Mox Emerald, Wall of Blossoms 0/4, Burnfallow Exuberant 1/1, Wall of Blossoms 0/4 | them: Mox Pearl, Mox Jet
+      hand: Mountain, Plateau, Shevelport, Taiga, Wall of Blossoms
+   ME   MAIN1  land Plateau
+      hand: Mountain, Shevelport, Taiga, Wall of Blossoms
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Mountain, Shevelport, Taiga
+      hand: Balance, Mountain, Shevelport, Taiga
+   ME   DECLARE_ATTACKERS attack my Burnfallow Exuberant
+--- T14 (theirs) life 24-22 | lands 9/4 | me: Mox Emerald, Wall of Blossoms 0/4, Burnfallow Exuberant 1/1, Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Mox Pearl, Mox Jet
+   THEM MAIN1  cast Vampire Nighthawk
+   THEM MAIN1  cast Vindicate → my Burnfallow Exuberant
+--- T15 (MINE) life 24-22 | lands 9/4 | me: Mox Emerald, Wall of Blossoms 0/4, Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Mox Pearl, Mox Jet, Vampire Nighthawk 2/3
+      hand: Balance, Mountain, Sacred Helix, Shevelport, Taiga
+   ME   MAIN1  land Taiga
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → their Vampire Nighthawk {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+      hand: Balance, Mountain, Sacred Helix, Shevelport
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   ME   MAIN1  cast Sacred Helix → THEM
+--- T16 (theirs) life 35-2 | lands 10/4 | me: Mox Emerald, Wall of Blossoms 0/4, Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Mox Pearl, Mox Jet
+   THEM MAIN1  cast Lumen, the Hearth Fire
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms
+   THEM MAIN1  cast Soul Warden
+--- T17 (MINE) life 35-2 | lands 10/4 | me: Mox Emerald, Wall of Blossoms 0/4, Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Mox Pearl, Mox Jet, Lumen, the Hearth Fire 3/4, Soul Warden 1/1
+      hand: Balance, Mountain, Shevelport
+      hand: Balance, Mountain, Mountain, Shevelport
+   ME   MAIN1  land Mountain
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+      hand: Balance, Mountain, Shevelport
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+
+===== game 25 bracket16.2:open:marducontrol vs Kester Ravensworth — WON in 14 turns =====
+--- T0 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+   ME   CLEANUP mulligan
+   ME   CLEANUP keepHand
+   ME   CLEANUP bottomCard
+   THEM CLEANUP mulligan
+   THEM CLEANUP keepHand
+   THEM CLEANUP bottomCard
+--- T1 (theirs) life 20-20 | lands 0/0 | me:  | them: 
+   THEM MAIN1  land Scrubland
+   THEM MAIN1  cast Mox Pearl
+   THEM MAIN1  cast Blood Artist
+--- T2 (MINE) life 20-20 | lands 0/1 | me:  | them: Mox Pearl, Blood Artist 0/1
+      hand: Earthrise, Plateau, Sacred Helix, Savannah, Taiga, Wall of Blossoms, Wall of Blossoms
+   ME   MAIN1  land Taiga
+      hand: Earthrise, Plateau, Sacred Helix, Savannah, Wall of Blossoms, Wall of Blossoms
+--- T3 (theirs) life 20-20 | lands 1/1 | me:  | them: Mox Pearl, Blood Artist 0/1
+   THEM MAIN1  land Badlands
+--- T4 (MINE) life 20-20 | lands 1/2 | me:  | them: Mox Pearl, Blood Artist 0/1
+      hand: Earthrise, Plateau, Powerstone Minefield, Sacred Helix, Savannah, Wall of Blossoms, Wall of Blossoms
+   ME   MAIN1  land Plateau
+      hand: Earthrise, Powerstone Minefield, Sacred Helix, Savannah, Wall of Blossoms, Wall of Blossoms
+   ME   MAIN1  cast Earthrise
+   ME   MAIN1  searchPick
+   ME   MAIN1  searchPick
+--- T5 (theirs) life 20-20 | lands 4/2 | me:  | them: Mox Pearl, Blood Artist 0/1
+   THEM MAIN1  land Plateau
+--- T6 (MINE) life 20-20 | lands 4/3 | me:  | them: Mox Pearl, Blood Artist 0/1
+      hand: Powerstone Minefield, Sacred Helix, Savannah, Wall of Blossoms, Wall of Blossoms
+      hand: Powerstone Minefield, Sacred Helix, Savannah, Stomping Ground, Wall of Blossoms, Wall of Blossoms
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Powerstone Minefield, Sacred Helix, Savannah, Stomping Ground, Wall of Blossoms
+      hand: Powerstone Minefield, Sacred Helix, Savannah, Stomping Ground, Wall of Blossoms, Wheel of Fortune
+   ME   MAIN1  land Stomping Ground
+   ME   MAIN1  acceptOptional
+      hand: Powerstone Minefield, Sacred Helix, Savannah, Wall of Blossoms, Wheel of Fortune
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Powerstone Minefield, Sacred Helix, Savannah, Wheel of Fortune
+      hand: Powerstone Minefield, Sacred Helix, Savannah, Taiga, Wheel of Fortune
+--- T7 (theirs) life 18-20 | lands 5/3 | me: Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Mox Pearl, Blood Artist 0/1
+--- T8 (MINE) life 18-20 | lands 5/3 | me: Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Mox Pearl, Blood Artist 0/1
+      hand: Plateau, Powerstone Minefield, Sacred Helix, Savannah, Taiga, Wheel of Fortune
+   ME   MAIN1  land Plateau
+      hand: Powerstone Minefield, Sacred Helix, Savannah, Taiga, Wheel of Fortune
+   ME   MAIN1  cast Powerstone Minefield
+      hand: Sacred Helix, Savannah, Taiga, Wheel of Fortune
+--- T9 (theirs) life 18-20 | lands 6/3 | me: Wall of Blossoms 0/4, Wall of Blossoms 0/4, Powerstone Minefield | them: Mox Pearl, Blood Artist 0/1
+   THEM MAIN1  cast Vindicate → my Powerstone Minefield
+--- T10 (MINE) life 18-20 | lands 6/3 | me: Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Mox Pearl, Blood Artist 0/1
+      hand: Sacred Helix, Sacred Helix, Savannah, Taiga, Wheel of Fortune
+   ME   MAIN1  land Taiga
+      hand: Sacred Helix, Sacred Helix, Savannah, Wheel of Fortune
+--- T11 (theirs) life 18-20 | lands 7/3 | me: Wall of Blossoms 0/4, Wall of Blossoms 0/4 | them: Mox Pearl, Blood Artist 0/1
+   THEM MAIN1  land Sacred Foundry
+   THEM MAIN1  acceptOptional
+   THEM MAIN1  cast Sacred Helix → my Wall of Blossoms
+   THEM MAIN1  chooseTriggerTargets → ME
+   ME   END    cast Sacred Helix → THEM
+--- T12 (MINE) life 24-17 | lands 7/4 | me: Wall of Blossoms 0/4 | them: Mox Pearl, Blood Artist 0/1
+      hand: Sacred Helix, Savannah, Wheel of Fortune
+      hand: Mountain, Sacred Helix, Savannah, Wheel of Fortune
+   ME   MAIN1  land Mountain
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+      hand: Sacred Helix, Savannah, Wheel of Fortune
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T13 (theirs) life 24-11 | lands 8/4 | me: Wall of Blossoms 0/4 | them: Mox Pearl, Blood Artist 0/1
+   THEM MAIN1  cast The Usher
+   THEM END    orderTrigger
+   THEM END    chooseTriggerTargets → ME
+   ME   END    cast Sacred Helix → THEM {stack: Blood Artist < The Usher}
+--- T14 (MINE) life 29-6 | lands 8/4 | me: Wall of Blossoms 0/4 | them: Mox Pearl, Blood Artist 0/1, The Usher 5/5
+      hand: Savannah, Wheel of Fortune
+      hand: Savannah, Wheel of Fortune, Wood Elves
+   ME   MAIN1  cast Wheel of Fortune
+      hand: Savannah, Wood Elves
+      hand: Balance, Burnfallow Exuberant, Faerie Macabre, Mox Pearl, Powerstone Minefield, Wood Elves, Wood Elves
+   ME   MAIN1  cast Mox Pearl
+      hand: Balance, Burnfallow Exuberant, Faerie Macabre, Powerstone Minefield, Wood Elves, Wood Elves
+   ME   MAIN1  cast Wood Elves
+      hand: Balance, Burnfallow Exuberant, Faerie Macabre, Powerstone Minefield, Wood Elves
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+
+===== game 29 bracket16.0:open:marducontrol vs Kester of the Weir — WON in 15 turns =====
+--- T0 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+   ME   CLEANUP keepHand
+   THEM CLEANUP keepHand
+--- T1 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+      hand: Black Lotus, Mountain, Mox Emerald, Savage Twister, Savannah, Valakut, the Molten Pinnacle, Wheel of Fortune
+   ME   MAIN1  land Valakut, the Molten Pinnacle
+      hand: Black Lotus, Mountain, Mox Emerald, Savage Twister, Savannah, Wheel of Fortune
+   ME   MAIN1  cast Mox Emerald
+      hand: Black Lotus, Mountain, Savage Twister, Savannah, Wheel of Fortune
+   ME   MAIN1  cast Black Lotus
+      hand: Mountain, Savage Twister, Savannah, Wheel of Fortune
+--- T2 (theirs) life 20-20 | lands 1/0 | me: Mox Emerald, Black Lotus | them: 
+   THEM MAIN1  land Plateau
+   THEM MAIN1  cast Soul Warden
+--- T3 (MINE) life 20-20 | lands 1/1 | me: Mox Emerald, Black Lotus | them: Soul Warden 1/1
+      hand: Mountain, Savage Twister, Savage Twister, Savannah, Wheel of Fortune
+   ME   MAIN1  land Mountain
+      hand: Savage Twister, Savage Twister, Savannah, Wheel of Fortune
+   ME   MAIN1  cast Savage Twister
+      hand: Savage Twister, Savannah, Wheel of Fortune
+--- T4 (theirs) life 20-20 | lands 2/1 | me: Mox Emerald, Black Lotus | them: 
+   THEM MAIN1  land Cairnbrand
+   THEM MAIN1  cast Blood Artist
+--- T5 (MINE) life 20-20 | lands 2/2 | me: Mox Emerald, Black Lotus | them: Blood Artist 0/1
+      hand: Earthrise, Savage Twister, Savannah, Wheel of Fortune
+   ME   MAIN1  cast Earthrise
+      hand: Savage Twister, Savannah, Wheel of Fortune
+   ME   MAIN1  searchPick
+   ME   MAIN1  searchPick
+   ME   MAIN1  activate my Black Lotus#0
+   ME   MAIN1  cast Wheel of Fortune
+      hand: Savage Twister, Savannah
+      hand: Highland Ritual, Plateau, Taiga, Taiga, Wall of Blossoms, Wall of Blossoms, Wrath of God
+   ME   MAIN1  land Taiga
+      hand: Highland Ritual, Plateau, Taiga, Wall of Blossoms, Wall of Blossoms, Wrath of God
+   ME   MAIN1  cast Wall of Blossoms
+--- T6 (theirs) life 20-20 | lands 5/2 | me: Mox Emerald, Wall of Blossoms 0/4 | them: Blood Artist 0/1
+   THEM MAIN1  land Badlands
+   THEM MAIN1  cast Blood Artist
+--- T7 (MINE) life 20-20 | lands 5/3 | me: Mox Emerald, Wall of Blossoms 0/4 | them: Blood Artist 0/1, Blood Artist 0/1
+      hand: Highland Ritual, Highland Ritual, Plateau, Taiga, Wall of Blossoms, Wrath of God
+      hand: Highland Ritual, Highland Ritual, Mox Pearl, Plateau, Taiga, Wall of Blossoms, Wrath of God
+   ME   MAIN1  land Plateau
+      hand: Highland Ritual, Highland Ritual, Mox Pearl, Taiga, Wall of Blossoms, Wrath of God
+   ME   MAIN1  cast Mox Pearl
+      hand: Highland Ritual, Highland Ritual, Taiga, Wall of Blossoms, Wrath of God
+   ME   MAIN1  cast Wrath of God
+      hand: Highland Ritual, Highland Ritual, Taiga, Wall of Blossoms
+   THEM MAIN1  chooseTriggerTargets → ME
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Blood Artist}
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Blood Artist < Blood Artist}
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Blood Artist < Blood Artist < Blood Artist}
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Blood Artist < Blood Artist < Blood Artist < Blood Artist}
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Blood Artist < Blood Artist < Blood Artist < Blood Artist < Blood Artist}
+   ME   MAIN1  cast Wall of Blossoms
+      hand: Highland Ritual, Highland Ritual, Taiga
+      hand: Highland Ritual, Highland Ritual, Plateau, Taiga
+--- T8 (theirs) life 14-26 | lands 6/3 | me: Mox Emerald, Mox Pearl, Wall of Blossoms 0/4 | them: 
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  acceptOptional
+   THEM MAIN1  cast Lumen, the Hearth Fire
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wall of Blossoms
+--- T9 (MINE) life 14-24 | lands 6/4 | me: Mox Emerald, Mox Pearl, Wall of Blossoms 0/4 | them: Lumen, the Hearth Fire 3/4
+      hand: Highland Ritual, Highland Ritual, Plateau, Taiga, Wood Elves
+   ME   MAIN1  land Plateau
+      hand: Highland Ritual, Highland Ritual, Taiga, Wood Elves
+   ME   MAIN1  cast Wood Elves
+      hand: Highland Ritual, Highland Ritual, Taiga
+   ME   MAIN1  searchPick
+--- T10 (theirs) life 14-24 | lands 8/4 | me: Mox Emerald, Mox Pearl, Wall of Blossoms 0/4, Wood Elves 1/1 | them: Lumen, the Hearth Fire 3/4
+   THEM MAIN1  cast Vampire Nighthawk
+   THEM MAIN1  activate their Lumen, the Hearth Fire#0 → my Wood Elves {stack: Vampire Nighthawk}
+   THEM MAIN1  land Plateau
+   THEM MAIN1  cast Blood Artist
+   THEM DECLARE_ATTACKERS attack their Wood Elves
+--- T11 (MINE) life 13-25 | lands 8/5 | me: Mox Emerald, Mox Pearl, Wall of Blossoms 0/4, Wood Elves 1/1 | them: Lumen, the Hearth Fire 3/4, Vampire Nighthawk 2/3, Blood Artist 0/1
+      hand: Highland Ritual, Highland Ritual, Taiga, Wrath of God
+   ME   MAIN1  land Taiga
+   ME   MAIN1  chooseTriggerTargets → their Blood Artist
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+      hand: Highland Ritual, Highland Ritual, Wrath of God
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   THEM MAIN1  chooseTriggerTargets → ME
+   ME   MAIN1  cast Wrath of God
+      hand: Highland Ritual, Highland Ritual
+--- T12 (theirs) life 12-20 | lands 9/5 | me: Mox Emerald, Mox Pearl | them: 
+   THEM MAIN1  cast Lumen, the Hearth Fire
+   THEM MAIN1  land Badlands
+   THEM DECLARE_ATTACKERS attack their Lumen, the Hearth Fire
+--- T13 (MINE) life 9-23 | lands 9/6 | me: Mox Emerald, Mox Pearl | them: Lumen, the Hearth Fire 3/4
+      hand: Highland Ritual, Highland Ritual, Savage Twister
+   ME   MAIN1  activate Highland Ritual#0
+      hand: Highland Ritual, Savage Twister
+   ME   MAIN1  searchPick
+      hand: Highland Ritual, Sacred Foundry, Savage Twister
+   ME   MAIN1  cast Savage Twister
+      hand: Highland Ritual, Sacred Foundry
+   ME   MAIN1  land Sacred Foundry
+   ME   MAIN1  declineOptional
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+      hand: Highland Ritual
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T14 (theirs) life 9-14 | lands 10/6 | me: Mox Emerald, Mox Pearl | them: 
+   THEM MAIN1  land Obsidian Observatory
+--- T15 (MINE) life 9-14 | lands 10/7 | me: Mox Emerald, Mox Pearl | them: 
+      hand: Burnfallow Exuberant, Highland Ritual
+   ME   MAIN1  activate Highland Ritual#0
+      hand: Burnfallow Exuberant
+   ME   MAIN1  searchPick
+      hand: Burnfallow Exuberant, Taiga
+   ME   MAIN1  land Taiga
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+      hand: Burnfallow Exuberant
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   ME   MAIN1  cast Burnfallow Exuberant
+      hand: 
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle < Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+
+===== game 30 bracket16.1:open:marducontrol vs Kester of the Weir — WON in 14 turns =====
+--- T0 (MINE) life 20-20 | lands 0/0 | me:  | them: 
+   ME   CLEANUP keepHand
+   THEM CLEANUP keepHand
+--- T1 (theirs) life 20-20 | lands 0/0 | me:  | them: 
+      hand: Black Lotus, Burnfallow Exuberant, Faerie Macabre, Highland Ritual, Mountain, Plateau, Wrath of God
+   THEM MAIN1  land Plateau
+   THEM MAIN1  cast Black Lotus
+   THEM MAIN1  activate their Black Lotus#0
+   THEM MAIN1  cast Vampire Nighthawk
+--- T2 (MINE) life 20-20 | lands 0/1 | me:  | them: Vampire Nighthawk 2/3
+      hand: Black Lotus, Burnfallow Exuberant, Faerie Macabre, Highland Ritual, Highland Ritual, Mountain, Plateau, Wrath of God
+   ME   MAIN1  land Plateau
+      hand: Black Lotus, Burnfallow Exuberant, Faerie Macabre, Highland Ritual, Highland Ritual, Mountain, Wrath of God
+   ME   MAIN1  cast Black Lotus
+      hand: Burnfallow Exuberant, Faerie Macabre, Highland Ritual, Highland Ritual, Mountain, Wrath of God
+   ME   MAIN1  activate my Black Lotus#0
+   ME   MAIN1  cast Burnfallow Exuberant
+      hand: Faerie Macabre, Highland Ritual, Highland Ritual, Mountain, Wrath of God
+   ME   MAIN1  searchPick
+   ME   MAIN1  activate Highland Ritual#0
+      hand: Faerie Macabre, Highland Ritual, Mountain, Wrath of God
+   ME   MAIN1  searchPick
+      hand: Faerie Macabre, Highland Ritual, Mountain, Taiga, Wrath of God
+--- T3 (theirs) life 20-20 | lands 2/1 | me: Burnfallow Exuberant 1/1 | them: Vampire Nighthawk 2/3
+   THEM MAIN1  land Scrubland
+   THEM DECLARE_ATTACKERS attack their Vampire Nighthawk
+--- T4 (MINE) life 18-22 | lands 2/2 | me: Burnfallow Exuberant 1/1 | them: Vampire Nighthawk 2/3
+      hand: Faerie Macabre, Highland Ritual, Mountain, Taiga, Wheel of Fortune, Wrath of God
+   ME   MAIN1  land Taiga
+      hand: Faerie Macabre, Highland Ritual, Mountain, Wheel of Fortune, Wrath of God
+--- T5 (theirs) life 18-22 | lands 3/2 | me: Burnfallow Exuberant 1/1 | them: Vampire Nighthawk 2/3
+   THEM MAIN1  cast Soul Warden
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  declineOptional
+   THEM DECLARE_ATTACKERS attack their Vampire Nighthawk
+--- T6 (MINE) life 16-24 | lands 3/3 | me: Burnfallow Exuberant 1/1 | them: Vampire Nighthawk 2/3, Soul Warden 1/1
+      hand: Faerie Macabre, Highland Ritual, Mountain, Tormod's Crypt, Wheel of Fortune, Wrath of God
+   ME   MAIN1  land Mountain
+      hand: Faerie Macabre, Highland Ritual, Tormod's Crypt, Wheel of Fortune, Wrath of God
+   ME   MAIN1  cast Tormod's Crypt
+      hand: Faerie Macabre, Highland Ritual, Wheel of Fortune, Wrath of God
+   ME   DECLARE_ATTACKERS attack my Burnfallow Exuberant
+   THEM DECLARE_BLOCKERS block my Burnfallow Exuberant with their Soul Warden
+   ME   MAIN2  cast Wrath of God
+      hand: Faerie Macabre, Highland Ritual, Wheel of Fortune
+--- T7 (theirs) life 16-24 | lands 4/3 | me: Tormod's Crypt | them: 
+   THEM MAIN1  land Godless Shrine
+   THEM MAIN1  acceptOptional
+   ME   END    activate Faerie Macabre#0 → Soul Warden (in their graveyard), Vampire Nighthawk (in their graveyard)
+      hand: Highland Ritual, Wheel of Fortune
+--- T8 (MINE) life 16-22 | lands 4/4 | me: Tormod's Crypt | them: 
+      hand: Highland Ritual, Highland Ritual, Wheel of Fortune
+   ME   MAIN1  activate Highland Ritual#0
+      hand: Highland Ritual, Wheel of Fortune
+   ME   MAIN1  searchPick
+      hand: Highland Ritual, Taiga, Wheel of Fortune
+   ME   MAIN1  land Taiga
+      hand: Highland Ritual, Wheel of Fortune
+   ME   MAIN1  cast Wheel of Fortune
+      hand: Highland Ritual
+      hand: Burnfallow Exuberant, Burnfallow Exuberant, Earthrise, Faerie Macabre, Powerstone Minefield, Sacred Helix, Wood Elves
+--- T9 (theirs) life 16-22 | lands 5/4 | me: Tormod's Crypt | them: 
+   THEM MAIN1  cast Vampire Nighthawk
+   THEM MAIN1  land Badlands
+   THEM MAIN1  cast Demonic Tutor
+   THEM MAIN1  searchPick
+--- T10 (MINE) life 16-22 | lands 5/5 | me: Tormod's Crypt | them: Vampire Nighthawk 2/3
+      hand: Burnfallow Exuberant, Burnfallow Exuberant, Earthrise, Faerie Macabre, Powerstone Minefield, Sacred Helix, Sacred Helix, Wood Elves
+   ME   MAIN1  cast Earthrise
+      hand: Burnfallow Exuberant, Burnfallow Exuberant, Faerie Macabre, Powerstone Minefield, Sacred Helix, Sacred Helix, Wood Elves
+   ME   MAIN1  searchPick
+   ME   MAIN1  searchPick
+   ME   MAIN1  cast Wood Elves
+      hand: Burnfallow Exuberant, Burnfallow Exuberant, Faerie Macabre, Powerstone Minefield, Sacred Helix, Sacred Helix
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → their Vampire Nighthawk
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T11 (theirs) life 16-19 | lands 8/5 | me: Tormod's Crypt, Wood Elves 1/1 | them: 
+   THEM UPKEEP cast Swords to Plowshares → my Wood Elves
+   THEM MAIN1  cast Vampire Nighthawk
+   THEM MAIN1  land Blood Crypt
+   THEM MAIN1  acceptOptional
+   THEM MAIN1  cast Blood Artist
+--- T12 (MINE) life 17-17 | lands 8/6 | me: Tormod's Crypt | them: Vampire Nighthawk 2/3, Blood Artist 0/1
+      hand: Burnfallow Exuberant, Burnfallow Exuberant, Faerie Macabre, Plateau, Powerstone Minefield, Sacred Helix, Sacred Helix
+   ME   MAIN1  land Plateau
+   ME   MAIN1  chooseTriggerTargets → their Vampire Nighthawk
+   ME   MAIN1  chooseTriggerTargets → their Blood Artist {stack: Valakut, the Molten Pinnacle}
+      hand: Burnfallow Exuberant, Burnfallow Exuberant, Faerie Macabre, Powerstone Minefield, Sacred Helix, Sacred Helix
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   THEM MAIN1  chooseTriggerTargets → ME {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   ME   MAIN1  cast Powerstone Minefield
+      hand: Burnfallow Exuberant, Burnfallow Exuberant, Faerie Macabre, Sacred Helix, Sacred Helix
+   ME   MAIN1  cast Burnfallow Exuberant
+      hand: Burnfallow Exuberant, Faerie Macabre, Sacred Helix, Sacred Helix
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+   ME   MAIN1  cast Burnfallow Exuberant
+      hand: Faerie Macabre, Sacred Helix, Sacred Helix
+   ME   MAIN1  searchPick
+   ME   MAIN1  chooseTriggerTargets → THEM
+   ME   MAIN1  chooseTriggerTargets → THEM {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional {stack: Valakut, the Molten Pinnacle}
+   ME   MAIN1  acceptOptional
+--- T13 (theirs) life 16-6 | lands 11/6 | me: Tormod's Crypt, Powerstone Minefield, Burnfallow Exuberant 1/1, Burnfallow Exuberant 1/1 | them: 
+   THEM MAIN1  cast The Usher
+   THEM MAIN1  chooseTriggerTargets → The Usher (in their graveyard)
+   ME   MAIN1  activate my Tormod's Crypt#0 → THEM {stack: The Usher}
+   THEM MAIN1  land Sacred Foundry
+   THEM MAIN1  declineOptional
+   THEM MAIN1  cast Mox Pearl
+--- T14 (MINE) life 16-6 | lands 11/7 | me: Powerstone Minefield, Burnfallow Exuberant 1/1, Burnfallow Exuberant 1/1 | them: The Usher 5/5, Mox Pearl
+      hand: Burnfallow Exuberant, Faerie Macabre, Sacred Helix, Sacred Helix
+   ME   MAIN1  cast Sacred Helix → THEM
+      hand: Burnfallow Exuberant, Faerie Macabre, Sacred Helix

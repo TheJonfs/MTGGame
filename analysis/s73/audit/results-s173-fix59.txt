@@ -1,0 +1,6 @@
+## bodies:stampede terror (centaur_courser:4:daunting_terror) seed 173
+matches 33.2 -> 39.2  +5.9 +/- 2.4   | game one 38.5 -> 42.4  +3.9 +/- 1.7   | later 38.5 -> 42.8  +4.3 +/- 2.8 (unpaired)   | n 1600
+by opponent: dragons 41->51 (+11), aerie 39->48 (+9), mbclio 27->36 (+9), emeraldsnakes 30->39 (+9), muster 31->38 (+7), marducontrol 18->25 (+7), reaperclio 14->19 (+6), rabble 32->37 (+5), wurmspeaker 69->69 (+0), bantsnake 32->29 (-3)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +5.9, lower bound +3.6)
+

@@ -1,0 +1,5 @@
+# the four rows the sideboard builder confounded (concern 59), re-run after the fix with fresh base arms (AUDIT_SUFFIX=-fix59)
+nothing-dear br reviv gravedigger:2:revivalist;reassembling_skeleton:2:revivalist
+bodies stampede terror centaur_courser:4:daunting_terror
+bodies stampede pouncer centaur_courser:4:domain_pouncer
+esper mbc command diabolic_edict:3:command_of_the_depths
