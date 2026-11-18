@@ -80,6 +80,39 @@ Things a fresh session might otherwise rediscover slowly:
 - **Verification track record, for motivation**: principle 9 (Scryfall) caught 2 planner card errors in S2 and 1 uncastable card in S3's brief; principle 10 (CR citations) caught rules errors in S3 and S4 briefs; the S6 brief's registry-staleness warning caught my own silent no-op edit. Run the checks even when they feel ceremonial — every session where they existed, they fired.
 - **Session rhythm that has worked**: read protocol docs → apply planner appends verbatim (verify!) → Scryfall-verify any card batch → implement → **fuzz before fixtures** → fixtures → registries with asserted edits → handoff with Concerns as the centerpiece → commit and push. Deviations from briefs are fine when grounded; log every one.
 
+## Standing procedures (cold-start checklist, kept current — post-S72, 2026-11-18)
+
+The per-session lessons below are history; this section is what a fresh session needs on day one. Update it in place when a procedure changes.
+
+**Chris's standing rules**
+- Commit only when asked; push only when asked, and only after `pnpm build:web` (a push to `main` deploys to Vercel). Commit messages end with the Co-Authored-By line.
+- Stage **named paths**, never `git add -A <dir>`. Before committing, `git status --porcelain -uall | grep '^??' | grep -v docs/debug_logs` must list nothing you meant to ship (a new engine source file nearly missed a commit post-S72). Before pushing, `git diff --stat origin/main HEAD -- docs/debug_logs` must be empty.
+- `analysis/` is gitignored: add study READMEs and logs with `git add -f`. `analysis/runs/` (rating shards) stays local.
+- Every AI change (heuristic-agent, view-sim, a book) gets `pnpm ladder`, **run alone**, logged to `analysis/sNN/ladder-<tag>.log` and diffed against the previous log. A rating-table change is not an AI change.
+- Never edit source or run tests while a sim runs — the sims import the live tree.
+- `handoff.md` is a running file between sessions: work after a session goes in a "Since Session NN" section near the top, new concerns continue the numbering, and the memory index records the commit.
+
+**Adding a card** (the five post-S72 cards are the latest worked example; commit e363fd0)
+1. Scryfall-verify a real card; CR-verify any rules reading (the CR is not in the repo: download the current text from magic.wizards.com/en/rules into the scratchpad, grep it, and cite its date — post-S72 used the 2026-11-06 CR).
+2. The def in `data/cards/` (custom: `text` on the def; real: `pnpm art:fetch`, oracle text from `data/art/real/oracle.json`). New vocabulary: `cards/src/types.ts` + `validate.ts` + `resolvers.ts`, the engine, an R-entry in the rules registry.
+3. Pins that move with every new card: the pool size in `cards/src/loader.test.ts`; the tier tally in `world/src/world.test.ts`; the `unscored` list in `world/src/s62-peasant-event.test.ts` (a new Peasant-legal card is unscored until `rating:format --format peasant --write`); `pnpm reference` regenerates `docs/reference/cards.md` (a test checks it is in sync).
+4. **Fuzz first** (`packages/sim/src/sNN-<card>-fuzz.test.ts`), then fixtures (`packages/engine/test/`), then a pool-registry row.
+5. If the AI misplays it, a book in `agents/src/book-of-shame.test.ts` ("book of shame NNN" — the highest number **is** the pilot version that rating runs stamp; ADR-150 forbids pooling runs across pilots), then the ladder.
+6. A tuning study when Chris asks: `open:rr --only <list> --swap <list>:<from>:<n>:<to>`, card variants as `card~key=value` (`world/src/card-variants.ts`), 160 games a pairing, sharded `--shard i/6` then `--merge`. **The merge keeps only per-pairing tables**; keep the shard files if per-game results matter.
+
+**Harness facts that cost time** (engine fixtures): scripted actions run strictly in order; a player with no instant-speed play is never asked for priority, so don't script its passes; a single legal target is chosen automatically; `runStep` empties the mana pool at the phase's end; a granted ability sits after the card's printed abilities (index 1 behind one static).
+
+**Art pass** (ADR-052): subject files `docs/art/subjects/card-<slug>-N.md` with a locked descriptor; render with `.claude/skills/gemini-image/render.py --entity-file … --aspect 1:1 --no-style`, **one subject at a time** (see Post-S72 below); Chris picks; crop to 5:4 into `assets/generated/card-art/`, his printed face to `assets/generated/printed/`, copies into `packages/ui/public/custom-art/` and `printed-art/`; verdicts and rows in `assets/generated/MANIFEST.md`; the def's `art.asset` and `printedAsset`. Check the crop on a tall subject (Nyxathid's head was clipped by a centre crop).
+
+**The rating rebuild** (`data/convocation/card-rating.json`; the post-S72 run took about 35 minutes for the four runs after Peasant):
+1. Peasant: `pnpm rating:format --format peasant --write` (writes the `peasant` columns into the live table).
+2. The four runs, sharded: `zsh analysis/s72/rating-rebuild.sh` (authored lists, Sealed, Sealed with `--noise 0.4`, draft; shards in `analysis/runs/`).
+3. `pnpm rating:build <authored shards> --prefixes <sealed,noise> --limited <sealed,noise,draft> --candidate pNNN` writes `card-rating-pNNN.json` and its report; **it does not carry the Peasant columns** — merge them from the live table.
+4. Compare with the live table before adopting. **The Limited runs build and draft by the current table**, so a card rated low goes unplayed and reads its tier mean: carry the old numbers for anything seen < 100 now and ≥ 500 before, marked `limitedCarried` (handoff concern 54).
+5. Adopt (bump `version`, extend `_comment`), replace `card-rating-report.md`, delete the candidate. Expect rating-driven pins to move: the builder's sideboards and guide-shape thresholds (`world/src/sideboard-s56.test.ts`).
+
+**Long jobs**: run with `run_in_background` and a waiter that greps for a done marker. A failure grep must not match card names (`error` matches "Daunting Terror"): use `^(Error|TypeError|RangeError)|    at `. Never put `head` on the output of a command an `until grep` loop is waiting on. Write Python helpers to a file with a `# -*- coding: utf-8 -*-` header rather than a heredoc with non-ASCII text, and assert every scripted doc replacement.
+
 ## S7 lessons (sane agent, gallery, riders)
 
 - **GameView is thinner than policy wants.** Two rule-5/rule-1 inputs aren't in the view: mulligan count (London always shows 7 cards) and combat state (who's attacking/blocked). SanePolicyAgent carries per-instance memory for both (`mulligansTaken`, `blockedAttackers` keyed by `view.turn`). The turn-key matters: single-option requests are auto-taken (ADR-014), so "reset on next non-block request" can silently span turns. If M4 wants pure functions, the view needs `mulligans` and `combat` fields — escalated in the S7 handoff.

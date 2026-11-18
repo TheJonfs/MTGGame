@@ -19,6 +19,7 @@ The guiding constraint: *the pool is designed to the engine, not the engine to t
 At session start, read in this order:
 1. This file.
 2. `handoff.md` — state of the world at the end of the last session.
+   Then the **Standing procedures** section near the top of `docs/implementer-notes.md` — Chris's standing rules and the checklists for adding a card, art passes and the rating rebuild.
 3. Your session brief: `docs/briefs/session-NN-brief.md` (highest-numbered unless Chris says otherwise).
 4. Whatever the brief tells you to read (typically `docs/engine-design.md`, `docs/data-model.md`, and named registry entries).
 
