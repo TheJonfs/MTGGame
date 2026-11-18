@@ -6,6 +6,7 @@
    "name": "the Usher's Coin",
    "title": "Mardu Aristocrats (W B R)",
    "archetype": "midrange",
+   "poolAt": 260,
    "cards": {
     "Badlands": 4,
     "Scrubland": 4,
@@ -38,6 +39,7 @@
    "name": "the Undertow",
    "title": "Simic Mill (U G)",
    "archetype": "control",
+   "poolAt": 260,
    "cards": {
     "Tropical Island": 4,
     "Breeding Pool": 4,
@@ -68,6 +70,7 @@
    "name": "the Larder",
    "title": "Four-Colour Reanimator (W U B G)",
    "archetype": "midrange",
+   "poolAt": 260,
    "cards": {
     "Bayou": 4,
     "Scrubland": 4,
@@ -104,6 +107,7 @@
    "name": "the Muster",
    "title": "Boros Weenie (W R)",
    "archetype": "aggro",
+   "poolAt": 260,
    "cards": {
     "Plateau": 4,
     "Sacred Foundry": 4,
@@ -130,6 +134,7 @@
    "name": "the Warband (Chris's list to test against the Muster)",
    "title": "Boros Goblins (R w)",
    "archetype": "aggro",
+   "poolAt": 260,
    "cards": {
     "Plateau": 4,
     "Sacred Foundry": 4,
@@ -156,6 +161,7 @@
    "name": "the Tally",
    "title": "Izzet Sparks (U R)",
    "archetype": "aggro",
+   "poolAt": 260,
    "cards": {
     "Volcanic Island": 4,
     "Steam Vents": 4,
@@ -184,6 +190,7 @@
    "name": "the Locks",
    "title": "Esper Control (W U B)",
    "archetype": "control",
+   "poolAt": 260,
    "cards": {
     "Tundra": 4,
     "Underground Sea": 4,
@@ -217,6 +224,7 @@
    "name": "the Wurmspeaker",
    "title": "Mono-Green Ramp",
    "archetype": "midrange",
+   "poolAt": 260,
    "cards": {
     "Forest": 20,
     "Tranquil Thicket": 2,
@@ -240,6 +248,7 @@
    "name": "the Ford",
    "title": "Naya Lifegain (R W G)",
    "archetype": "midrange",
+   "poolAt": 260,
    "cards": {
     "Plateau": 4,
     "Savannah": 4,
@@ -271,6 +280,7 @@
    "name": "the Enchantress",
    "title": "Selesnya Auras (G W)",
    "archetype": "aggro",
+   "poolAt": 260,
    "cards": {
     "Savannah": 4,
     "Temple Garden": 4,
@@ -298,6 +308,7 @@
    "name": "the Levy",
    "title": "Orzhov Landfall (W B)",
    "archetype": "midrange",
+   "poolAt": 260,
    "cards": {
     "Scrubland": 4,
     "Godless Shrine": 4,

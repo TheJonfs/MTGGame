@@ -472,6 +472,7 @@
    "title": "Jund Aristocrats (B R G)",
    "archetype": "midrange",
    "source": "Chris's Convocation, seed 418014, 2026-10-03 — 16–0 in the Swiss and the Umbel (19–0), the Open on both Constructed days",
+   "poolAt": 260,
    "decklist": [
     {
      "cardId": "the_reaper",
@@ -593,6 +594,7 @@
    "title": "Sultai Control (U B G)",
    "archetype": "control",
    "source": "Chris's Convocation, seed 186842, 2026-10-03 — 16–0 in the Swiss and the Umbel (19–0; 32–3 in Swiss games), the Open on both Constructed days",
+   "poolAt": 260,
    "decklist": [
     {
      "cardId": "clio_lady_of_the_depths",
@@ -742,6 +744,7 @@
    "title": "Mardu Aristocrats, the value build (W B R)",
    "archetype": "midrange",
    "source": "Chris's Convocation, seed 798567, 2026-10-04 — 15–1 in the Swiss and the Umbel (18–1; the loss a misclick mid-loop), the Open on both Constructed days. A variation on the Mardu Aristocrats macro-archetype (the Loop's family): the Usher / Restoration Angel / Altar of Dementia finish in a removal-and-value shell.",
+   "poolAt": 260,
    "decklist": [
     {
      "cardId": "lumen_the_hearth_fire",
@@ -883,6 +886,7 @@
    "title": "Usher Combo (B w r)",
    "archetype": "combo",
    "source": "Chris's Open, seed 189758, 2026-10-05 — 5–0 and the Umbel. Buried Alive into the Usher's loop, the Jet Witch as its engine; \"the Pall\" is the planner's placeholder name until Chris names it (S55).",
+   "poolAt": 262,
    "decklist": [
     {
      "cardId": "the_usher",
@@ -1051,6 +1055,7 @@
    "title": "Izzet Spells (U R)",
    "archetype": "midrange",
    "source": "Chris's Open, seed 531727, 2026-10-05 — 5–0 and the Umbel. Counterspells and burn behind Tidewalls, with Guttersnipe, Young Pyromancer and Odile paying for every spell; \"the Kiln\" is a working name until Chris names it. Tuned 2026-10-06 for the AI's hands (Chris: \"something better tuned to perform well when it becomes an AI-piloted deck\"): −2 Experimental Overload −2 Blaze −3 Arcane Collector, +4 Control Magic +3 Flametongue Kavu (46.8% → 57.8% against the field over 1,600 paired games); the list as Chris played it is kept under `registered`.",
+   "poolAt": 262,
    "decklist": [
     {
      "cardId": "time_walk",
@@ -1286,6 +1291,7 @@
    "title": "Mono-Red Burn (R)",
    "archetype": "aggro",
    "source": "Chris's Open, seed 35015, 2026-10-07 — 5–0 in the Swiss and 3–0 in the Umbel (8–0), Normal. A working name until Chris names it.",
+   "poolAt": 263,
    "decklist": [
     {
      "cardId": "mox_ruby",
@@ -1393,6 +1399,7 @@
    "title": "Dimir Control (U B)",
    "archetype": "control",
    "source": "Chris's Open, seed 350754, 2026-10-08 — 5–0 in the Swiss and the Umbel won, Normal. Offered as the replacement for the Undertow. A working name until Chris names it.",
+   "poolAt": 263,
    "decklist": [
     {
      "cardId": "library_of_alexandria",
@@ -1528,6 +1535,7 @@
    "title": "Mono-Red Goblins (R)",
    "archetype": "aggro",
    "source": "Built in simulation by paired swaps (2026-10-08: about 45 trials in the Cinder's seat) and played by Chris in an Open, seed 577748 — 4–1 in the Swiss, a quarter-final won, a semi-final lost; with his Mox Sapphire for the Pearl and his fifteen as read from his recorded games. A working name until Chris names it.",
+   "poolAt": 263,
    "decklist": [
     {
      "cardId": "cairnbrand",
@@ -1631,6 +1639,7 @@
    "title": "Four-Colour Countersnake (G U w b)",
    "archetype": "midrange",
    "source": "Chris's Open, seed 851238, 2026-10-09 — 5–0 in the Swiss and the Umbel won (8–0 in matches, 16–2 in games), Normal. Flash creatures and counterspells played at the opponent's end step: Reaper's Forerunner, Restoration Angel, Mystic Snake, the Sower, Clio. Chris's name for it. Piloted as midrange: the AI plays it better so (57.8% against 54.3% as control over 1,500 paired games).",
+   "poolAt": 264,
    "decklist": [
     {
      "cardId": "bayou",
@@ -1782,6 +1791,7 @@
    "title": "Jund Snake Control (G R b)",
    "archetype": "midrange",
    "source": "Chris's Open, seed 611853, 2026-10-10 — 5–0 in the Swiss, a quarter-final lost to the Kiln. Deathtouch Snakes and Walls hold the ground for Flametongue Kavu, the sweepers and the Reaper; the Manaba and Rage Cobra beside them; four Reaper's Forerunners for the graveyard decks. Built over three runs against the Rabble (ADR-171: the Rabble at 71 in matches). Chris's name for it.",
+   "poolAt": 265,
    "decklist": [
     {
      "cardId": "manaba",
@@ -1905,6 +1915,7 @@
    "title": "Naya Minefield Control (R W G)",
    "archetype": "control",
    "source": "The planner's overhaul of the Ford (2026-10-10), promoted by Chris in its place: Powerstone Minefield and the Fordkeeper behind Walls, Kavus and sweepers, Sacred Helix to close. Measured in the Ford's seat before it was registered; mana creatures, tried at Chris's suggestion, measured worse. The planner's name.",
+   "poolAt": 265,
    "decklist": [
     {
      "cardId": "plateau",
@@ -2044,6 +2055,7 @@
    "title": "Four-Colour Snake Control (G B u r)",
    "archetype": "midrange",
    "source": "Chris's full Convocation, seed 858052, 2026-10-10 — 10–0 in the Constructed Swiss (5–1 in the drafts), a quarter-final won, a semi-final lost to the Rabble. Reaper Control with blue for Clio, Mystic Snake and the Reeve: the Snakes and Walls hold the ground, Clio shrinks what comes, the Manaba and Birds cast it all. Brought in by Chris as the field's new top target (74 in matches before it joined: over ADR-171's line, knowingly). Chris's name for it.",
+   "poolAt": 265,
    "decklist": [
     {
      "cardId": "reapers_forerunner",
@@ -2183,6 +2195,7 @@
    "title": "Usher Control (W B R)",
    "archetype": "midrange",
    "source": "Chris's Convocation, seed 230126, 2026-10-11 — 8–0 in matches (one game lost), then 5–0 in matches against Reaper Clio in the single match. Removal for every size of creature (Vindicate, the Purge, Swords, a Helix), the Jet Witch paid for by Soul Wardens, Nighthawks and Lumen's lifelink, and a second Usher returning the first to end the game. As registered here the three Ushers are in the sixty (his revision after the run: −1 Lumen, −1 Restoration Angel, −1 Jet Witch) and the fifteen holds a Helix and two Kavus in their place. 63 in matches in the AI's hands before it joined. Revised 2026-10-12 (Chris, after playing the Rabble): two Wraths for two Purges in the sixty, the fifteen and its guide rewritten — against small creatures every spot removal leaves for the sweepers and the Kavus; against a deck of small and large creatures (Reaper Clio) the Warden and Artist package leaves instead. 70 in matches in the AI's hands in its own seat (61 before); 56 against Reaper Clio and 57 against the Rabble at 900 matches each. Chris's name for it.",
+   "poolAt": 265,
    "decklist": [
     {
      "cardId": "lumen_the_hearth_fire",
@@ -2322,6 +2335,7 @@
    "title": "Snake Keeper (G R, Moxen)",
    "archetype": "midrange",
    "source": "Chris's Convocations, 2026-10-16/17 — the Snake Keeper list 8–0 in matches (16–1 in games), then his V2 13–1 in Constructed matches: Manaba and Rage Cobra as the engine, the Emerald Keeper off Manaba mana as the finisher (Clio is beaten by never letting power go negative), Reaper's Forerunner, Kavus, Harmonize and Gaean Wurms. As registered (his V5, after the pilot's study, 160 matches a pairing against the field): V2 less three Sharpshooters and a Volcanic Island, plus a Harmonize, a Gaean Wurm, a Bayou and the fourth Kavu — 65.8 in matches in the AI's hands (V2 59.8; the first list as played 48.2, with Kavus for its Elders 59.6, and Harmonize for its Armors 65.6). His fifteen (Airship Crash, Foxglove Dose, Savage Twister, Tormod's Crypt, the big Wurms, Baru, two Walls of Razors), no guide yet. Chris's name for it.",
+   "poolAt": 285,
    "decklist": [
     {
      "cardId": "black_lotus",
@@ -2465,6 +2479,7 @@
    "title": "Valakut Ramp (R g, Moxen)",
    "archetype": "midrange",
    "source": "Chris's Convocation, 2026-10-31 — 8–0 in matches, 16–3 in games, the Swiss swept and three three-game matches in the Top Eight against the Warband and two Mardu Controls: Burnfallow Exuberant, Highland Ritual's Mountaincycling, Earthrise and the Moxen into Valakut and Drakuseth. As registered (his cuts from the 16–3): Arc Mage and Furnace Whelp for two Foxglove Doses, a Blaze for the fourth Kavu (chosen by trial, 150 matches a pairing: Kavu 63.0 ± 2.1 in matches in the AI's hands, Siege-Gang 60.1, Bolt 59.5, Char 59.2, Rage Cobra 58.8; the list as played 55.6). The fifteen: his, two Doses gone to the main for two Rage Cobras against lifegain. His swaps read as a guide measured 57.8 against the rules' 63.0, so it sideboards by the rules.",
+   "poolAt": 303,
    "decklist": [
     {
      "cardId": "burnfallow",
@@ -2616,6 +2631,7 @@
    "title": "Naya Valakut (R W G, Moxen)",
    "archetype": "control",
    "source": "Post-S70 (Chris, 2026-11-03): built from his Convocation (Sealed/Open/Sealed/Open, Normal) — 15-1 and Champion of the Umbel. Powerstone Minefields and Walls of Blossoms hold the ground, Wrath of God and Savage Twister reset it, Valakut and Sacred Helix win; Wood Elves, Burnfallow Exuberant, Earthrise and Highland Ritual find the Mountains. His 75 as played. A working name. No guide.",
+   "poolAt": 304,
    "decklist": [
     {
      "cardId": "powerstone_minefield",
@@ -2751,6 +2767,7 @@
    "title": "Four-Colour Clio (W U B r, Moxen)",
    "archetype": "control",
    "source": "Post-S71 (Chris, 2026-11-05): built from his Open (5–0, then the Top 8 won; 16–2 in games). Clio, Lumen and the Restoration Angels hold the board; Confession and the Jet Witch draw; Vindicate, Protocol and the Meathook Massacre answer; Wrath and Pyroclasm from the fifteen. A four-colour deck without green. The quarter-final's second game: Confession at a 9/10 Rage Cobra from 11 life, ten cards, the Wrath — won from 2. His 75 as played. A working name. No guide.",
+   "poolAt": 305,
    "decklist": [
     {
      "cardId": "protocol",
@@ -2918,6 +2935,7 @@
    "title": "Five-Colour Earthrise (W U B R G, Moxen)",
    "archetype": "control",
    "source": "Post-S71 (Chris, 2026-11-06): built from his Open (4–1 in the Swiss, losing round 5 to Mardu Control; then the Top 8 won over the Pinnacle, the Rabble and the Pall; 15–4 in games). The first five-colour list. The Minefield's Powerstone Minefield + Sacred Helix + Experimental Overload win; Earthrise fetches two High Grounds (Nightbower, Cairnbrand, Hearthspire, Wrackroot, Volmaw, Tallyflame Court, Shevelport) and Cairnbrand loops Reaper's Forerunner; Overload returns Time Walk and Sacred Helix. Pre-boarded against the Usher loops (Reaper's Forerunner, Vigil Keeper) with Savage Twister and the Meathook Massacre to sweep beside the Minefields. In his hands: Sacred Helix cast 22 times, Hearthspire activated 23, Nightbower 14. His 75 as played. A working name. No guide.",
+   "poolAt": 305,
    "decklist": [
     {
      "cardId": "badlands",
@@ -3089,6 +3107,7 @@
    "title": "Five-Colour Land Destruction (W U B R G, Moxen)",
    "archetype": "control",
    "source": "Post-S71a (Chris, 2026-11-13): built from his Open (seed 558517, Normal) — 5–0 in the Swiss (the Writ 2–1, Mardu Control, the Tollgate, the Minefield, the Pinnacle 2–0), a quarter-final won over the Muster 2–0, the semi-final lost to the Rabble 0–2 (turns 7 and 16); 6–1 in matches, 12–3 in games. The first list built on the hybrid cycle: Terrain Collapse and Molten Rain with Vindicate at the lands, Domain Pouncer as the body, Clio and Experimental Overload, the Minefield–Helix finish, the Power and seven High Grounds. Wrath of God, the Meathook Massacre, the Jet Witch and Tormod's Crypt in the fifteen. His 75 as played. No guide.",
+   "poolAt": 315,
    "decklist": [
     {
      "cardId": "demonic_tutor",

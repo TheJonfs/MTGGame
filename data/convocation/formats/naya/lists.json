@@ -137,6 +137,8 @@
    "title": "Mono-Red Goblins (R)",
    "archetype": "aggro",
    "source": "S64 seed (the planner's): the Open's Rabble whole but for its mana — its Badlands, Volcanic Islands, Cairnbrand and Tallyflame Court (black and blue lands) and its Mox Jet and Mox Sapphire out under ADR-181 (Chris: mana artifacts follow the land rule), twelve Mountains in.",
+   "poolAt": 283,
+   "portOf": "open:rabble",
    "decklist": [
     {
      "cardId": "mountain",
@@ -198,6 +200,8 @@
    "title": "Naya Control (R G W)",
    "archetype": "control",
    "source": "S64 seed (the planner's): the Open's Tollgate whole (Naya-legal as it stands). Its fifteen loses the two Faerie Macabres (black): a fourth Tormod's Crypt and a Retribution of the Meek.",
+   "poolAt": 283,
+   "portOf": "open:tollgate",
    "decklist": [
     {
      "cardId": "plateau",
@@ -337,6 +341,7 @@
    "title": "Naya Snakes and Angels (R G W)",
    "archetype": "midrange",
    "source": "S65 (Chris, 2026-10-16): his list, champion of his first Naya-and-Esper Convocation (7-1 on Days 3 and 4; 4-1 in the Swiss) — Manaba, Rage Cobra, Reaper's Forerunner, Birds, Restoration Angel, Lumen, the Emerald Keeper, Shocking Sharpshooters, Karmic Mentors, Sacred Helix; his fifteen with two Airship Crashes for the Seasoned Pyromancers (for the Thicket's Auras and the Tollgate's Minefields). It replaces the planner's seed (Naya Flash Snakes at the Open's tier), which it beat 54.0 to 49.2 in the same seat (the Tollgate 28 -> 69, the Thicket 51 -> 62).",
+   "poolAt": 283,
    "decklist": [
     {
      "cardId": "black_lotus",
@@ -476,6 +481,8 @@
    "title": "Boros Weenie (W R)",
    "archetype": "aggro",
    "source": "S64 seed (the planner's): the Open's Muster whole.",
+   "poolAt": 283,
+   "portOf": "open:muster",
    "decklist": [
     {
      "cardId": "plateau",
@@ -557,6 +564,8 @@
    "title": "Boros Goblins (R w)",
    "archetype": "aggro",
    "source": "S64 seed (the planner's): the Open's Warband whole.",
+   "poolAt": 283,
+   "portOf": "open:warband",
    "decklist": [
     {
      "cardId": "plateau",
@@ -638,6 +647,7 @@
    "title": "Boros Tokens (W R)",
    "archetype": "aggro",
    "source": "S64 seed (the planner's, built by the implementer): Peasant's RW Tokens promoted — four Captains of the Watch, two Emeria Angels and Lumen for two Marshals and two Kavus; Plateaus and the Naya power for basics. Named the Watch in the plane's register (S65; it was RW Tokens (Naya)).",
+   "poolAt": 283,
    "decklist": [
     {
      "cardId": "sacred_foundry",
@@ -723,6 +733,7 @@
    "title": "Selesnya Auras (G W)",
    "archetype": "aggro",
    "source": "S64 seed (the planner's, built by the implementer): the archived Enchantress with Dungrove Elder (Peasant's pillar) — four Elders and a fourth Angelic Destiny for the Timberland Guides, the Glare and two Spirit Links; a Plains for a Forest (the Elder counts Forests). Named the Thicket in the plane's register (S65; it was GW Auras reborn).",
+   "poolAt": 283,
    "decklist": [
     {
      "cardId": "savannah",
@@ -804,6 +815,8 @@
    "title": "Mono-Green Ramp (G)",
    "archetype": "midrange",
    "source": "S64 seed (the planner's): the Open's Wurmspeaker whole.",
+   "poolAt": 283,
+   "portOf": "open:wurmspeaker",
    "decklist": [
     {
      "cardId": "forest",
@@ -877,6 +890,7 @@
    "title": "Naya Lifegain (R G W)",
    "archetype": "midrange",
    "source": "S64 seed (the planner's, built by the implementer): the archived Ford's shape — Vitalist ×4, the Fordkeeper, Soul Warden, Sacred Helix, Bolt and Char (Lightning Helix is not in the pool) — with Peasant's new white: two Karmic Mentors (they return Wardens and Gladeharts) and two Dazzling Angels, for the Rage Cobras, two Spirit Links and two lands. Named the Chantry in the plane's register (S65; it was Naya Lifegain).",
+   "poolAt": 283,
    "decklist": [
     {
      "cardId": "plateau",
@@ -982,6 +996,7 @@
    "title": "Gruul Stompy (R G)",
    "archetype": "aggro",
    "source": "S64 seed (the planner's, built by the implementer): Peasant's Stompy promoted — Dungrove Elder for the Grizzly Bears, two Baru at the top (the Reaper is Jund and not legal here; the Fordkeeper is tried in his place), Taigas and the Naya power. Named the Stampede in the plane's register (S65; it was Gruul Stompy (Naya)).",
+   "poolAt": 283,
    "decklist": [
     {
      "cardId": "stomping_ground",
@@ -1063,6 +1078,8 @@
    "title": "Snake Keeper (G R)",
    "archetype": "midrange",
    "source": "Chris's Emerald Snakes (the Open) ported to Naya (post-S65, Chris's choice of the two ports measured): its ten off-colour lands (Bayous, Tropical Islands, Volcanic, Wrackroot, Cairnbrand, Tallyflame Court) for four Savannahs, four Temple Gardens and two Forests (all Forests, for Gaean Wurm); Mox Sapphire, Mox Jet and Time Walk out for a third Harmonize and two more Forests. 67.1 in matches against the ten lists before it joined (the Elves port, three Llanowar Elves in those slots, 62.4; 160 matches a pairing). Its fifteen as the Open's. Chris's name for it.",
+   "poolAt": 285,
+   "portOf": "open:emeraldsnakes",
    "decklist": [
     {
      "cardId": "black_lotus",
@@ -1182,6 +1199,8 @@
    "title": "Naya Valakut (R W G, Moxen)",
    "archetype": "control",
    "source": "Post-S70 (Chris, 2026-11-03): his Open list (15-1, Champion of the Umbel; see the Open's entry), the first Valakut list in Naya. The 60 as played; the fifteen without the Open's graveyard answers (2 Faerie Macabre, 4 Tormod's Crypt — no graveyard deck in Naya; the Macabres are not Naya's colours), its six slots 2 Drakuseth, 2 Lightning Bolt, 2 Char (Chris's top end and burn). By trial (150 matches a pairing, paired): the AI's rules bring Swords to Plowshares in for three Walls of Blossoms (−2.6 ± 1.4 in matches); Bolt, Char, Disenchant and Drakuseth never come in, so this fifteen plays as the bare nine for the pilot and is Chris's to use. A working name.",
+   "poolAt": 304,
+   "portOf": "open:minefield",
    "decklist": [
     {
      "cardId": "powerstone_minefield",

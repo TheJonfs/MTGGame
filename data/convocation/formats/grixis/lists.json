@@ -232,7 +232,9 @@
      "count": 1
     }
    ],
-   "source": "S67 seed (the planner's): the Open's Kiln whole."
+   "source": "S67 seed (the planner's): the Open's Kiln whole.",
+   "poolAt": 286,
+   "portOf": "open:kiln"
   },
   {
    "key": "rabble",
@@ -335,7 +337,9 @@
      "count": 4
     }
    ],
-   "source": "S67 seed (the planner's): the Open's Rabble whole."
+   "source": "S67 seed (the planner's): the Open's Rabble whole.",
+   "poolAt": 286,
+   "portOf": "open:rabble"
   },
   {
    "key": "writ",
@@ -450,7 +454,9 @@
      "count": 3
     }
    ],
-   "source": "S67 seed (the planner's): Esper's Writ whole (the Open's needs its green lands swapped)."
+   "source": "S67 seed (the planner's): Esper's Writ whole (the Open's needs its green lands swapped).",
+   "poolAt": 286,
+   "portOf": "esper:writ"
   },
   {
    "key": "tempo",
@@ -519,7 +525,9 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): Esper's Eddy whole."
+   "source": "S67 seed (the planner's): Esper's Eddy whole.",
+   "poolAt": 286,
+   "portOf": "esper:tempo"
   },
   {
    "key": "undertow",
@@ -608,7 +616,9 @@
      "count": 3
     }
    ],
-   "source": "S67 seed (the planner's): Esper's Undertow whole. Post-S71 (Part 3, the triad read; ADR-168): Volmaw for an Underground Sea — +3.0 ± 1.0 in matches (160 a pairing, paired)."
+   "source": "S67 seed (the planner's): Esper's Undertow whole. Post-S71 (Part 3, the triad read; ADR-168): Volmaw for an Underground Sea — +3.0 ± 1.0 in matches (160 a pairing, paired).",
+   "poolAt": 286,
+   "portOf": "esper:undertow"
   },
   {
    "key": "mbc",
@@ -681,7 +691,9 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): Esper's Barrow whole."
+   "source": "S67 seed (the planner's): Esper's Barrow whole.",
+   "poolAt": 286,
+   "portOf": "esper:mbc"
   },
   {
    "key": "tally",
@@ -766,7 +778,9 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): the Open's Tally, archived there, revived here whole."
+   "source": "S67 seed (the planner's): the Open's Tally, archived there, revived here whole.",
+   "poolAt": 286,
+   "portOf": "open:tally"
   },
   {
    "key": "ashen",
@@ -859,7 +873,9 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): Mardu's Ashen whole."
+   "source": "S67 seed (the planner's): Mardu's Ashen whole.",
+   "poolAt": 286,
+   "portOf": "mardu:brremoval"
   },
   {
    "key": "kindling",
@@ -932,7 +948,9 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): Mardu's Kindling whole."
+   "source": "S67 seed (the planner's): Mardu's Kindling whole.",
+   "poolAt": 286,
+   "portOf": "mardu:burn"
   },
   {
    "key": "br",
@@ -997,7 +1015,9 @@
      "count": 4
     }
    ],
-   "source": "S67 seed (the planner's): Peasant's BR Removal, the Ashen's source (Chris's ruling: the brief's \"the Ashen, BR Removal\")."
+   "source": "S67 seed (the planner's): Peasant's BR Removal, the Ashen's source (Chris's ruling: the brief's \"the Ashen, BR Removal\").",
+   "poolAt": 286,
+   "portOf": "peasant:br"
   },
   {
    "key": "clio",
@@ -1005,6 +1025,7 @@
    "title": "Grixis Control (U B r)",
    "archetype": "control",
    "source": "S67 seed (the planner's): built by the implementer — the Writ with Kavu and Char (the brief): three Arcane Collectors for three Flametongue Kavus, three Essence Scatters for three Chars, the Gravitational Shift for Mox Ruby; the red from four Volcanic Islands and Cairnbrand for two Islands, two Watery Graves and a Swamp.",
+   "poolAt": 286,
    "decklist": [
     {
      "cardId": "library_of_alexandria",
@@ -1128,6 +1149,7 @@
    "title": "Mono-Black Clio (B u r)",
    "archetype": "midrange",
    "source": "Post-S67 (Chris's, 2026-10-19): 8–0 in a Grixis Convocation (event 233306; 16–1 in games — the Ashen, Grixis Clio, the Writ, the Kindling and the Rabble in the Swiss, then the Kindling, the Tally and the Rabble). The Witch's black core (Witch, Specter, Dread Presence, Nighthawk, Drana, Hymn, Rituals) with four Clios on blue duals; Pyroclasm, Kavu, Control Magic and Protocol in the fifteen. The fifteen and the guide read from Chris's swaps.",
+   "poolAt": 286,
    "decklist": [
     {
      "cardId": "black_lotus",
@@ -1247,6 +1269,7 @@
    "title": "Massacre Aristocrats (B u r)",
    "archetype": "midrange",
    "source": "Post-S68 (Chris's, 2026-10-21): won a Grixis Umbel, 7–1 (event 975263; 15–2 in games — BR Removal, the Writ, the Eddy and the Barrow 2–0, Mono-Black Clio 1–2 in the Swiss; then Grixis Clio, the Ashen and the Rabble 2–0). The Meathook Massacre over Blood Artist, Indulgent Aristocrat and Meliyan, with Clio, Nighthawks, the Witch and Drana; a second Massacre re-sweeps under the legend rule. The fifteen as Chris named it (the three Faerie Formations never came in); the guide read from his swaps. Chris: the main-deck Unearth and the Children of Night are open slots.",
+   "poolAt": 287,
    "decklist": [
     {
      "cardId": "the_meathook_massacre",

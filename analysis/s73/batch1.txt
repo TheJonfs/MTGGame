@@ -1,0 +1,29 @@
+# the cliff lists: Nothing Dear
+nothing-dear br terror child_of_night:4:daunting_terror
+nothing-dear br nyx gravedigger:2:nyxathid;reassembling_skeleton:2:nyxathid
+nothing-dear br reviv gravedigger:2:revivalist;reassembling_skeleton:2:revivalist
+nothing-dear undertow silt vampire_nighthawk:3:silt_spirit
+nothing-dear undertow protocol control_magic:3:protocol
+nothing-dear tally shaman ponder:4:storm_shaman
+nothing-dear tally corr control_magic:2:correspondence
+nothing-dear levy marshal raise_the_alarm:4:dawnwing_marshal
+nothing-dear levy cleric vampire_nighthawk:2:banishing_cleric
+nothing-dear levy reviv soul_warden:4:revivalist
+# Bodies
+bodies wurmspeaker elder gaean_wurm:3:dungrove_elder
+bodies wurmspeaker dryad rampant_growth:4:sapwell_dryad
+bodies wurmspeaker druid rampant_growth:4:order_druid
+bodies stampede terror centaur_courser:4:daunting_terror
+bodies stampede pouncer centaur_courser:4:domain_pouncer
+# the Open under 50 (the planner's lists)
+open muster spire plains:1:hearthspire
+open muster marshal suntail_hawk:2:dawnwing_marshal;fencing_ace:1:dawnwing_marshal
+open warband spire mountain:1:hearthspire
+open tollgate spire plateau:1:hearthspire
+open wurmspeaker elder gaean_wurm:3:dungrove_elder
+open wurmspeaker dryad rampant_growth:4:sapwell_dryad
+open levy marshal raise_the_alarm:4:dawnwing_marshal
+open levy reviv soul_warden:4:revivalist
+# Clutch Guard in the other Snake lists it is legal in (not Naya or Jund: the Guard is blue there, ADR-197)
+temur emeraldsnakes guard elvish_visionary:4:clutch_guard
+bodies emeraldsnakes guard elvish_visionary:4:clutch_guard

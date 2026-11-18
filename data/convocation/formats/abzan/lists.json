@@ -203,7 +203,9 @@
      "count": 1
     }
    ],
-   "source": "S69 seed (the planner's): the Open's Levy whole."
+   "source": "S69 seed (the planner's): the Open's Levy whole.",
+   "poolAt": 287,
+   "portOf": "open:levy"
   },
   {
    "key": "roll",
@@ -288,7 +290,9 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): Esper's Roll whole."
+   "source": "S69 seed (the planner's): Esper's Roll whole.",
+   "poolAt": 287,
+   "portOf": "esper:bwtokens"
   },
   {
    "key": "chancel",
@@ -419,7 +423,9 @@
      "count": 1
     }
    ],
-   "source": "S69 seed (the planner's): Esper's Chancel whole (Mardu's holds Ushers)."
+   "source": "S69 seed (the planner's): Esper's Chancel whole (Mardu's holds Ushers).",
+   "poolAt": 287,
+   "portOf": "esper:wbcontrol"
   },
   {
    "key": "thicket",
@@ -500,7 +506,9 @@
      "count": 4
     }
    ],
-   "source": "S69 seed (the planner's): Naya's Thicket whole."
+   "source": "S69 seed (the planner's): Naya's Thicket whole.",
+   "poolAt": 287,
+   "portOf": "naya:auras"
   },
   {
    "key": "auras",
@@ -557,7 +565,9 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): Peasant's Dungrove Auras whole."
+   "source": "S69 seed (the planner's): Peasant's Dungrove Auras whole.",
+   "poolAt": 287,
+   "portOf": "peasant:elder"
   },
   {
    "key": "bfh",
@@ -656,7 +666,9 @@
      "count": 1
     }
    ],
-   "source": "S69 seed (the planner's): Black Forest Ham (Chris's) whole."
+   "source": "S69 seed (the planner's): Black Forest Ham (Chris's) whole.",
+   "poolAt": 287,
+   "portOf": "jund:bfh"
   },
   {
    "key": "bw",
@@ -751,7 +763,9 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): Peasant's BW Aristocrats, promoted whole."
+   "source": "S69 seed (the planner's): Peasant's BW Aristocrats, promoted whole.",
+   "poolAt": 287,
+   "portOf": "peasant:bw"
   },
   {
    "key": "wskies",
@@ -842,7 +856,9 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): Peasant's White Skies, promoted whole."
+   "source": "S69 seed (the planner's): Peasant's White Skies, promoted whole.",
+   "poolAt": 287,
+   "portOf": "peasant:wskies"
   },
   {
    "key": "warden",
@@ -850,6 +866,7 @@
    "title": "Abzan Lifegain (W b g)",
    "archetype": "midrange",
    "source": "S69 seed (the planner's): built by the implementer — the Warden (Abzan's lord) over Soul Warden, Dazzling Angel, Vitalist, Karmic Mentor and the Forerunner (the brief); Nighthawks, Swords and Putrefy.",
+   "poolAt": 287,
    "decklist": [
     {
      "cardId": "black_lotus",
@@ -1066,7 +1083,8 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): built by the implementer from Esper's Roll — Abzan tokens (the brief: the Roll with Rampaging Baloths and Harmonize): its four Vindicates for two Baloths and two Harmonizes; four Swamps for two Savannahs and two Bayous, two Plains for two Temple Gardens, Mox Jet for Mox Emerald."
+   "source": "S69 seed (the planner's): built by the implementer from Esper's Roll — Abzan tokens (the brief: the Roll with Rampaging Baloths and Harmonize): its four Vindicates for two Baloths and two Harmonizes; four Swamps for two Savannahs and two Bayous, two Plains for two Temple Gardens, Mox Jet for Mox Emerald.",
+   "poolAt": 287
   },
   {
    "key": "bwmassacrats",
@@ -1074,6 +1092,7 @@
    "title": "Orzhov Massacrats (W B)",
    "archetype": "midrange",
    "source": "Post-S69 (Chris's, 2026-10-26): 8–0 in an Abzan Convocation (event 19887; 16–2 in games — Dungrove Auras, Abzan Warden, the Roll, Abzan Warden and Abzan Tokens in the Swiss; the Roll, the Thicket and the Levy in the bracket). Grixis's Massacrats in Orzhov colours: Soul Warden, Blood Artist and Bitterblossom into The Meathook Massacre; Nighthawks, Dazzling Angels and the Witch; Vindicate and Retribution of the Meek. The Massacre loops on Shevelport (the legend rule keeps the new one; round 5, game 2). The fifteen as Chris registered it; the guide read from his swaps.",
+   "poolAt": 287,
    "decklist": [
     {
      "cardId": "the_meathook_massacre",

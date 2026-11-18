@@ -166,7 +166,9 @@
      "count": 1
     }
    ],
-   "source": "S69 seed (the planner's): the Aerie (Jeskai's: the Observatory for a Plains, the Macabre for a third Crypt)."
+   "source": "S69 seed (the planner's): the Aerie (Jeskai's: the Observatory for a Plains, the Macabre for a third Crypt).",
+   "poolAt": 287,
+   "portOf": "jeskai:skies"
   },
   {
    "key": "thicket",
@@ -247,7 +249,9 @@
      "count": 4
     }
    ],
-   "source": "S69 seed (the planner's): Naya's Thicket whole."
+   "source": "S69 seed (the planner's): Naya's Thicket whole.",
+   "poolAt": 287,
+   "portOf": "naya:auras"
   },
   {
    "key": "uwskies",
@@ -346,7 +350,9 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): Peasant's UW Skies, promoted whole."
+   "source": "S69 seed (the planner's): Peasant's UW Skies, promoted whole.",
+   "poolAt": 287,
+   "portOf": "peasant:skies"
   },
   {
    "key": "countersnake",
@@ -493,7 +499,9 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's) (Chris's ruling): the Open's Countersnake — its three Clios (black) for three Serra Angels, Demonic Tutor for an Absorb; four Underground Seas for four Tundras, four Bayous for two Temple Gardens and two Forests, the Observatory for a Plains; its fifteen's two Macabres for two Tormod's Crypts and its Drana for a Wall of Reverence."
+   "source": "S69 seed (the planner's) (Chris's ruling): the Open's Countersnake — its three Clios (black) for three Serra Angels, Demonic Tutor for an Absorb; four Underground Seas for four Tundras, four Bayous for two Temple Gardens and two Forests, the Observatory for a Plains; its fifteen's two Macabres for two Tormod's Crypts and its Drana for a Wall of Reverence.",
+   "poolAt": 287,
+   "portOf": "open:countersnake"
   },
   {
    "key": "auras",
@@ -550,7 +558,9 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): Peasant's Dungrove Auras whole."
+   "source": "S69 seed (the planner's): Peasant's Dungrove Auras whole.",
+   "poolAt": 287,
+   "portOf": "peasant:elder"
   },
   {
    "key": "wurmspeaker",
@@ -623,7 +633,9 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's): the Open's Wurmspeaker whole."
+   "source": "S69 seed (the planner's): the Open's Wurmspeaker whole.",
+   "poolAt": 287,
+   "portOf": "open:wurmspeaker"
   },
   {
    "key": "wskies",
@@ -714,7 +726,9 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): Peasant's White Skies, promoted whole."
+   "source": "S69 seed (the planner's): Peasant's White Skies, promoted whole.",
+   "poolAt": 287,
+   "portOf": "peasant:wskies"
   },
   {
    "key": "locks",
@@ -849,7 +863,9 @@
      "count": 1
     }
    ],
-   "source": "S69 seed (the planner's): Jeskai Locks (UW) whole."
+   "source": "S69 seed (the planner's): Jeskai Locks (UW) whole.",
+   "poolAt": 287,
+   "portOf": "jeskai:locks"
   },
   {
    "key": "sower",
@@ -857,6 +873,7 @@
    "title": "Bant Midrange (G W u)",
    "archetype": "midrange",
    "source": "S69 seed (the planner's): built by the implementer — the Sower (Bant's lord) over the Forerunner, Restoration Angel, Control Magic and the Wave (the brief; its Clio is black — left out); Walls and Birds to reach her. S69 (the lord read, ADR-168): two Serra Angels for two more Sowers (+2.6 ± 1.2).",
+   "poolAt": 287,
    "decklist": [
     {
      "cardId": "black_lotus",
@@ -988,6 +1005,7 @@
    "title": "Bant Hexproof Auras (G w u)",
    "archetype": "aggro",
    "source": "S69 seed (the planner's): built by the implementer — Dungrove Elder and Gladecover Scout under Rancor, Blanchwood Armor and Angelic Destiny, Ovna drawing off them (the brief; Protocol needs more blue than this mana has — Pacifism in its slot).",
+   "poolAt": 287,
    "decklist": [
     {
      "cardId": "black_lotus",
@@ -1103,6 +1121,7 @@
    "title": "Bant Wurm Ramp (G w u)",
    "archetype": "midrange",
    "source": "Post-S69 (Chris's, 2026-10-28): 8–0 in a Bant Convocation (event 221140; 16–2 in games — Jeskai Locks, Countersnake, White Skies and Bant Sower twice in the Swiss; Dungrove Auras, Bant Auras and Bant Sower in the bracket). Birds, Manaba and Elvish Visionary into Gaean Wurms, Baru, Pelakka, the Emerald Keeper and the Sower (the name's pun); Reaper's Forerunner. The fifteen as Chris registered it; the guide read from his swaps (Chris: the boarding was haphazard — the coherent plan was the deathtouchers in against the Aura decks).",
+   "poolAt": 287,
    "decklist": [
     {
      "cardId": "black_lotus",

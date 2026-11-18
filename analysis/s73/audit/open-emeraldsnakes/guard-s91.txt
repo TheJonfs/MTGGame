@@ -1,0 +1,5 @@
+## open:emeraldsnakes guard (elvish_visionary:4:clutch_guard) seed 91
+matches 65.3 -> 73.8  +8.5 +/- 1.5   | game one 63.7 -> 68.5  +4.9 +/- 1.1   | later 59.1 -> 65.7  +6.7 +/- 2.0 (unpaired)   | n 3040
+by opponent: minefield 59->86 (+28), earthrise 53->73 (+20), reaperclio 34->52 (+18), pinnacle 58->72 (+14), warband 64->76 (+12), lumenclio 55->68 (+12), kiln 76->87 (+11), tollgate 85->95 (+10), sweep 59->68 (+9), rabble 43->52 (+9), marducontrol 42->50 (+8), depths 62->68 (+5), funpolice 82->86 (+4), countersnake 70->74 (+4), writ 62->64 (+2), levy 96->96 (+0), muster 76->75 (-1), wurmspeaker 90->88 (-2), pall 74->70 (-4)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +8.5, lower bound +7.0)

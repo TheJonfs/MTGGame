@@ -82,6 +82,7 @@
    "title": "Rakdos Removal (B R)",
    "archetype": "midrange",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. Unchanged from the experiments: the yardstick.",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "blood_crypt",
@@ -147,6 +148,7 @@
    "title": "Rakdos Removal, Djinn and Char (B R)",
    "archetype": "midrange",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. Unchanged: the second build.",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "blood_crypt",
@@ -208,6 +210,7 @@
    "title": "Mono-Black Removal (B)",
    "archetype": "midrange",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Sign in Blood for the Ragers and a Blood Artist.",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "swamp",
@@ -265,6 +268,7 @@
    "title": "Mono-Red Goblins (R)",
    "archetype": "aggro",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. The Open list's port.",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "mountain",
@@ -322,6 +326,7 @@
    "title": "Gruul Stompy (R G)",
    "archetype": "aggro",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle.",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "stomping_ground",
@@ -387,6 +392,7 @@
    "title": "Boros Weenie (W R)",
    "archetype": "aggro",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. The Open list's port; Longbow Archer for the Suntail Hawks.",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "sacred_foundry",
@@ -490,6 +496,7 @@
    "title": "Boros Tokens (W R)",
    "archetype": "aggro",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Dawnwing Marshal, +2 Captain of the Watch and a land for the Angels, the Chieftains and the Grenades.",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "sacred_foundry",
@@ -551,6 +558,7 @@
    "title": "Azorius Skies (W U)",
    "archetype": "midrange",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Dawnwing Marshal, +2 Wave of Reckoning for the Seers, the Air Elementals and a Pacifism. S64 (Chris): 2 Karmic Mentor for the 2 Pacifisms (UW Skies 46.9 -> 53.1 in the card's table).",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "hallowed_fountain",
@@ -650,6 +658,7 @@
    "title": "Azorius Skies with walls (W U)",
    "archetype": "midrange",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. The walls build: the Wave leaves its walls standing.",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "hallowed_fountain",
@@ -749,6 +758,7 @@
    "title": "Orzhov Aristocrats (W B)",
    "archetype": "midrange",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +2 Captain of the Watch for the Typhoid Rats.",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "godless_shrine",
@@ -844,6 +854,7 @@
    "title": "Dimir Mill (U B)",
    "archetype": "control",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. The UB control draft as a mill build: Tome Scour, Hedron Crab and Thought Scour as the second engine.",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "watery_grave",
@@ -905,6 +916,7 @@
    "title": "Izzet Control (U R)",
    "archetype": "control",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. Unchanged.",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "steam_vents",
@@ -966,6 +978,7 @@
    "title": "Orzhov Control with reanimation (W B)",
    "archetype": "control",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. New: the Wave, walls, and Penumbra Wurm brought back by Entomb and Zombify (it cannot be cast in these colours).",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "godless_shrine",
@@ -1027,6 +1040,7 @@
    "title": "Mono-Green Auras (G)",
    "archetype": "midrange",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. New: the Enchantress's tier-two cousin. Revised 2026-10-13 (Chris): four Gaean Wurms for the four Rumbling Baloths — as large or larger with twenty-two Forests, and trample. +9.3 ± 1.5 in matches against the other twelve, paired (66.8 to 76.1), better against every one. Committed knowing it is over ADR-171's line: it is the next round's target.",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "forest",
@@ -1084,6 +1098,7 @@
    "title": "Naya Flash (R G W)",
    "archetype": "midrange",
    "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. As drafted.",
+   "poolAt": 276,
    "decklist": [
     {
      "cardId": "stomping_ground",
@@ -1161,6 +1176,7 @@
    "title": "Mono-White Lifegain Skies (W)",
    "archetype": "midrange",
    "source": "Post-S62 (Chris, 2026-10-13): built for the round against Dungrove Auras from his two additions, Dazzling Angel and Wall of Reverence — lifegain, fliers, and Wave of Reckoning as the reset (its Walls and most of its fliers survive it). His revision of the first draft: four Vitalists for the two Pacifisms and two of the Dawnwing Marshals (+4.6 ± 2.4 in matches, paired; Vitalists for the Restoration Angels had been −3.7 ± 2.1). 58.7 in matches against the twelve others and 61 against Dungrove Auras before it joined. A working name. S64 (Chris): 2 Karmic Mentor for the 2 Dawnwing Marshals (his card; in its table White Skies 58.3 -> 62.0, BR Removal 45 -> 50).",
+   "poolAt": 278,
    "decklist": [
     {
      "cardId": "plains",
@@ -1252,6 +1268,7 @@
    "title": "Orzhov Basilisk (W B)",
    "archetype": "midrange",
    "source": "Post-S70 (Chris, 2026-11-01): built around Shevelport Quartermaster and Basilisk Collar on Fencing Ace and Longbow Archer, with one Loxodon Warhammer to fetch; a run at 20 lands and 4 Thought Replacement went 5-0 in the Swiss and out in the quarterfinals, 11-3 in games. Registered with 3 Plains and 1 Swamp for the Replacements. Registered knowing the AI pilots it poorly (21.8 -> 31.6 in matches on the land change, ±2.5, against his 11-3): kept here to be found and tweaked. A working name. No guide.",
+   "poolAt": 303,
    "decklist": [
     {
      "cardId": "blood_artist",

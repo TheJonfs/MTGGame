@@ -1,4 +1,4 @@
-# Handoff — after Session 72, with the post-S72 work (2026-11-18)
+# Handoff — after Session 72, with the post-S72 work and Session 73's Part 1 (2026-11-18)
 
 ## State of the world
 The ten-card hybrid two-drop cycle is complete in the pool: 315 cards, R-125 to R-129. The AI has a book for each card that needed one (165–169).
@@ -21,7 +21,35 @@ The ten-card hybrid two-drop cycle is complete in the pool: 315 cards, R-125 to 
 
 `docs/decision-updates/s72.md` is the full record. Run the app with `pnpm viewer` and the tests with `pnpm test`.
 
-## Since Session 72 (2026-11-15 to 18; commits a780ae3 to this one)
+## Session 73, Part 1 — the vintage audit (2026-11-18; the fresh session, uncommitted)
+The brief's Part 1 only. Parts 0 (its code items), 2, 3, 4 and 5 are untouched and owed to the regular implementer. `docs/decision-updates/s73.md` is the record; `docs/reference/vintage-audit-s73.md` is the table. **No list was edited**: every row is a trial.
+
+- **ADR-199 built**: `poolAt` on all 187 lists, and `portOf` on the 102 ports (Chris's ruling: a port is read at its source's vintage). `data/convocation/pool-history.json` holds each card's place in the pool. `pnpm vintage-audit` prints a list's vintage and its delta. `world/src/vintage.test.ts` pins all three.
+- **61 trial rows** (160 matches a pairing, paired, seed 91; four on seed 173), none failed. 39 of the planner's lists have rows, 68 lists are Chris's or ports of his (reported to him), 69 are owed.
+- **33 rows clear ADR-168, as six findings**:
+  1. **Hearthspire in fourteen planner lists** (the Muster ×6, the Warband ×4, the Tollgate ×2, the Chantry, Jeskai Sweepers): +5.2 to +30.2 for one land. **Nightbower in Abzan Warden**: +11.2. Chris (2026-11-18): the High Grounds are Power-class; a list in the pair needs a reason not to play its own.
+  2. **Order Druid for Rampant Growth in the Wurmspeaker**: +10.3 to +13.9 in all seven formats. S72's −1.5 was the wrong slot.
+  3. **Clutch Guard in the Snake lists** (Chris's): +8.5, +15.3, +9.5 for Elvish Visionary in Emerald Snakes (the Open, Temur, Bodies); +10.9 for Wall of Blossoms in Temur Snakes.
+  4. **Daunting Terror for Child of Night in BR Removal**: +16.9 (Nothing Dear), +12.8 (Grixis).
+  5. **Nyxathid for the Gallows Djinn in Peasant's Mono-Black Removal**: +10.8. In the Barrow +3.0 ± 1.8 pooled.
+  6. **Storm Shaman** in the Kindling (pooled +5.0 ± 1.6) and the Tally's Ponder slot (+2.6 ± 1.2); **Dawnwing Marshal** in the Open's Muster (+3.2 ± 1.1).
+- **Not clears**: Banishing Cleric in five hosts (best +2.3 ± 2.3); Revivalist in four; nothing moved the Undertow or the Levy; Nyxathid in BR Removal is conditional (it loses the Tally in both formats).
+- **Deviations** (eight, in s73.md): ports read at the source's vintage; the Open's seeds at 260 (the brief's 244 leaves out the tokens); **no Naya row for Clutch Guard** (it is blue at Naya's and Jund's gates, ADR-197); the second seed only under +5; restricted cards named, not trialled; the top halves not reached.
+- **Tests**: 1,347 passed, 2 skipped (178 files; typecheck clean): `vintage.test.ts` adds five. `pnpm test` still exits non-zero on five vitest errors, the same count as the known "Timeout calling onTaskUpdate" load errors (only the run's tail was kept, so their text was not re-read); every assertion passes.
+- **How to run**: `pnpm vintage-audit [--format <id>] [--list <key>] [--bottom N] [--summary]`; `zsh analysis/s73/trial.sh <format> <list> <tag> '<from:n:to>' [seed]`; `zsh analysis/s73/queue.sh <batch-file> [seed]`; `pnpm -s vintage-audit --summary --json analysis/s73/census.json && python3 analysis/s73/audit-doc.py` rebuilds the table. The shards are in `analysis/s73/audit/` (local, about 320 MB).
+
+**Concerns from the audit** (59–66; they continue the list below):
+
+59. **The sideboard builder reads a hybrid card as both its colours** (`buildSideboard`, `constructed-builder.ts`: `colors` from `cardColors`). A list that plays an off-colour hybrid card and has no registered fifteen is built one it cannot cast. BR Removal with Revivalist stops casting Phyrexian Purge after sideboarding. Four audit rows are read on game one because of it. This is live in the field wherever a builder-made fifteen meets a hybrid card. The fix is the regular implementer's; the four rows are owed a re-run after it.
+60. **The tables of record are far from the pilot now.** The audit's base arms (v1.5, pilot 176, 160 matches) against the recorded match rates: the Undertow in Nothing Dear 37.2 → 23.5, the Open's Levy 38.0 → 26.2, Bodies' Stampede 46.6 → 35.6; Abzan Warden 39.0 → 48.9, the Kindling in Mardu 35.9 → 44.6. Part 5's re-run will move the tables more than concerns 48 and 55 suggest.
+61. **The Undertow's fall may be a regression.** Book 176 moved tap-to-mill to the opponent's end step after that table was recorded. A probe before the re-run.
+62. **About sixty High Ground gaps are untried.** The census in the audit table lists every planner list in a pair without its High Ground, the five older ones included. The fifteen rows run all clear. Whether to trial the rest or adopt by rule is the planner's and Chris's call.
+63. **Jeskai Sweepers decks itself** in 23% of its games (957 of 4,233): three Serra Angels are its only way to win. Hearthspire's +30 is partly a second win condition.
+64. **Clutch Guard's gain in Emerald Snakes is mostly sideboarding** (Bodies: game one +2.1, later games +9.1). The fifteen is the same; the pilot's out-rule takes the Visionary out and leaves the Guard in. Real under this pilot; it would shrink if the out-rule learned the Guard.
+65. **The Gaean Wurm carries the Wurmspeaker**: replacing three costs eleven points in two formats. S72's Druid study read the Druid in that slot.
+66. **Pool gaps seen in the slot pass** (for the Cube count, 320 of 360): mill beyond Silt Spirit; a white-black token payoff; control finishers outside the legends; two-drops outside the hybrid cycle; an answer to nonbasic lands and legends. In the audit table.
+
+## Since Session 72 (2026-11-15 to 18; commits a780ae3 to ec233c3)
 Everything below came after the S72 handoff, at Chris's direction. The S72 sections further down are unchanged.
 
 - **Books 170–173** (each ladder PASS):

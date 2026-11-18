@@ -1,0 +1,16 @@
+# carrying batch 1's clears to the same lists in other formats
+grixis br terror child_of_night:4:daunting_terror
+grixis br nyx gravedigger:2:nyxathid;reassembling_skeleton:2:nyxathid
+naya muster spire plains:1:hearthspire
+naya warband spire mountain:1:hearthspire
+naya tollgate spire plateau:1:hearthspire
+mardu muster spire plains:1:hearthspire
+mardu warband spire mountain:1:hearthspire
+jeskai muster spire plains:1:hearthspire
+jeskai warband spire mountain:1:hearthspire
+bodies muster spire plains:1:hearthspire
+nothing-dear muster spire plains:1:hearthspire
+jund wurmspeaker druid rampant_growth:4:order_druid
+temur wurmspeaker druid rampant_growth:4:order_druid
+bant wurmspeaker druid rampant_growth:4:order_druid
+naya wurms druid rampant_growth:4:order_druid

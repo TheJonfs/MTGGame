@@ -260,6 +260,8 @@
    "title": "Snake Keeper (G R)",
    "archetype": "midrange",
    "source": "Post-S71a (the Bodies seeds): Emerald Snakes from the Open, without the Power — the Power for two Forests, a third Harmonize, Rancor and Bolt.",
+   "poolAt": 305,
+   "portOf": "open:emeraldsnakes",
    "decklist": [
     {
      "cardId": "birds_of_paradise",
@@ -387,6 +389,8 @@
    "title": "Snakes and Clio (G B u r)",
    "archetype": "midrange",
    "source": "Post-S71a (the Bodies seeds): Reaper Clio from the Open, without the Power — the Power for two duals, three Putrefy (from its fifteen) and a Drana; its fifteen two Pyroclasm for the Putrefy moved in.",
+   "poolAt": 305,
+   "portOf": "open:reaperclio",
    "decklist": [
     {
      "cardId": "reapers_forerunner",
@@ -514,6 +518,8 @@
    "title": "Usher Midrange (W B R)",
    "archetype": "midrange",
    "source": "Post-S71a (the Bodies seeds): Mardu Control from the Open, without the Power — the Power for a Blood Crypt, two Kavus (from its fifteen), a third Purge, a second Helix.",
+   "poolAt": 305,
+   "portOf": "open:marducontrol",
    "decklist": [
     {
      "cardId": "lumen_the_hearth_fire",
@@ -637,6 +643,8 @@
    "title": "Flash and Counters (G W U b)",
    "archetype": "midrange",
    "source": "Post-S71a (the Bodies seeds): Countersnake from the Open, without the Power — the Power for two duals, two Essence Scatter (from its fifteen), a second Absorb, a third Mystic Snake.",
+   "poolAt": 305,
+   "portOf": "open:countersnake",
    "decklist": [
     {
      "cardId": "bayou",
@@ -776,6 +784,8 @@
    "title": "Wurm Ramp (G)",
    "archetype": "midrange",
    "source": "Post-S71a (the Bodies seeds): the Wurmspeaker from the Open, without the Power — the Lotus and Mox for a third Prey Upon and a third Pelakka Wurm.",
+   "poolAt": 305,
+   "portOf": "open:wurmspeaker",
    "decklist": [
     {
      "cardId": "forest",
@@ -841,6 +851,8 @@
    "title": "Goblins (R u b)",
    "archetype": "aggro",
    "source": "Post-S71a (the Bodies seeds): the Rabble from the Open, without the Power — to twenty-four creatures: the Power and the Dragon Fodders for two Mountains, four Boggart Brutes, a third Siege-Gang and a Matron.",
+   "poolAt": 305,
+   "portOf": "open:rabble",
    "decklist": [
     {
      "cardId": "cairnbrand",
@@ -932,6 +944,8 @@
    "title": "Boros Weenie (W r)",
    "archetype": "aggro",
    "source": "Post-S71a (the Bodies seeds): the Muster from the Open, without the Power — to twenty-four creatures: the Power for three Dawnwing Marshals.",
+   "poolAt": 305,
+   "portOf": "open:muster",
    "decklist": [
     {
      "cardId": "plateau",
@@ -1009,6 +1023,8 @@
    "title": "Gruul Stompy (G R)",
    "archetype": "aggro",
    "source": "Post-S71a (the Bodies seeds): the Stampede from Naya, without the Power — from Naya; the Power for a Forest and two Little Bears.",
+   "poolAt": 305,
+   "portOf": "naya:stompy",
    "decklist": [
     {
      "cardId": "stomping_ground",
@@ -1082,6 +1098,8 @@
    "title": "Dragons (B R G)",
    "archetype": "midrange",
    "source": "Post-S71a (the Bodies seeds): Jund Dragons from Jund, without the Power — from Jund; the Power for a Swamp, three Bolts and two Voracious Cobras (from its fifteen); its fifteen two Putrefy for the Cobras moved in.",
+   "poolAt": 305,
+   "portOf": "jund:dragons",
    "decklist": [
     {
      "cardId": "drakuseth_maw_of_flames",
@@ -1189,6 +1207,8 @@
    "title": "Azorius Skies (W U)",
    "archetype": "midrange",
    "source": "Post-S71a (the Bodies seeds): the Aerie from Esper, without the Power — from Esper; the Power for a Plains, a third Serra Angel and a third Emeria Angel.",
+   "poolAt": 305,
+   "portOf": "esper:skies",
    "decklist": [
     {
      "cardId": "hallowed_fountain",
@@ -1308,6 +1328,8 @@
    "title": "Vampires and Clio (B u r)",
    "archetype": "midrange",
    "source": "Post-S71a (the Bodies seeds): Mono-Black Clio from Grixis, without the Power — from Grixis (Chris's); to twenty-four creatures and past: the Power for a Swamp, a fourth Drana, two Children of Night, three Doom Blades.",
+   "poolAt": 305,
+   "portOf": "grixis:mbclio",
    "decklist": [
     {
      "cardId": "drana_kalastria_bloodchief",
@@ -1407,6 +1429,7 @@
    "title": "Flash and Counters (G W U)",
    "archetype": "midrange",
    "source": "Post-S71a (Chris's 75, the Bodies event of 2026-11-10, seed 325496): second of the field — 5–0 in the Swiss, then 2–0, 2–1 and 1–2 in the bracket (15–4 in games), the final lost to Mono-Black Clio. Countersnake without the black: Arcane Collector, Plumecreed Escort and Vigil Keeper for Clio, Birds, Deadly Recluse and Wall of Blossoms; Hallowed Fountain and Temple Garden for the black duals. No guide.",
+   "poolAt": 305,
    "decklist": [
     {
      "cardId": "arcane_collector",

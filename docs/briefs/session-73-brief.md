@@ -1,0 +1,44 @@
+# Session 73 brief — the vintage audit
+
+*Planner → Implementer. 2026-11-18. Follows the running handoff.md (after S72 and the post-S72 work, 2026-11-18). One session, maybe a half more. The spine is Part 1, an audit of the registered lists against the pool they were built on — run by a **fresh implementer session** that reads before it has habits about which lists are done. Chris is playing the five newest cards through the formats while it runs; his reads come to the planner, not into this brief. Process rules unchanged: appends to `docs/decision-updates/s73.md`; probe before rule (ADR-167); the revision bar (ADR-168) and the identity test (S57) on every swap; every AI change ladder-gated; push only when Chris asks.*
+
+## Part 0 — Rulings and ADR appends
+- **S72 and the post-S72 work ratified**: moxkeep shipped (the mulligan read's one shape); the Mystic Snake and Vindicate probes closed as results (concern 30 a measurement error; landgate level and reverted — the planner's two calls were wrong and ADR-167 caught both); the leak census closed; the re-record of the Open and Bodies; Nothing Dear with thirteen seeds and the Power banned (Chris); the ten-card hybrid cycle complete at tier R; the Fun Police in the Open; the Grand Convocation; books 170–176; the five tier-2 cards with R-130–R-133; card-rating v1.5 with the fourteen carried numbers as an interim (Chris); the implementer's calls stand (counter-log-probe as its own tool; Nothing Dear's folder id; Part 5's third list as Earthrise; the thirteenth seed).
+- **ADR-199 — Every registered list carries its pool vintage.** `poolAt` on the list's data: the pool count when the list was registered (backfilled from the registry's dates — the Open's seeds at 244, the triads' at their sessions' counts, Nothing Dear's at 315). The audit (Part 1) reads from it, and is re-run at each expansion that adds a tier-1 or tier-2 card to a colour a list plays. The audit's output is **trial rows, never edits**: the planner and Chris adopt from the measured table.
+- **ADR-200 — Contributed lists are read, not revised.** The audit reports a contributed list's candidate slots to Chris; the field's builders and the planner never swap a card in a list he registered. (His Bodies Snakes, unregistered, is outside the audit.)
+- **Clutch Guard adopted** in Nothing Dear's Emerald Snakes for Elvish Visionary (+3.9 ± 1.0; ADR-168 cleared). The Open's and Naya's Emerald Snakes get the same row (Part 1's first trial).
+- **Nothing Dear's large threshold stays at 2** (ADR-186's floor). The derivation to 0 says six seeds have no creature with toughness three — the format's shape — and 0 would make every creature large and fire every guide row keyed on it. Reads true for seven of thirteen; recorded as the format's number, not re-derived.
+- **The land-deck shape is "four or more lands that do more than make mana"** (ADR-188's list of shapes; `landdeck`): it catches the Pinnacle, the Minefield and Earthrise from list data and passes a dual-heavy control list (duals make mana and nothing else). Part 3 measures it.
+- **sourcePower reads last-known information**, as sourceToughness does (CR 608.2h): one `lastKnownPT`, two readers. A census of the cards that reference sourcePower first; fixtures where the read changes; the ladder. R-097 amended.
+- **The one re-run of record** (moxkeep, books 170–176, the v1.5 sideboards — concerns 48 and 55) is one job, scheduled after the audit's adoptions land so it is not run twice (Part 5). Bodies, Peasant and Nothing Dear are current but for the ratings.
+- **Silt Spirit into Sultai Mill** (+7.9) is Chris's call; the planner's read is adopt — the format's bottom moving is the adoption that matters most.
+- **Standing with Chris**: WB Basilisk; the Pinnacle as registered; Confession's list; his play of Nothing Dear and of the hybrid spells still in no list.
+
+## Part 1 — The vintage audit (the fresh session; the spine)
+**Scope**: every active registered list in every format with a field (the Open, the ten triads, Peasant, Bodies, Nothing Dear), contributed lists read under ADR-200.
+**Per list, in order**:
+1. **The vintage** (`poolAt`, backfilled) and the **delta**: the cards added since, filtered to the list's colours (hybrid as both, ADR-197), its format's rule (tier, mana value, colours, bans) and its curve — the mechanical first cut, printed as a count and a list.
+2. **The slots**: for each delta card, the card in the list it would replace and *why by role* — the same job done better (a two-drop body for a two-drop body; a counter for a counter; a sweeper for a sweeper), never "a higher rating." A delta card with no role in the list is not a candidate. The identity test applies before any trial: a swap that turns the list into another list (the Locks into the Undertow; a Snake list into Countersnake) is a new list and goes to a separate line for Chris.
+3. **The trial row**: `open:rr --swap`, paired, 160 matches a pairing against the format's field, three columns. The bar is ADR-168 (+2 clear of error; the defining matchups not lost).
+**Priority** (the audit works top-down and stops where the session ends; the rest is owed):
+- **The cliff lists first** — Nothing Dear's Levy, Tally, Undertow and BR Removal; Bodies' Wurmspeaker and the Stampede; the Open's lists under 50; each triad's bottom three. A swap here moves a format's shape, not its top.
+- **Homes for the five** by the same slot method: Nyxathid (3.28 in Peasant) in the BR and mono-black lists; Banishing Cleric in white midrange (the Muster, the Watch, WB Control); Order Druid in the green lists that can wait a turn (Wurmspeaker read −1.5, Bant Countersnake +2.3 — the Druid's hosts are the ones that go long); Storm Shaman in Ponder's slot (+0.6) and nowhere else yet; Silt Spirit beyond Sultai Mill (the Undertows).
+- **The hybrid bodies**: Clutch Guard in every Snake list; Domain Pouncer only in a host that plays Mountains or Swamps (−4.0 in the Thicket is the card unswitched, not the card).
+- **Then the top halves**, where the expectation is few adoptions (ADR-170 — the staples are already there) and the audit's value is the census itself.
+**Output**: `docs/reference/vintage-audit-s73.md` — list × vintage × delta count × candidate slots × trial numbers × verdict (adopted / below bar / identity line / contributed, to Chris). Adoptions written to lists.json by the regular implementer after the planner reads the table; `open:gen`; the affected formats' tables re-run in Part 5.
+
+## Part 2 — The Limited blind spot (concern 54) and Bolt (concern 56)
+- **Forced inclusion**: a Sealed and draft pass on pilot 176 where each of the fourteen carried cards is seeded into a built deck until it reaches 500 sightings, then the normal build; their `limited` numbers rebuilt from that run alone (ADR-150 — never pooled with pilot 94) and `limitedCarried` cleared. The method goes in the rating pipeline for every future card under 100 sightings (ADR-151's tests extended).
+- **Bolt**: 2.29 → 1.44 on 8,960 sightings is not a blind spot. *Probe*: the burn holds (books 88, 160, 172) on 40-card boards — how many Bolts are held past a kill that would have won the race, and at what board. The rule, if one follows, is a Limited-sized hold (the board's power is the knob), measured on the Sealed sim and ladder-gated.
+
+## Part 3 — The land-deck shape and the Warband's row (concern 13)
+`landdeck` as ruled; the Warband's fifteen gains two Molten Rain and two Terrain Collapse keyed on it; measured paired, 160, against the three land decks (the +7.3 should hold) *and* against the whole field (the shape must not fire elsewhere — the row's cost against a non-land deck is what ADR-168 reads). Adopt by the bar. The Rabble's row (+0.7) is not retried.
+
+## Part 4 — Reading list, game one
+The Minefield against Mardu Control: Chris's match wins from his Naya Valakut run (`narrate … --match marducontrol`) against the AI's list at 19. The planner reads the games from the narration; the implementer runs them and attaches the Walls, Minefield and Wrath timings as a table of turns. No rule this session unless the reading names one plainly; concern 47's Snake end-step body is a trial only if the session has room.
+
+## Part 5 — Measure
+The audit's table and its adoptions; the tables of record re-run once for every format a swap landed in, and the Open's and the triads' for moxkeep, books 170–176 and v1.5 (the ADR-191 reading list refreshed from them); the forced-inclusion numbers and the Bolt probe; the Warband's row; the sourcePower census and ladder; `poolAt` on every list.
+
+## Handoff
+The audit's table (adoptions, below-bar, identity lines, the contributed report for Chris); the fourteen rebuilt Limited numbers; the Bolt read; the land-deck shape's numbers; the tables; deviations, concerns — and the audit's owed remainder, by format, where the session stopped.

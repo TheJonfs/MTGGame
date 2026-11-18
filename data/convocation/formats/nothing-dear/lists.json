@@ -303,6 +303,8 @@
    "title": "Boros Weenie (W R)",
    "archetype": "aggro",
    "source": "S72 (the Nothing Dear seeds): the Muster from the Open, without the Power — the Power for three Dawnwing Marshals (Bodies' swap).",
+   "poolAt": 315,
+   "portOf": "open:muster",
    "decklist": [
     {
      "cardId": "plateau",
@@ -380,6 +382,8 @@
    "title": "Mono-Red Goblins (R)",
    "archetype": "aggro",
    "source": "S72 (the Nothing Dear seeds): the Rabble from the Open, without the Power or the top — the Power and the two Siege-Gangs (five) for two Mountains and four Boggart Brutes; its fifteen's four Ruby Tyrants (five) for a fourth Abrade and three Pyroclasms.",
+   "poolAt": 315,
+   "portOf": "open:rabble",
    "decklist": [
     {
      "cardId": "cairnbrand",
@@ -467,6 +471,8 @@
    "title": "Selesnya Auras (G W)",
    "archetype": "aggro",
    "source": "S72 (the Nothing Dear seeds): the Thicket from Abzan, without the Power — the Power for a Forest and two Spirit Links.",
+   "poolAt": 315,
+   "portOf": "abzan:thicket",
    "decklist": [
     {
      "cardId": "savannah",
@@ -536,6 +542,8 @@
    "title": "Bant Hexproof Auras (G w u)",
    "archetype": "aggro",
    "source": "S72 (the Nothing Dear seeds): Bant Auras from Bant, without the Power — the Power for a Forest, a third Harmonize and a third Pacifism; its fifteen's three Penumbra Wurms (seven) for a fourth Wall of Blossoms, Disenchant and Tormod's Crypt.",
+   "poolAt": 315,
+   "portOf": "bant:hexaura",
    "decklist": [
     {
      "cardId": "dungrove_elder",
@@ -635,6 +643,8 @@
    "title": "Izzet Sparks (U R)",
    "archetype": "aggro",
    "source": "S72 (the Nothing Dear seeds): the Tally from Grixis, without the Power — the Power for a Mountain, a fourth Ponder and a third Counterspell.",
+   "poolAt": 315,
+   "portOf": "grixis:tally",
    "decklist": [
     {
      "cardId": "volcanic_island",
@@ -708,6 +718,8 @@
    "title": "Snake Keeper (G R)",
    "archetype": "midrange",
    "source": "S72 (the Nothing Dear seeds): Emerald Snakes as Bodies plays it (the Open's without the Power: two Forests, a third Harmonize, Rancor and Bolt) — nothing above four; its fifteen's Pelakka and Penumbra Wurms (seven) for two more Walls of Razors and two more Savage Twisters.",
+   "poolAt": 315,
+   "portOf": "bodies:emeraldsnakes",
    "decklist": [
     {
      "cardId": "birds_of_paradise",
@@ -827,6 +839,8 @@
    "title": "Orzhov Landfall (W B)",
    "archetype": "midrange",
    "source": "S72 (the Nothing Dear seeds): the Levy from the Open, without the Power — the Power for a Plains, a second Nighthawk and a third Anthem; its fifteen's two Dranas (five) for two more Doom Blades.",
+   "poolAt": 315,
+   "portOf": "open:levy",
    "decklist": [
     {
      "cardId": "scrubland",
@@ -942,6 +956,8 @@
    "title": "Sultai Massacre Snakes (G B u)",
    "archetype": "midrange",
    "source": "S72 (the Nothing Dear seeds): Massocrafts from Sultai, without the Power — Library for a Breeding Pool, the Lotus for a Watery Grave, the rest for a second Jet Witch, two Walls of Blossoms and two Doom Blades (its fifteen kept whole for its guide); its fifteen's Drana (five) for a Tormod's Crypt.",
+   "poolAt": 315,
+   "portOf": "sultai:massocrafts",
    "decklist": [
     {
      "cardId": "birds_of_paradise",
@@ -1049,6 +1065,8 @@
    "title": "Mono-Black Clio (B u r)",
    "archetype": "midrange",
    "source": "S72 (the Nothing Dear seeds): Mono-Black Clio from Grixis, without the Power or the top — Library and the Lotus for two Swamps, the rest and the three Dranas (five) for two Children of Night, three Doom Blades (Bodies' picks) and three Typhoid Rats (its fifteen kept whole for its guide).",
+   "poolAt": 315,
+   "portOf": "grixis:mbclio",
    "decklist": [
     {
      "cardId": "vampire_nighthawk",
@@ -1148,6 +1166,8 @@
    "title": "Rakdos Removal (B R)",
    "archetype": "midrange",
    "source": "S72 (the Nothing Dear seeds): BR Removal from Grixis — legal as it stands (no Power, nothing above four).",
+   "poolAt": 315,
+   "portOf": "grixis:br",
    "decklist": [
     {
      "cardId": "blood_crypt",
@@ -1213,6 +1233,8 @@
    "title": "Naya Valakut (R W G)",
    "archetype": "control",
    "source": "S72 (the Nothing Dear seeds): the Minefield from the Open, without the Power — Library, the Lotus and the Emerald for three Mountains, the Pearl and the Ruby for a second Sacred Foundry and Stomping Ground, Earthrise for a fourth Wrath, Balance for a fourth Savage Twister, Wheel for a Pyroclasm (from its fifteen, a third Faerie Macabre in its place).",
+   "poolAt": 315,
+   "portOf": "open:minefield",
    "decklist": [
     {
      "cardId": "powerstone_minefield",
@@ -1320,6 +1342,8 @@
    "title": "Dimir Mill (U B)",
    "archetype": "control",
    "source": "S72 (the Nothing Dear seeds): the Undertow from Esper, without the Power — the Power for an Island, a fourth Counterspell and a third Essence Scatter.",
+   "poolAt": 315,
+   "portOf": "esper:undertow",
    "decklist": [
     {
      "cardId": "underground_sea",
@@ -1397,6 +1421,8 @@
    "title": "Usher Midrange (W B R)",
    "archetype": "midrange",
    "source": "S72 (the Nothing Dear seeds): Mardu Control as Bodies plays it (the Open's without the Power: a Blood Crypt, two Kavus, a third Purge, a second Helix) — the three Ushers (five) for three Revivalists (Chris: the Usher is a side win; the Revivalist recovers the aristocrats).",
+   "poolAt": 315,
+   "portOf": "bodies:marducontrol",
    "decklist": [
     {
      "cardId": "lumen_the_hearth_fire",

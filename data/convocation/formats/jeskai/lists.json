@@ -186,7 +186,9 @@
      "count": 1
     }
    ],
-   "source": "S67 seed (the planner's): the Open's Kiln, its fifteen's three Faerie Macabres (black) for three Pyroclasms — the Kiln makes no white mana, so no castable graveyard answer but the Crypt (which it holds four of)."
+   "source": "S67 seed (the planner's): the Open's Kiln, its fifteen's three Faerie Macabres (black) for three Pyroclasms — the Kiln makes no white mana, so no castable graveyard answer but the Crypt (which it holds four of).",
+   "poolAt": 286,
+   "portOf": "open:kiln"
   },
   {
    "key": "tally",
@@ -271,7 +273,9 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): the Open's Tally, archived there, revived here whole."
+   "source": "S67 seed (the planner's): the Open's Tally, archived there, revived here whole.",
+   "poolAt": 286,
+   "portOf": "open:tally"
   },
   {
    "key": "skies",
@@ -394,7 +398,9 @@
      "count": 1
     }
    ],
-   "source": "S67 seed (the planner's): Esper's Aerie, the Observatory for a Plains; its fifteen's Faerie Macabre (black) for a third Tormod's Crypt. Esper's guide (Wrath against `wide`) carried."
+   "source": "S67 seed (the planner's): Esper's Aerie, the Observatory for a Plains; its fifteen's Faerie Macabre (black) for a third Tormod's Crypt. Esper's guide (Wrath against `wide`) carried.",
+   "poolAt": 286,
+   "portOf": "esper:skies"
   },
   {
    "key": "watch",
@@ -479,7 +485,9 @@
      "count": 1
     }
    ],
-   "source": "S67 seed (the planner's): Mardu's Watch whole (with its Vigil Keepers)."
+   "source": "S67 seed (the planner's): Mardu's Watch whole (with its Vigil Keepers).",
+   "poolAt": 286,
+   "portOf": "mardu:watch"
   },
   {
    "key": "muster",
@@ -564,7 +572,9 @@
      "count": 4
     }
    ],
-   "source": "S67 seed (the planner's): the Open's Muster whole, with S67's three Vigil Keepers for three Fencing Aces (Part 1)."
+   "source": "S67 seed (the planner's): the Open's Muster whole, with S67's three Vigil Keepers for three Fencing Aces (Part 1).",
+   "poolAt": 286,
+   "portOf": "open:muster"
   },
   {
    "key": "warband",
@@ -645,7 +655,9 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): the Open's Warband whole."
+   "source": "S67 seed (the planner's): the Open's Warband whole.",
+   "poolAt": 286,
+   "portOf": "open:warband"
   },
   {
    "key": "rabble",
@@ -706,7 +718,9 @@
      "count": 1
     }
    ],
-   "source": "S67 seed (the planner's): Naya's Rabble whole (Chris's ruling: the Open's and Mardu's hold Badlands)."
+   "source": "S67 seed (the planner's): Naya's Rabble whole (Chris's ruling: the Open's and Mardu's hold Badlands).",
+   "poolAt": 286,
+   "portOf": "naya:rabble"
   },
   {
    "key": "urcontrol",
@@ -767,7 +781,9 @@
      "count": 3
     }
    ],
-   "source": "S67 seed (the planner's): Peasant's UR Pyroclasm Control whole."
+   "source": "S67 seed (the planner's): Peasant's UR Pyroclasm Control whole.",
+   "poolAt": 286,
+   "portOf": "peasant:urcontrol"
   },
   {
    "key": "sweepers",
@@ -775,6 +791,7 @@
    "title": "Jeskai Control (U W r)",
    "archetype": "control",
    "source": "S67 seed (the planner's): built by the implementer — the sweeper control the Open never got: Wrath, Pyroclasm and the Wave behind Counterspell, Absorb and Swords; Control Magic and the Kavu; Serra Angels to finish.",
+   "poolAt": 286,
    "decklist": [
     {
      "cardId": "black_lotus",
@@ -918,6 +935,7 @@
    "title": "Jeskai Theft (W R u)",
    "archetype": "midrange",
    "source": "S67 seed (the planner's): built by the implementer — the S60 theft shell with a sweeper behind it (the brief): Lumen, Restoration Angel, Protocol and Control Magic; the Altar to spend what is borrowed; Wrath. S67 (the lord read, ADR-168): two Man-o'-Wars for two Bailiffs (+4.6 ± 1.0).",
+   "poolAt": 286,
    "decklist": [
     {
      "cardId": "black_lotus",
@@ -1057,6 +1075,7 @@
    "title": "Azorius Control (W U)",
    "archetype": "control",
    "source": "S67 seed (the planner's): built by the implementer — the Locks without black (the brief): the Dredgers and Undermines for Serra Angels, Arcanis and Essence Scatters; Vindicate and Demonic Tutor for Swords and a Divination; its black lands for Tundras, Plains and Islands.",
+   "poolAt": 286,
    "decklist": [
     {
      "cardId": "tundra",
@@ -1192,6 +1211,7 @@
    "title": "Jeskai Minefield Control (U R W)",
    "archetype": "control",
    "source": "Post-S67 (Chris's, 2026-10-19): 8–0 in a Jeskai Convocation (event 347987; 16–3 in games — UR Pyroclasm Control, the Rabble, UR Pyroclasm Control, the Rabble and the Watch in the Swiss, then the Aerie, the Rabble and the Rabble). Nearly creatureless control: Powerstone Minefield behind Tidewalls, Waves and Pyroclasms; Sacred Helix to finish, Experimental Overload to bring it back; Mind Stone and Ponder to get there. The fifteen as registered; the guide read from Chris's swaps. NOTE (handoff Concern 9): the pilot attacks into the Minefield (81% of its attackers died to the trigger in Chris's games) — this list's table overstates it until S68's fix.",
+   "poolAt": 286,
    "decklist": [
     {
      "cardId": "ponder",

@@ -150,7 +150,9 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): Esper's Writ whole."
+   "source": "S69 seed (the planner's): Esper's Writ whole.",
+   "poolAt": 287,
+   "portOf": "esper:writ"
   },
   {
    "key": "tempo",
@@ -219,7 +221,9 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's): Esper's Eddy whole."
+   "source": "S69 seed (the planner's): Esper's Eddy whole.",
+   "poolAt": 287,
+   "portOf": "esper:tempo"
   },
   {
    "key": "undertow",
@@ -304,7 +308,9 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): Esper's Undertow whole."
+   "source": "S69 seed (the planner's): Esper's Undertow whole.",
+   "poolAt": 287,
+   "portOf": "esper:undertow"
   },
   {
    "key": "depths",
@@ -453,7 +459,9 @@
      "count": 1
     }
    ],
-   "source": "S69 seed (the planner's) (Chris's ruling): the Open's Depths — Sultai already; its Mox Pearl and Mox Ruby for an Island and a Swamp."
+   "source": "S69 seed (the planner's) (Chris's ruling): the Open's Depths — Sultai already; its Mox Pearl and Mox Ruby for an Island and a Swamp.",
+   "poolAt": 287,
+   "portOf": "open:depths"
   },
   {
    "key": "auras",
@@ -510,7 +518,9 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): Peasant's Dungrove Auras whole."
+   "source": "S69 seed (the planner's): Peasant's Dungrove Auras whole.",
+   "poolAt": 287,
+   "portOf": "peasant:elder"
   },
   {
    "key": "wurmspeaker",
@@ -583,7 +593,9 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's): the Open's Wurmspeaker whole."
+   "source": "S69 seed (the planner's): the Open's Wurmspeaker whole.",
+   "poolAt": 287,
+   "portOf": "open:wurmspeaker"
   },
   {
    "key": "bfh",
@@ -682,7 +694,9 @@
      "count": 1
     }
    ],
-   "source": "S69 seed (the planner's): Black Forest Ham (Chris's) whole."
+   "source": "S69 seed (the planner's): Black Forest Ham (Chris's) whole.",
+   "poolAt": 287,
+   "portOf": "jund:bfh"
   },
   {
    "key": "mbc",
@@ -755,7 +769,9 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's): Esper's Barrow whole (the pure-black shape)."
+   "source": "S69 seed (the planner's): Esper's Barrow whole (the pure-black shape).",
+   "poolAt": 287,
+   "portOf": "esper:mbc"
   },
   {
    "key": "reeve",
@@ -763,6 +779,7 @@
    "title": "Sultai Control (U B g)",
    "archetype": "control",
    "source": "S69 seed (the planner's): built by the implementer — the Reeve over Clio, Protocol, Control Magic, Putrefy and the Forerunner (the brief); Walls of Blossoms and counters to reach her.",
+   "poolAt": 287,
    "decklist": [
     {
      "cardId": "black_lotus",
@@ -987,7 +1004,8 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): built by the implementer from Esper's Undertow — Sultai mill (the brief: the Undertow with Tome Scour and Clio, both already in it): its three Nighthawks for three Zinnias (a creature of theirs leaving mills its power), its four Evolving Wilds for two Bayous and two Tropical Islands. Post-S71 (Part 3, the triad read; ADR-168): Volmaw for an Underground Sea — +5.6 ± 1.3 in matches (160 a pairing, paired)."
+   "source": "S69 seed (the planner's): built by the implementer from Esper's Undertow — Sultai mill (the brief: the Undertow with Tome Scour and Clio, both already in it): its three Nighthawks for three Zinnias (a creature of theirs leaving mills its power), its four Evolving Wilds for two Bayous and two Tropical Islands. Post-S71 (Part 3, the triad read; ADR-168): Volmaw for an Underground Sea — +5.6 ± 1.3 in matches (160 a pairing, paired).",
+   "poolAt": 287
   },
   {
    "key": "massocrafts",
@@ -995,6 +1013,7 @@
    "title": "Sultai Massacre Snakes (G B u)",
    "archetype": "midrange",
    "source": "Post-S69 (Chris's, 2026-10-25): 8–0 in a Sultai Convocation (event 879534; 16–2 in games — the Writ, Sultai Reeve, the Undertow, the Depths and Sultai Reeve again in the Swiss; Sultai Mill, Sultai Reeve (an 81-turn game one) and the Undertow in the bracket). Go wide on Birds, Manaba and Blood Artist into either the Emerald Keeper or The Meathook Massacre; Clio and Nighthawks; the Forerunner. The fifteen as Chris registered it; the guide read from his swaps (Chris: the plan felt haphazard — the main is tight; Protocol and Drana for the Clio wars). Guide (measured, ADR-168): against the Clio lists the Protocols come in for Birds and Manaba, the two Massacres for the Witch and a Keeper (+4.6 ± 0.9 over the guide read from Chris's swaps; +7.7 against the six Clio lists).",
+   "poolAt": 287,
    "decklist": [
     {
      "cardId": "birds_of_paradise",

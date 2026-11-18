@@ -176,7 +176,9 @@
      "count": 1
     }
    ],
-   "source": "S67 seed (the planner's): the Open's Sweep, its off-colour mana swapped: Tallyflame Court, the Observatory, Shevelport, Underground Sea and Savannah for two Blood Crypts, two Overgrown Tombs and a Stomping Ground; Mox Sapphire and Mox Pearl for two Forests."
+   "source": "S67 seed (the planner's): the Open's Sweep, its off-colour mana swapped: Tallyflame Court, the Observatory, Shevelport, Underground Sea and Savannah for two Blood Crypts, two Overgrown Tombs and a Stomping Ground; Mox Sapphire and Mox Pearl for two Forests.",
+   "poolAt": 286,
+   "portOf": "open:sweep"
   },
   {
    "key": "ashen",
@@ -269,7 +271,9 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): Mardu's Ashen whole."
+   "source": "S67 seed (the planner's): Mardu's Ashen whole.",
+   "poolAt": 286,
+   "portOf": "mardu:brremoval"
   },
   {
    "key": "rabble",
@@ -360,7 +364,9 @@
      "count": 4
     }
    ],
-   "source": "S67 seed (the planner's): Mardu's Rabble whole (the Open's with its blue mana swapped)."
+   "source": "S67 seed (the planner's): Mardu's Rabble whole (the Open's with its blue mana swapped).",
+   "poolAt": 286,
+   "portOf": "mardu:rabble"
   },
   {
    "key": "stompy",
@@ -441,7 +447,9 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): Naya's Stampede whole."
+   "source": "S67 seed (the planner's): Naya's Stampede whole.",
+   "poolAt": 286,
+   "portOf": "naya:stompy"
   },
   {
    "key": "auras",
@@ -498,7 +506,9 @@
      "count": 3
     }
    ],
-   "source": "S67 seed (the planner's): Peasant's Dungrove Auras for the Thicket (Chris's ruling: the Thicket is white)."
+   "source": "S67 seed (the planner's): Peasant's Dungrove Auras for the Thicket (Chris's ruling: the Thicket is white).",
+   "poolAt": 286,
+   "portOf": "peasant:elder"
   },
   {
    "key": "emeraldsnakes",
@@ -609,7 +619,9 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): Naya's Emerald Snakes (Chris's), its white mana swapped: Mox Pearl for Mox Jet, Shevelport and four Temple Gardens for five Forests, four Savannahs for four Bayous."
+   "source": "S67 seed (the planner's): Naya's Emerald Snakes (Chris's), its white mana swapped: Mox Pearl for Mox Jet, Shevelport and four Temple Gardens for five Forests, four Savannahs for four Bayous.",
+   "poolAt": 286,
+   "portOf": "naya:emeraldsnakes"
   },
   {
    "key": "wurmspeaker",
@@ -682,7 +694,9 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): the Open's Wurmspeaker whole."
+   "source": "S67 seed (the planner's): the Open's Wurmspeaker whole.",
+   "poolAt": 286,
+   "portOf": "open:wurmspeaker"
   },
   {
    "key": "kindling",
@@ -755,7 +769,9 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): Mardu's Kindling whole."
+   "source": "S67 seed (the planner's): Mardu's Kindling whole.",
+   "poolAt": 286,
+   "portOf": "mardu:burn"
   },
   {
    "key": "reaper",
@@ -878,7 +894,9 @@
      "count": 4
     }
    ],
-   "source": "S67 seed (the planner's): the Open's Reaper Control, archived there, revived here (Chris's ruling) — its Wrackroot for a Forest. The Reaper is Jund's lord."
+   "source": "S67 seed (the planner's): the Open's Reaper Control, archived there, revived here (Chris's ruling) — its Wrackroot for a Forest. The Reaper is Jund's lord.",
+   "poolAt": 286,
+   "portOf": "open:reaper"
   },
   {
    "key": "bfh",
@@ -886,6 +904,7 @@
    "title": "Golgari Auras (B G)",
    "archetype": "midrange",
    "source": "Chris's (S67, his Peasant list, registered in Jund at his ruling): Rancor and Blanchwood Armor on Dungrove Elder, Gaean Wurm and the Forerunner; Unearth to bring them back. His fifteen as he registered it in Peasant.",
+   "poolAt": 286,
    "decklist": [
     {
      "cardId": "rancor",
@@ -985,6 +1004,7 @@
    "title": "Rakdos Aristocrats (B R g)",
    "archetype": "midrange",
    "source": "S67 seed (the planner's): built by the implementer — the Coin's shape without white (the brief): Blood Artist, Indulgent Aristocrat, Reassembling Skeleton and Meliyan, Bitterblossom and the Fodder for bodies, Nighthawks; no Usher. The Sweep is Jund's other aristocrats list (the Reaper's).",
+   "poolAt": 286,
    "decklist": [
     {
      "cardId": "badlands",
@@ -1096,6 +1116,7 @@
    "title": "Jund Dragons (R g b)",
    "archetype": "midrange",
    "source": "Post-S67 (Chris's, 2026-10-20): event 778824 — 5–0 and 10–0 in the Swiss (the Ashen, the Kindling, the Rabble, Emerald Snakes twice), then the Stampede 1–2 in the quarter-final. Going bigger than the Emerald Keeper: Drakuseth and the Ruby Tyrant on Birds, Manaba and the power; Kavu, Forerunner, Nighthawk and Shocking Sharpshooter around them; the Witch to dig. Registered at Chris's flip (S68): three Drakuseth and two Tyrants (played: two and three). The fifteen and the guide read from Chris's swaps.",
+   "poolAt": 286,
    "decklist": [
     {
      "cardId": "drakuseth_maw_of_flames",

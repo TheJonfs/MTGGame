@@ -1,0 +1,5 @@
+# the second seed (173) for rows that cleared under +5 on seed 91
+nothing-dear tally shaman ponder:4:storm_shaman
+open muster marshal suntail_hawk:2:dawnwing_marshal;fencing_ace:1:dawnwing_marshal
+esper mbc nyx gravedigger:2:nyxathid
+mardu burn shaman arc_mage:2:storm_shaman;furnace_whelp:2:storm_shaman

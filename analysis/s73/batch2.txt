@@ -1,0 +1,19 @@
+# the triads' and Peasant's bottom lists, and homes for the five
+naya lifegain spire plains:1:hearthspire
+naya lifegain cleric karmic_mentor:2:banishing_cleric;dazzling_angel:2:banishing_cleric
+esper mbc nyx gravedigger:2:nyxathid
+esper mbc command diabolic_edict:3:command_of_the_depths
+mardu burn valakut mountain:4:valakut_the_molten_pinnacle
+mardu burn shaman arc_mage:2:storm_shaman;furnace_whelp:2:storm_shaman
+jeskai sweepers spire plateau:1:hearthspire
+jeskai urcontrol silt wall_of_air:4:silt_spirit
+abzan warden bower overgrown_tomb:1:nightbower
+abzan warden reviv dazzling_angel:4:revivalist
+peasant naya cleric little_bear:3:banishing_cleric
+peasant mbc nyx gallows_djinn:3:nyxathid
+esper wbcontrol cleric karmic_mentor:4:banishing_cleric
+open muster cleric vigil_keeper:3:banishing_cleric
+temur reaper guard wall_of_blossoms:4:clutch_guard
+# Order Druid in Rampant Growth's slot (bodies:wurmspeaker read +10.3): the Open's and the lowest triad port
+open wurmspeaker druid rampant_growth:4:order_druid
+sultai wurmspeaker druid rampant_growth:4:order_druid

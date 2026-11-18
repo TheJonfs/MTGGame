@@ -179,7 +179,9 @@
      "count": 1
     }
    ],
-   "source": "S69 seed (the planner's): the Kiln (Jeskai's fifteen, its Pyroclasms for the Macabres)."
+   "source": "S69 seed (the planner's): the Kiln (Jeskai's fifteen, its Pyroclasms for the Macabres).",
+   "poolAt": 287,
+   "portOf": "jeskai:kiln"
   },
   {
    "key": "tally",
@@ -264,7 +266,9 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's): the Open's Tally (archived there) whole."
+   "source": "S69 seed (the planner's): the Open's Tally (archived there) whole.",
+   "poolAt": 287,
+   "portOf": "open:tally"
   },
   {
    "key": "stompy",
@@ -345,7 +349,9 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's): Naya's Stampede whole."
+   "source": "S69 seed (the planner's): Naya's Stampede whole.",
+   "poolAt": 287,
+   "portOf": "naya:stompy"
   },
   {
    "key": "emeraldsnakes",
@@ -456,7 +462,9 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's): Emerald Snakes (Chris's, Jund's mana), its Mox Jet for Mox Sapphire and four Bayous for four Tropical Islands."
+   "source": "S69 seed (the planner's): Emerald Snakes (Chris's, Jund's mana), its Mox Jet for Mox Sapphire and four Bayous for four Tropical Islands.",
+   "poolAt": 287,
+   "portOf": "jund:emeraldsnakes"
   },
   {
    "key": "wurmspeaker",
@@ -529,7 +537,9 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's): the Open's Wurmspeaker whole."
+   "source": "S69 seed (the planner's): the Open's Wurmspeaker whole.",
+   "poolAt": 287,
+   "portOf": "open:wurmspeaker"
   },
   {
    "key": "rabble",
@@ -590,7 +600,9 @@
      "count": 1
     }
    ],
-   "source": "S69 seed (the planner's): Naya's Rabble whole."
+   "source": "S69 seed (the planner's): Naya's Rabble whole.",
+   "poolAt": 287,
+   "portOf": "naya:rabble"
   },
   {
    "key": "reaper",
@@ -713,7 +725,9 @@
      "count": 4
     }
    ],
-   "source": "S69 seed (the planner's) (Chris's ruling): the Open's Reaper Control revived — its three Reapers (Jund's lord) for three Emerald Keepers; Mox Jet for Mox Sapphire, Cairnbrand for the Tallyflame Court, four Bayous and four Badlands for four Tropical and four Volcanic Islands; its fifteen's four Putrefies (black) for four Abrades. Renamed Temur Snakes (Chris, 2026-10-22; the key stays `reaper`)."
+   "source": "S69 seed (the planner's) (Chris's ruling): the Open's Reaper Control revived — its three Reapers (Jund's lord) for three Emerald Keepers; Mox Jet for Mox Sapphire, Cairnbrand for the Tallyflame Court, four Bayous and four Badlands for four Tropical and four Volcanic Islands; its fifteen's four Putrefies (black) for four Abrades. Renamed Temur Snakes (Chris, 2026-10-22; the key stays `reaper`).",
+   "poolAt": 287,
+   "portOf": "open:reaper"
   },
   {
    "key": "kindling",
@@ -786,7 +800,9 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's): the Kindling whole."
+   "source": "S69 seed (the planner's): the Kindling whole.",
+   "poolAt": 287,
+   "portOf": "mardu:burn"
   },
   {
    "key": "unwinder",
@@ -794,6 +810,7 @@
    "title": "Temur Tempo (U R g)",
    "archetype": "midrange",
    "source": "S69 seed (the planner's): built by the implementer — the Unwinder (Temur's lord) with bounce (Man-o'-War, Aether Channeler, Boomerang), the Forerunner, Kavu and Control Magic (the brief); counters and Bolts.",
+   "poolAt": 287,
    "decklist": [
     {
      "cardId": "black_lotus",
@@ -925,6 +942,7 @@
    "title": "Temur Ramp (G r u)",
    "archetype": "midrange",
    "source": "S69 seed (the planner's): built by the implementer — Elves, Birds and Walls into Rampaging Baloths, Penumbra Wurm and Gaean Wurm, Harmonize to refuel, Pyroclasm and the Kavu to clear the way (the brief); counters for the top.",
+   "poolAt": 287,
    "decklist": [
     {
      "cardId": "black_lotus",
@@ -1040,6 +1058,7 @@
    "title": "Temur Control (U R G)",
    "archetype": "control",
    "source": "Post-S69 (Chris's, 2026-10-28): 8–0 in a Temur Convocation (event 507677; 16–2 in games — Emerald Snakes, the Unwinder, the Rabble, Temur Snakes twice in the Swiss; Temur Ramp, the Rabble (33, 47 and 37 turns) and Temur Ramp in the bracket). Counterspells, Mystic Snakes and Control Magic over Walls of Razors, Voracious Cobras and Reaper's Forerunners; Bolts, Foxglove Dose and Char; Drakuseth as the finisher. The fifteen as Chris registered it; the guide read from his swaps.",
+   "poolAt": 287,
    "decklist": [
     {
      "cardId": "black_lotus",

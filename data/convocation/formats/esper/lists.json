@@ -114,6 +114,7 @@
    "title": "Mono-Black Control (B)",
    "archetype": "control",
    "source": "S65 seed (the planner's, built by the implementer): the Pall's shell without its engine — the Usher is Mardu's and legal only there, so no loop in Esper. The Jet Witch's draw, Drana, Nighthawk, Hypnotic Specter, Nekrataal; Doom Blade, Edict, the Tutor.",
+   "poolAt": 283,
    "decklist": [
     {
      "cardId": "swamp",
@@ -187,6 +188,8 @@
    "title": "Dimir Control (U B)",
    "archetype": "control",
    "source": "S65 seed (the planner's): the Open's Writ whole but for its mana — Badlands, Bayou, the Tallyflame Court, Wrackroot, the Volcanic and Tropical Islands and Cairnbrand (eleven lands making red or green) out under ADR-181, six Islands and five Swamps in.",
+   "poolAt": 283,
+   "portOf": "open:writ",
    "decklist": [
     {
      "cardId": "library_of_alexandria",
@@ -302,6 +305,8 @@
    "title": "Orzhov Landfall (W B)",
    "archetype": "midrange",
    "source": "S65 seed (the planner's): the Open's Levy whole (Esper-legal as it stands).",
+   "poolAt": 283,
+   "portOf": "open:levy",
    "decklist": [
     {
      "cardId": "scrubland",
@@ -433,6 +438,7 @@
    "title": "Esper Control (W U B)",
    "archetype": "control",
    "source": "S65 seed (the planner's): the archived Locks revived with its S57/S58 revisions (the four Control Magics), plus two Protocols, two Karmic Mentors and a Wave of Reckoning beside its Wraths — for two Undermines, two Swords and a Vindicate. S66 (Part 2, the sweeper round): its fifteen with a fourth Wrath, a second Wave and a Retribution for the two Faerie Macabres and a Disenchant; its guide the Open's rows plus Wrath and the Wave in for Vindicate and Swords against `wide` (the Roll, the Levy) — +9.7 ± 5.1 there, 160 matches a pairing (Retribution measured −1.6 and left out).",
+   "poolAt": 283,
    "decklist": [
     {
      "cardId": "tundra",
@@ -588,6 +594,8 @@
    "title": "Dimir Mill (U B)",
    "archetype": "control",
    "source": "S65 seed (the planner's): the archived Undertow revived — its Tropical Islands, Bayous, Wrackroot and Mox Emerald (green) out for Watery Graves and Islands; four Tome Scours for the two Man-o'-Wars and the two Faerie Macabres; Tidewall, Glimpse and Clio kept. Post-S71 (Part 3, the triad read; ADR-168): Volmaw for an Underground Sea — +3.8 ± 1.3 in matches (160 a pairing, paired).",
+   "poolAt": 283,
+   "portOf": "open:undertow",
    "decklist": [
     {
      "cardId": "underground_sea",
@@ -677,6 +685,7 @@
    "title": "Orzhov Control (W B)",
    "archetype": "midrange",
    "source": "S65 seed (the planner's, built by the implementer; Chris expects a WB control list here): Mardu Control's shape without the Ushers (Mardu's) and without red — Karmic Mentor, Restoration Angel, Vindicate, the Jet Witch, Wrath, Isaura, Swords, Emeria Angel at the top; Blood Artist and Soul Warden as the lifegain floor. S66 (Part 2, the sweeper round): a fifteen registered (the builder's, with a fourth Wrath, two Waves and a Retribution); its guide Wrath in for Vindicate and Swords against `wide` (the Roll, the Levy) — +5.0 ± 5.6 there (the Wave −1.2, Retribution −1.2, left as fifteen cards only).",
+   "poolAt": 283,
    "decklist": [
     {
      "cardId": "scrubland",
@@ -808,6 +817,7 @@
    "title": "Azorius Skies (W U)",
    "archetype": "midrange",
    "source": "S65 seed (the planner's, built by the implementer): Peasant's UW Skies promoted — two Serra Angels, two Emeria Angels, a Faerie Formation and two Control Magics for the four Marshals, two Traumatizers and a Swords; Tundras, the Obsidian Observatory and the power for basics. S66 (Part 2, the sweeper round): a fifteen registered (the builder's, two Waves and a Retribution for Tidewall, Traumatizer and a Faerie Macabre); its guide Wrath in for Swords and Plumecreed Escort against `wide` — +3.4 ± 3.5 there. Faldor (two for two Valkyries) measured −6.3 ± 2.1 against the field and not adopted.",
+   "poolAt": 283,
    "decklist": [
     {
      "cardId": "hallowed_fountain",
@@ -939,6 +949,7 @@
    "title": "Orzhov Tokens (W B)",
    "archetype": "aggro",
    "source": "S65 seed (the planner's, built by the implementer): Shadow Summoning, Bitterblossom, Raise the Alarm, Captain of the Watch, Isaura, Emeria Angel, Glorious Anthem, Vindicate — with Soul Warden and two Karmic Mentors (they return Wardens and Bitterblossoms).",
+   "poolAt": 283,
    "decklist": [
     {
      "cardId": "scrubland",
@@ -1024,6 +1035,7 @@
    "title": "Blue Tempo, splash Clio (U b)",
    "archetype": "midrange",
    "source": "S65 seed (the planner's 'Mono-Blue Tempo', built by the implementer): Tidewall, Man-o'-War, Plumecreed Escort, Aether Channeler, Control Magic, Counterspell, Boomerang — and Clio, so black is splashed (Chris).",
+   "poolAt": 283,
    "decklist": [
     {
      "cardId": "underground_sea",
@@ -1093,6 +1105,7 @@
    "title": "Esper Reanimator (W U B)",
    "archetype": "combo",
    "source": "S65 seed (the planner's, built by the implementer): Entomb, Buried Alive, Zombify, Graceful Restoration; Angel of the Ruins and Artisan of Kozilek as the pieces, the Dredger and Drana; the Jet Witch to dig. A plan in the Larder's vocabulary (goal: once).",
+   "poolAt": 283,
    "decklist": [
     {
      "cardId": "scrubland",
