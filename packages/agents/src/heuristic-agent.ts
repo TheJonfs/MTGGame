@@ -3,7 +3,7 @@ import { parseManaCost, manaValue, cardColors, type CardDef, type Effect, type R
 import type { Action, ActionRequest, Agent, GameView, PlayerId } from "@shandalar/engine";
 import { preferSide, targetSide, classifyEffects, effectsForAction, ptSign } from "./effect-classification.js";
 import { DEFAULT_CONSTANTS, deterrence, evaluate, legendLoopWorth, legendLoopWorth99, LOOP_GAIN_WORTH, LOOP_WORTH, millPerDamage, millValue, objectValue, reanimationWorth, type AiProfile, type EvalConstants } from "./evaluator.js";
-import { predictAction, exchangeStaticsGain } from "./view-sim.js";
+import { predictAction, exchangeStaticsGain, setSimLibrary } from "./view-sim.js";
 import { viewAbilityAt } from "./granted-view.js";
 import { PlanPlay } from "./plan-play.js";
 import { payableBy, reserveTaps, type ManaSource, type Tap } from "./reserve.js";
@@ -272,6 +272,7 @@ export class HeuristicAgent implements Agent {
 
   /** Exposed for the book-of-shame suite: the score one action would get. */
   scorePriorityAction(view: GameView, action: Action): number {
+    setSimLibrary(this.remainingLibrary(view)); // book 175: what a search onto the battlefield can find
     if (action.type === "pass") {
       return evaluate(view, this.profile, this.defs) + this.counterHoldBonus(view) + this.flashHoldBonus(view);
     }
@@ -371,6 +372,8 @@ export class HeuristicAgent implements Agent {
     if (this.accumulatorSpendGated(view, action)) return -Infinity; // S26: Clio holds the tax while the board threatens
     if (this.floodSinkGated(view, action)) return -Infinity; // S40 (books 58–63): the flood's repeatable sinks — timing, targets, spare lands
     if (this.landUntapGated(view, action)) return -Infinity; // post-S70 (book 156): a land is untapped when it pays now
+    if (this.selfSacSearchGated(view, action)) return -Infinity; // book 175: the Order Druid fetches at their end step, or in answer
+    if (this.tapMillTimingGated(view, action)) return -Infinity; // book 176: a creature's {T} mill at their end step, in answer, or for the last cards
     // The misaim rule: a FINITE cliff (not -Infinity) so book-of-shame orderings among
     // bad aims survive — at any softmax temperature exp(-MISAIM/t) is 0, so a misaimed
     // variant is never picked while any legitimate action (pass included) exists.
@@ -1036,6 +1039,7 @@ export class HeuristicAgent implements Agent {
         case "creatureYouControl": return o.power !== null && o.controller === view.you && kw;
         case "creatureYouDontControl": return o.power !== null && o.controller !== view.you && kw;
         case "permanent": case "nonlandPermanent": return kw;
+        case "nonlandPermanentYouDontControl": return !dd.types.includes("Land") && o.controller !== view.you && kw;
         default: return true;
       }
     };
@@ -1233,11 +1237,77 @@ export class HeuristicAgent implements Agent {
    * Tutor (any card): if the hand is land-light (<2), a needed basic; else
    * the best castable-soon nonland (mv ≤ lands+1), highest mv first — the
    * discard/bottom ranking inverted; never a land while holding ≥3 lands. */
+  /** Book 175 (R-132): the card ids our library still holds — the decklist less the cards we can see (hand, the
+   * permanents we own, our graveyard). Null without a decklist. Exposed for the book. */
+  remainingLibrary(view: GameView): string[] | null {
+    const deck = this.profile.decklist;
+    if (!deck) return null;
+    const left = new Map(deck.map((e) => [e.cardId, e.count]));
+    const seen = [...view.hand.map((c) => c.cardId), ...view.battlefield.filter((o) => (o.owner ?? o.controller) === view.you && !o.token && !o.id.startsWith("pred_")).map((o) => o.cardId), ...view.graveyardObjects[view.you].map((g) => g.cardId)];
+    for (const c of seen) if (left.has(c)) left.set(c, left.get(c)! - 1);
+    return [...left].flatMap(([c, n]) => Array.from({ length: Math.max(0, n) }, () => c));
+  }
+
+  /** Book 175 (R-132, the Order Druid): an ability that SACRIFICES its source to search onto the battlefield is an instant-
+   * speed tutor — spent at the opponent's end step (the mana is spare; the find is ready on our turn), or at once when the
+   * source is about to be lost (an opposing spell or ability on the stack targets it, or it is in a blocked or blocking
+   * combat it does not survive — read as: it is in combat at all, damage step not yet dealt). Off: "orderfind". */
+  selfSacSearchGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility" || this.profile.off?.includes("orderfind")) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || ab.cost.sacrifice?.predicate !== "self" || !ab.effects.some((e) => e.type === "searchLibrary" && e.to === "battlefield")) return false;
+    if (this.sourceThreatened(view, action.objectId)) return false;
+    const inCombat = view.combat.attackers.includes(action.objectId) || view.combat.blocks.some((b) => b.blocker === action.objectId || b.attacker === action.objectId);
+    if (inCombat && (view.step === "DECLARE_BLOCKERS")) return false;
+    return !(view.activePlayer !== view.you && view.step === "END" && view.stack.length === 0);
+  }
+
+  /** Book 175: an opposing spell or ability on the stack that kills, burns, exiles, bounces or edicts — aimed at this
+   * permanent or not (a sweeper, a ping at a creature, an edict). The answer window for an ability the source may not
+   * survive to use. A −X/−X `modifyPT` counts; a pump does not. */
+  sourceThreatened(view: GameView, objectId: string): boolean {
+    const KILLS = new Set(["destroy", "destroyAll", "damage", "damageAll", "exile", "bounce", "sacrifice", "modifyPT"]);
+    return view.stack.some((it) => {
+      if (it.controller === view.you) return false;
+      if ((it.targets ?? []).some((t) => t.kind === "object" && t.id === objectId)) return true;
+      const d = this.def(it.cardId); if (!d) return false;
+      const effs = it.kind === "spell" ? (d.spellEffect ?? []) : (d.abilities ?? []).flatMap((a) => (a.kind === "activated" || a.kind === "triggered" ? a.effects : []));
+      return effs.some((e) => KILLS.has(e.type) && !(e.type === "modifyPT" && typeof (e as { toughness?: unknown }).toughness === "number" && ((e as { toughness: number }).toughness >= 0)));
+    });
+  }
+
+  /** Book 176 (R-133, the Silt Spirit): a creature's {T}-only mill (no mana in the cost) at a player is spent at the
+   * opponent's end step — the creature untaps in our untap step, so it costs no block and no attack — or at once when the
+   * creature may not live to use it (an opposing threat on the stack), or when the mill empties the target's library.
+   * Off: "tapmill". */
+  tapMillTimingGated(view: GameView, action: Action): boolean {
+    if (action.type !== "activateAbility" || this.profile.off?.includes("tapmill")) return false;
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!ab || ab.kind !== "activated" || !ab.cost.tap || ab.cost.mana || ab.cost.sacrifice || !ab.effects.some((e) => e.type === "mill")) return false;
+    const src = view.battlefield.find((o) => o.id === action.objectId);
+    if (!src || src.power === null) return false; // a land's or an artifact's tap: the S40/S70 rules
+    if (view.activePlayer !== view.you && view.step === "END" && view.stack.length === 0) return false;
+    if (this.sourceThreatened(view, action.objectId)) return false;
+    const t = ((action as { targets?: ResolvedTarget[] }).targets ?? [])[0];
+    const who = t?.kind === "player" ? t.player : 1 - view.you;
+    const n = ab.effects.reduce((m, e) => m + (e.type === "mill" ? (typeof e.count === "number" ? e.count : (e.count as { ref?: string }).ref === "sourceToughness" ? Math.max(0, src.toughness ?? 0) : 0) : 0), 0);
+    if (who !== view.you && n >= (view.librarySizes[who as 0 | 1] ?? 99)) return false; // it empties them: now
+    return true;
+  }
+
   searchChoice(view: GameView, request: ActionRequest): Action {
     const picks = request.actions.filter((a): a is Extract<Action, { type: "searchPick" }> => a.type === "searchPick");
     const decline = request.actions.find((a) => a.type === "declineSearch") ?? request.actions[0]!;
     if (picks.length === 0) return decline;
     const cardOf = new Map((request.revealed ?? []).map((r) => [r.objectId, r.cardId]));
+    // Book 175 (R-132): a creature search onto the battlefield takes the best body — what it costs to cast is beside the
+    // point (the reanimator's worth: mana value, size, an enter trigger); the legend we already control is never taken.
+    if (!this.profile.off?.includes("orderfind") && (request.source?.effects ?? []).some((e) => e.type === "searchLibrary" && e.to === "battlefield" && e.predicate === "creatureCard")) {
+      const legendHeld = (c: string) => (this.def(c)?.supertypes ?? []).includes("Legendary") && view.battlefield.some((o) => o.controller === view.you && o.cardId === c);
+      const ok = picks.filter((a) => !legendHeld(cardOf.get(a.objectId) ?? ""));
+      const w = (a: (typeof picks)[number]) => reanimationWorth(this.def(cardOf.get(a.objectId) ?? ""));
+      if (ok.length) return [...ok].sort((a, b) => w(b) - w(a) || (cardOf.get(a.objectId) ?? "").localeCompare(cardOf.get(b.objectId) ?? ""))[0]!;
+    }
     const me = view.you;
     const myLands = view.battlefield.filter((o) => o.controller === me && this.def(o.cardId)?.types.includes("Land"));
     const handLands = view.hand.filter((c) => this.def(c.cardId)?.types.includes("Land")).length;
@@ -1399,6 +1469,19 @@ export class HeuristicAgent implements Agent {
     }
     return best ? best.pips.join("") : null;
   }
+  /** Book 175 (the Druid probe: Wurmspeaker cast 60 Druids and fetched with 9 — the rest died to sweepers and the Kavu with
+   * every Forest tapped): while we control a READY self-sacrificing search (untapped, not summoning-sick), a cast is paid so
+   * that its activation cost stays open, whenever some payment allows it — the answer to removal in response is the fetch. */
+  sacSearchHold(view: GameView, pick: Action): string | null {
+    if (this.profile.off?.includes("orderfind")) return null;
+    for (const o of view.battlefield) {
+      if (o.controller !== view.you || o.tapped || o.summoningSick || (pick.type === "activateAbility" && pick.objectId === o.id)) continue;
+      for (const a of this.def(o.cardId)?.abilities ?? []) {
+        if (a.kind === "activated" && a.cost.sacrifice?.predicate === "self" && a.cost.mana && a.effects.some((e) => e.type === "searchLibrary" && e.to === "battlefield")) return a.cost.mana;
+      }
+    }
+    return null;
+  }
   /** S56 (book 108): the mana cost the chosen action pays — a spell's (with X) or an activated ability's. */
   private actionManaCost(view: GameView, action: Action): { cost: string; x: number } | null {
     const x = (action as { x?: number }).x ?? 0;
@@ -1414,7 +1497,7 @@ export class HeuristicAgent implements Agent {
     const paying = this.actionManaCost(view, pick);
     if (!paying || Object.values(view.manaPool).some((n) => n > 0)) return null;
     const counter = this.profile.holdTricks === false || this.profile.off?.includes("counter") ? null : this.heldCounter(view, pick.type === "castSpell" ? pick.objectId : undefined);
-    const hold = counter ?? this.burstHold(view, pick);
+    const hold = counter ?? this.burstHold(view, pick) ?? this.sacSearchHold(view, pick);
     if (!hold) return null;
     const taps = reserveTaps(this.manaSources(view), paying.cost, paying.x, hold);
     if (!taps || taps.length === 0) return null;

@@ -26,6 +26,8 @@ export interface ResolvedContinuousEffect {
 
 /** Player selection that needs target LKI resolves through the context (ADR-028). */
 
+/** Post-S72 (R-132): a search's colour and mana-value filters. */
+export interface SearchFilter { color?: "W" | "U" | "B" | "R" | "G"; monocolored?: true; manaValueAtMost?: number }
 export interface EffectContext {
   /** Re-checked target by index; null if the target is now illegal (skip it, CR 608.2b). */
   target(i: number): ResolvedTarget | null;
@@ -63,7 +65,7 @@ export interface EffectContext {
    * asked) or decline; the library is ALWAYS shuffled after (CR 701.19),
    * through the logged game RNG. Async: it is a DecisionRequest.
    */
-  searchLibrary(player: number, predicate: "basicLand" | "landCard" | "anyCard" | "creatureCard" | `subtype:${string}`, to: "hand" | "battlefield" | "graveyard", entersTapped: boolean, count?: number): Promise<void>;
+  searchLibrary(player: number, predicate: "basicLand" | "landCard" | "anyCard" | "creatureCard" | `subtype:${string}`, to: "hand" | "battlefield" | "graveyard", entersTapped: boolean, count?: number, filter?: SearchFilter): Promise<void>;
   /** ADR-075 A8: exile the object and return it to the battlefield under the effect controller's control as a new object (ETBs fire). */
   exileThenReturn(objectId: string, under?: "yourControl" | "owner"): Promise<void> | void;
   /** S36 (R-096 word 1): schedule the resolving ability's SOURCE to return to its owner's hand at the beginning of the next cleanup step. */
@@ -98,7 +100,8 @@ export interface EffectContext {
   /** S58 (R-106): the resolving ability's own SOURCE fights `targetId`; nothing happens if the source has left the battlefield (CR 701.14b). */
   fightSource(targetId: string): void;
   /** Exile (CR 700.4: not a death — no DIES trigger). S55: a permanent, or a card in a graveyard (Faerie Macabre). */
-  exile(objectId: string): void;
+  /** Post-S72 (R-130): `linked` — exile until the resolving ability's source leaves the battlefield (CR 610.3). */
+  exile(objectId: string, linked?: boolean): void;
   /** S66 (R-115): a graveyard card to the bottom of its owner's library. */
   putOnBottom(objectId: string): void;
   /** S23 (ADR-084): sacrifice the resolving ability's own SOURCE (the Thundersnake) — a sacrifice,
@@ -291,7 +294,7 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   searchLibrary: async (e, ctx) => {
     if (e.type !== "searchLibrary") throw new Error("resolver mismatch");
-    for (const p of ctx.players("you")) await ctx.searchLibrary(p, e.predicate, e.to, e.entersTapped === true, e.count ?? 1);
+    for (const p of ctx.players("you")) await ctx.searchLibrary(p, e.predicate, e.to, e.entersTapped === true, e.count ?? 1, { ...(e.color ? { color: e.color } : {}), ...(e.monocolored ? { monocolored: true as const } : {}), ...(e.manaValueAtMost !== undefined ? { manaValueAtMost: e.manaValueAtMost } : {}) });
   },
 
   createToken: (e, ctx) => {
@@ -393,7 +396,7 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     if (e.scope === "laws" && ctx.lawMode() === "accumulate") return;
     // S42a (the Cinquefont): the wash comes only at the full tide.
     if (e.ifLawsAtLeast !== undefined && ctx.lawCount() < e.ifLawsAtLeast) return;
-    for (const t of targeted(e, ctx)) if (t.kind === "object") ctx.exile(t.id);
+    for (const t of targeted(e, ctx)) if (t.kind === "object") ctx.exile(t.id, e.untilSourceLeaves === true);
   },
 
   createLaw: (e, ctx) => {

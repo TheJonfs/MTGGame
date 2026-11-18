@@ -188,6 +188,10 @@ function basePredicate(ctx: EngineCtx, spec0: TargetSpec, target: ResolvedTarget
       if (!isLegalTarget(ctx, { ...spec, predicate: "permanent" }, target, by)) return false;
       return target.kind === "object" && !ctx.defs.def(state.objects[target.id]!.cardId).types.includes("Land");
     }
+    case "nonlandPermanentYouDontControl": { // post-S72 (R-130, the Banisher)
+      if (!isLegalTarget(ctx, { ...spec, predicate: "nonlandPermanent" }, target, by)) return false;
+      return target.kind === "object" && state.objects[target.id]!.controller !== by;
+    }
     // S36 (Angel of the Ruins): "artifacts and/or enchantments" — one predicate so a range spec spans both.
     case "artifactOrEnchantment": {
       if (!isLegalTarget(ctx, { ...spec, predicate: "permanent" }, target, by)) return false;

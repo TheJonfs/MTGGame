@@ -1,4 +1,4 @@
-# Handoff — after Session 72 (2026-11-14)
+# Handoff — after Session 72, with the post-S72 work (2026-11-18)
 
 ## State of the world
 The ten-card hybrid two-drop cycle is complete in the pool: 315 cards, R-125 to R-129. The AI has a book for each card that needed one (165–169).
@@ -21,26 +21,33 @@ The ten-card hybrid two-drop cycle is complete in the pool: 315 cards, R-125 to 
 
 `docs/decision-updates/s72.md` is the full record. Run the app with `pnpm viewer` and the tests with `pnpm test`.
 
-## Since the planner's last read (2026-11-11 to 13; commits e386d8a to 20c3669)
-The S72 brief follows the handoff of 2026-11-11. Everything below came after it, at Chris's direction. Each item is in `docs/decision-updates/s71.md` (post-S71a) or in its commit.
+## Since Session 72 (2026-11-15 to 18; commits a780ae3 to this one)
+Everything below came after the S72 handoff, at Chris's direction. The S72 sections further down are unchanged.
 
-- **The hybrid cycle completed.** Six cards at tier R, each Chris's design, printed face and art. The brief's ADR-198 says six pairs remain; all ten exist now.
-  - **Revivalist** ({W/B}{W/B}, 1/1 lifelink; when it dies, return another permanent card with mana value 3 or less from the graveyard to hand). No new word: Dutiful Attendant's shape.
-  - **Daunting Terror** ({B/R}{B/R}, 3/3 menace; damage dealt to it is dealt to each player). **R-128**, the `DEALT_DAMAGE` trigger. Its design was chosen by study. **Book 166** teaches the AI to price the recoil.
-  - **Discontinuous Flash** ({W/U}{W/U} instant; exile a permanent, return it under its owner's control, draw). **R-129** (`exileThenReturn under: "owner"`). The view now carries `owner` and `token`. **Book 167** covers its timing.
-  - **Intuitive Mastery** ({R/W}{R/W} flash Aura; −1/−1 and double strike). Its −1/−1 was chosen by study; it reads below every card it replaced. **Book 168** covers a keyword grant paid for with a debuff.
-  - **Command of the Depths** ({U/B}{U/B} instant; choose two of draw, −2/−2, a Faerie, a discard). No new word. **The play screen now asks a modal spell's mode before its targets** (`chooseMode`; Abrade too).
-  - **Glory Hound** ({B/G}{B/G} 2/2; {B/G}{B/G}, discard: the team gets +1/+1 and menace). No new word. **Book 169** gates the team grant.
-- **The concerns pass** (`a77cc41`):
-  - resolved 37 (the Terror's recoil read from the blocker's side), 39 (a dead recoiler keeps its lifelink), 41 (the Flash's cantrip target), 44 (an instant waits out our own upkeep) and 45 (Glory Hound's grant in the attack plan);
-  - tried 43 (double strike valued by power) and reverted it;
-  - ladder PASS.
-- **The Fun Police** (`funpolice`, Chris's five-colour land destruction list; 6–1 in his Open). The Open's tables were re-run with twenty lists. The list reads eighth: it beats the slow lists and loses to the Pall, the Pinnacle and Mardu Control.
-- **Chris's Bodies Snakes** (8–0 in his Bodies event). Read against 79 of the AI's games, it gave two AI rules:
-  - **the Reaper's harvest** as a lifelink swing (`harvestswing`: the AI harvested in 1 of 43 Reaper casts, Chris in 9 of 9);
-  - **Rage Cobra's counters** out of the opponent's damage reach (`counterreach`, Chris's rule).
-
-  His list in Emerald Snakes' seat went 41.4 → 47.8 under the AI; the current list reads 59.2, so it is not swapped. Reaper Clio gained 1.7.
+- **Books 170–173** (each ladder PASS):
+  - **170 `fightwait`** (Chris's Nothing Dear finals): a flash fighter waits for the creature spell it would kill; the fight reads the power the creature enters with. Also `pnpm clio-probe` and the Grixis analysis (`analysis/s72/grixis`).
+  - **171 `landburn`**: a land that deals fixed damage (Valakut, Hearthspire) counts as a burn spell in book 113's count.
+  - **172** (RUW Spells through the Nothing Dear field, Chris's boarding as a guide): `scaledburn`, `burstaim`, `burstpay`, `exchangestatic`. RUW in the AI's hands 39.3 → 39.6% (`analysis/s72/ruw`).
+  - **173 `doubleaim`**: nothing aimed at a permanent our own stack already removes.
+- **The Grand Convocation** (e598c3b): one Constructed format, 128 seats, sixteen rounds; Chris went 19–0 with RUW Spells. Portraits recycle once every face is taken (d9f958c).
+- **Chris's five-card batch** (all tier 2; Chris's designs, names and art picks; printed faces his). Pool 320.
+  - **Nyxathid** (the reprint, CON #49, verified on Scryfall): {1}{B}{B} 7/7 Elemental; as it enters choose an opponent, −1/−1 for each card in that player's hand. **R-131** (`entersChoose: "opponent"`, `chosenPlayer`, the value ref `handCount`).
+  - **Banishing Cleric** {1}{W}{W} 2/2 Human Cleric: when it enters, exile target nonland permanent an opponent controls until it leaves the battlefield. **R-130** (`exile.untilSourceLeaves`, `state.linkedExiles`).
+  - **Order Druid** {1}{G}{G} 2/2 Elf Druid: {G}, {T}, sacrifice: search for a green creature card, put it onto the battlefield. **R-132** (`searchLibrary.color`, with study filters `monocolored` and `manaValueAtMost`).
+  - **Storm Shaman** {1}{R}{R} 2/2 Elemental Shaman: whenever you cast an instant or sorcery, add {R}; **Chris's rider**: when it enters, return target instant or sorcery card from your graveyard to your hand. No new word.
+  - **Silt Spirit** {1}{U}{U} 0/3 Spirit Wizard: creatures you control have "{T}: target player mills X, where X is this creature's toughness." **R-133** (`sourceToughness`, with last-known information, CR 608.2h).
+  - **AI books**: **174** (`nyxsize`: the predictor reads the entering P/T, so a 0-toughness Nyxathid is not cast; `heldback`: removing a permanent in the sim returns what it was holding). **175 `orderfind`**: the search finds the best body from the library as it stands (decklist less what is visible), and a self-sacrifice search waits for the opponent's end step unless the creature is threatened. **176 `tapmill`**: a creature's {T}-only mill waits for the opponent's end step unless it is threatened or lethal. Ladder PASS for each, numbers unchanged.
+  - **Studies** (160 games a pairing):
+    - Order Druid as written: Wurmspeaker −1.5, Reaper Clio −9.3, Bant Countersnake +2.3. Not too strong; summoning sickness is the limiter (27 of 35 unused Druids that died were still sick). `analysis/s72/druid`.
+    - Storm Shaman: −9.1 and −7.9 in the Pyromancers' slots as first designed; with the rider −3.3, −1.6, and +0.6 in Ponder's slot. `analysis/s72/shaman`.
+    - Silt Spirit: Sultai Mill +7.9 (46.1 → 53.9); the Peasant walls Skies −2.0. `analysis/s72/silt`.
+  - **Art**: two laps of four styles each (eight for Nyxathid and the Shaman), Chris's picks in `assets/generated/MANIFEST.md`.
+- **The rating rebuild** (Chris: "a nice up-to-date look at the pool"), `card-rating.json` v1.5:
+  - **Peasant** re-scored (11,400 games): Nyxathid 3.28, Order Druid 2.62, Silt Spirit 2.23 (prior; no Peasant list plays it), Banishing Cleric 2.01, Storm Shaman 1.32.
+  - **Constructed** re-measured on pilot 176: 288 authored lists, 34,560 games. Correlation with the old table 0.93.
+  - **Limited** re-measured on pilot 176: Sealed, noise and draft, 73,600 games. Correlation 0.72. The five: Silt Spirit 3.64, Nyxathid 2.82, Banishing Cleric 2.00, Storm Shaman 0.68, Order Druid 0.07.
+  - **Fourteen cards carry their pilot-94 Limited numbers** (`limitedCarried`, `run.limited.carried`; Chris's ruling): seen under 100 times now and 500 or more before. Concern 54.
+  - `analysis/s72/rating-compare.txt` has the movers.
 
 ## Done this session
 Mapped to the brief's parts (`docs/decision-updates/s72.md`).
@@ -169,8 +176,15 @@ Open concerns carry their numbers. Resolved ones keep a line.
 50. **Clutch Guard is +3.9 ± 1.0 in Emerald Snakes** (Nothing Dear, for Elvish Visionary), above ADR-168's bar. It is not adopted: the brief made it a first read, and adopting it is the planner's and Chris's call. Chris's own Bodies Snakes plays four.
 51. **His Bodies Snakes' remaining habits** (from the 18-against-79 read): the Forerunner's mode (he makes the tokens 12 to 6; the AI fights 45 to 19), Den of Vipers onto 0–1 Snakes (30 of 77), the Keeper onto a small board, and the AI blocking three times as often. The list reads 47.8 against his 89%.
 52. **`open:gen` wrote a hyphenated format id as a bare key**, so the generated `open-decks.ts` did not parse. Fixed: such ids are quoted. The broken file was patched by hand once so the fixed generator could run, because `open:gen` imports the file it writes.
+53. **`sourcePower` reads 0 once its source has left** (R-097), where the new `sourceToughness` reads last-known information (CR 608.2h). They could share `lastKnownPT`; left alone so existing behaviour does not move. The planner's to rule.
+54. **The Limited rating has a blind spot.** The Sealed builder and the drafters pick by the current table, so a card rated low goes unplayed and is never re-measured; the noise run's ±0.4 does not lift it. Fourteen cards with 500 to 16,000 old sightings had 0 to 93 new ones and would have read their tier mean (Entomb −0.09 → 1.71, Demonic Tutor 0.74 → 2.30). **They carry their pilot-94 numbers** (Chris), marked `limitedCarried`: Altar of Dementia, Curiosity, Demonic Tutor, Disenchant, Duress, Entomb, Giant Growth, Orcish Lumberjack, Ovna, Scepter of Dominance, the Bailiff, the Pearl Cleric, Waste Not, Zinnia. ADR-150 forbids pooling across pilots, so this is an interim, not a measurement.
+55. **A rating rebuild moves the field's sideboards.** The builder makes the fifteen of every list without an authored one, and the guide shapes fire on rating thresholds (a steal against three prizes rated 2.5 or more). Under v1.5 the Larder shows two prizes (its Reeves), so the Depths no longer brings in Control Magic against it. The tables of record were played under v1.4.
+56. **Lightning Bolt fell in Limited**, 2.29 → 1.44 on 8,960 sightings; Evolving Wilds 1.55 → −0.78. Possibly the burn holds are too patient on Limited boards. Unprobed.
+57. **The linked exile returns at the next state-based check**, not as its own one-shot (R-130's registered simplification; CR 610.3 makes the return its own one-shot effect). No card in the pool can see the gap.
+58. **Order Druid reads 0.07 in Limited** and loses to summoning sickness in Constructed; **Storm Shaman 0.68 in Limited**. Fair cards, not pillar-makers. A design matter for Chris, if any.
 
 ## Registry entries added/changed
+- **Post-S72**: **R-130** (linked exile), **R-131** (`entersChoose`, `handCount`), **R-132** (`searchLibrary` colour and filters), **R-133** (`sourceToughness`, `lastKnownPT`). Pool rows for nyxathid, banishing_cleric, order_druid, storm_shaman, silt_spirit (all T2; "Post-Session 72 additions"). Books 170–176 in `book-of-shame.test.ts`. `card-rating.json` v1.5. Grand Convocation door option.
 - **Rules**: none in S72. Since the planner's last read: **R-128** (`DEALT_DAMAGE`), **R-129** (`exileThenReturn under: "owner"`).
 - **Pool**: since the planner's last read, revivalist, daunting_terror, discontinuous_flash, intuitive_mastery, command_of_the_depths, glory_hound (custom, tier R; 315 cards). None in S72.
 - **The Open**: `funpolice` in `contributed.json` (2026-11-13). Tables of record re-recorded 2026-11-14 (they predate `moxkeep`).
@@ -180,13 +194,22 @@ Open concerns carry their numbers. Resolved ones keep a line.
 - **Tools**: `counter-log-probe`, `target-probe` (`--windows`), `leak-census`, `mulligan-probe`, `nothingdear:census`.
 
 ## Test status
-**1,294 passed**, 2 skipped (172 files; typecheck clean; 2026-11-14). New this session:
+**1,342 passed**, 2 skipped (177 files; typecheck clean; 2026-11-18). Post-S72:
+- `engine/test/s73-nyx-banisher.test.ts` (21 fixtures for the five cards) and four fuzz files in `sim/src` (`s73-*-fuzz`), run before the fixtures;
+- books 170–176 pinned; book 10 and the S63 Adept test re-pinned to the opponent's end step (book 176 moves the Adept's mill there);
+- **re-baselined by the rating rebuild**: the Peasant `unscored` list is now empty; the S56 steal test reads the Depths against the Levy, not the Larder (concern 55); the pool count (320) and shop-tier tally.
+
+S72:
 - the `moxkeep` pin in `book-of-shame.test.ts`;
 - `constructed-builder.test.ts` moved off "Nothing Dear has no field": the repair test names its source list, and the field-less scale check reads Nothing Sudden.
 
 `pnpm test` exits non-zero on five vitest "Timeout calling onTaskUpdate" load errors; every assertion passes (implementer-notes). Ladder PASS after `moxkeep` (`analysis/s72/ladder-moxkeep.log`).
 
 ## Suggested next
+- **A method for the Limited rating's blind spot** (concern 54): a forced-inclusion or wider-noise run, so the fourteen carried cards get measured on the current pilot.
+- **Lightning Bolt in Limited** (concern 56): a probe of the burn holds (books 88, 160, 172) on 40-card boards.
+- **The tables of record after the rebuild** (concerns 48, 55): the Open's and the triads' re-run now also covers books 170–176 and the new ratings.
+- **Homes for the five**: Silt Spirit in Sultai Mill (+7.9) is the one study that cleared ADR-168's bar; adopting it is Chris's call.
 - **The Open's and the triads' tables re-run with `moxkeep`** (concern 48), and the ADR-191 list with them.
 - **A land-deck guide shape** (concern 13), then the Warband's row adopted by ADR-168 if it clears.
 - **Clutch Guard in Nothing Dear's Emerald Snakes** (concern 50), and Nothing Dear's `large` threshold (concern 49).
@@ -213,4 +236,7 @@ pnpm nothingdear:census | pnpm bodies:census                                    
 pnpm open:rr --only <k> --vs <a,b> --matches 160 --deck <k>:sixty.json --deck-side fifteen.json --deck-guide guide.json [--guide-drop <cards>]   # a sideboard row, paired
 pnpm narrate <recorded-games.json> --event <seed>    # a recorded run, move by move
 pnpm art:fetch                                       # after adding a real card
+pnpm rating:format --format peasant --write          # the Peasant score
+zsh analysis/s72/rating-rebuild.sh                   # the rating runs, sharded (rating:run, sealed-sim, its noise run, draft-cards; shards in analysis/runs, local)
+pnpm rating:build analysis/runs/authored176_shard*.json --prefixes sealed176,noise176 --limited sealed176,noise176,draft176 --candidate p176
 ```

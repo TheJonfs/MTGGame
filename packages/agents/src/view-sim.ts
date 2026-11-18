@@ -1,4 +1,4 @@
-import { parseManaCost, manaValue, type CardDef, type Effect, type ResolvedTarget } from "@shandalar/cards";
+import { cardColors, parseManaCost, manaValue, type CardDef, type Effect, type ResolvedTarget } from "@shandalar/cards";
 import type { Action, GameView } from "@shandalar/engine";
 import { classifyEffects, effectsForAction } from "./effect-classification.js";
 import { viewAbilityAt } from "./granted-view.js";
@@ -151,6 +151,37 @@ function removeObject(view: GameView, id: string): void {
   if (gone) { if (lastKnown.size > 4096) lastKnown.clear(); lastKnown.set(id, { cardId: gone.cardId, controller: gone.controller as 0 | 1 }); }
   view.battlefield = view.battlefield.filter((o) => o.id !== id);
   if (gone && simDefs) revertStatics(view, gone, simDefs);
+  // Book 174 (R-130, the Banishing Cleric): what it held in exile comes back to its owner as it leaves (CR 610.3c) — so
+  // removing a Banisher is priced as handing the card back, not as killing a 2/2. A returning Aura's host choice is not
+  // modelled (it stays out of the prediction); everything else returns fresh: untapped, a creature summoning-sick.
+  for (const h of simOff.includes("heldback") ? [] : (gone?.holding ?? [])) {
+    const d = simDefs?.get(h.cardId);
+    if (!d || (d.subtypes ?? []).includes("Aura")) continue;
+    const creature = d.types.includes("Creature");
+    view.battlefield.push({ id: `pred_${predSeq++}`, cardId: d.id, controller: h.owner, tapped: false, damage: 0, attachedTo: null,
+      power: creature ? (d.power ?? 0) : null, toughness: creature ? (d.toughness ?? 0) : null, keywords: [...(d.keywords ?? [])], ...(creature ? { summoningSick: true } : {}) });
+  }
+}
+/** Book 174 (R-131, Nyxathid): an entering creature's P/T after its own hand-count static (−1/−1 for each card in the
+ * chosen player's hand) — the printed 7/7 is a 0/0 into a full hand. `me` is the caster; `handAfter` its hand once the
+ * spell has left it. Other self statics keep the printed numbers (unchanged behaviour). */
+export function entryPT(d: CardDef, view: GameView, me: 0 | 1, handAfter: number): { power: number; toughness: number } {
+  let p = d.power ?? 0, t = d.toughness ?? 0;
+  for (const a of d.abilities ?? []) {
+    if (a.kind !== "static") continue;
+    for (const e of a.effects) {
+      if (e.type !== "modifyPT" || e.scope !== "self") continue;
+      const read = (v: unknown): number => {
+        if (typeof v === "number") return v;
+        const r = v as { ref?: string; who?: string; times?: number };
+        if (r?.ref !== "handCount") return 0;
+        const n = r.who === "you" ? handAfter : view.you === me ? view.opponentHandCount : view.hand.length; // "chosen"/"opponent": the caster's opponent
+        return n * (r.times ?? 1);
+      };
+      p += read(e.power); t += read(e.toughness);
+    }
+  }
+  return { power: p, toughness: t };
 }
 /**
  * Post-S69 (Chris: the pilot's Massacres killed 26 of its own creatures to 15 of theirs): the life the deaths of a
@@ -184,6 +215,27 @@ export function deathPayoffs(view: GameView, dying: readonly GameView["battlefie
 }
 /** The defs of the prediction in progress (set by predictAction) — removeObject reads the removed permanent's statics. */
 let simDefs: Map<string, CardDef> | null = null;
+/** Book 174: the prediction's `off` switches (heldback, nyxsize). */
+let simOff: readonly string[] = [];
+/** Book 175 (R-132, the Order Druid): the card ids the predicting player's library still holds — its decklist less what
+ * it can see (hand, its permanents, its graveyard) — set by the agent before it scores; null when unknown. */
+let simLibrary: readonly string[] | null = null;
+export function setSimLibrary(cards: readonly string[] | null): void { simLibrary = cards; }
+/** Book 175: the best card a search to the battlefield can find in the predicted library — by the reanimator's body worth. */
+export function bestSearchFind(e: { predicate: string; color?: string; monocolored?: true; manaValueAtMost?: number }, library: readonly string[], defs: Map<string, CardDef>): CardDef | null {
+  let best: CardDef | null = null, bestW = -1;
+  for (const id of new Set(library)) {
+    const d = defs.get(id);
+    if (!d) continue;
+    if (e.predicate === "creatureCard" && !d.types.includes("Creature")) continue;
+    if (e.predicate !== "creatureCard" && e.predicate !== "anyCard") continue; // lands and subtypes keep the flat credit
+    if (e.color) { const cs = cardColors(d); if (!cs.includes(e.color as never) || (e.monocolored && cs.length !== 1)) continue; }
+    if (e.manaValueAtMost !== undefined && manaValue(parseManaCost(d.manaCost)) > e.manaValueAtMost) continue;
+    const w = reanimationWorth(d);
+    if (w > bestW) { best = d; bestW = w; }
+  }
+  return best;
+}
 /** Book 96: the credit a removal earns beyond the board it leaves — a GROWING lock's next step (see revertStatics),
  * banked by removeObject and collected by the effect loops. */
 let removalCredit = 0;
@@ -263,6 +315,7 @@ export function predictAction(
   const next = clone(view);
   let adjustment = 0;
   simDefs = defs; // book 96: removeObject undoes a removed permanent's statics
+  simOff = constants.off ?? []; // book 174's switches
 
   const def = (cardId: string) => defs.get(cardId);
 
@@ -344,11 +397,13 @@ export function predictAction(
       // Manafleur's engine) is worth a petal a turn on top of its body; without this the master
       // priced Faerie Formation a hair above the flower and bloomed a turn late (heart-sim, seed 510).
       if ((d.abilities ?? []).some((a) => a.kind === "triggered" && a.effects.some((e) => e.type === "createLaw"))) adjustment += 2.5;
-      next.battlefield.push({
+      // Book 174: a hand-count creature enters at its live size, and a 0-toughness one dies on arrival (CR 704.5f).
+      const ept = simOff.includes("nyxsize") ? { power: d.power ?? 0, toughness: d.toughness ?? 0 } : entryPT(d, view, me as 0 | 1, view.hand.length - 1);
+      if (!d.types.includes("Creature") || ept.toughness > 0) next.battlefield.push({
         id: `pred_${predSeq++}`, cardId: d.id, controller: me, tapped: false, damage: 0,
         attachedTo: null,
-        power: d.types.includes("Creature") ? (d.power ?? 0) : null,
-        toughness: d.types.includes("Creature") ? (d.toughness ?? 0) : null,
+        power: d.types.includes("Creature") ? ept.power : null,
+        toughness: d.types.includes("Creature") ? ept.toughness : null,
         keywords: [...(d.keywords ?? [])],
       });
       // Post-S69 (the Massacre): an enters trigger that shrinks every creature in a scope (−X/−X, X the announced one)
@@ -546,7 +601,7 @@ export function predictAction(
   // S29 (R-092, Arc Mage): a modal activation applies its chosen mode's effects.
   const abilityEffects = (ability.modes && action.mode !== undefined ? (ability.modes[action.mode]?.effects ?? []) : ability.effects)
     .map((e) => (sacrificedPower !== null && e.type === "mill" && typeof e.count === "object" && "ref" in e.count && e.count.ref === "sacrificedPower" ? { ...e, count: sacrificedPower } : e));
-  for (const e of abilityEffects) adjustment += applyEffect(next, e, targets, x, defs, constants, { creatureSource: !!objEntry && objEntry.power !== null && objEntry.controller === me }) + takeRemovalCredit();
+  for (const e of abilityEffects) adjustment += applyEffect(next, e, targets, x, defs, constants, { creatureSource: !!objEntry && objEntry.power !== null && objEntry.controller === me, ...(objEntry?.toughness != null ? { sourceToughness: objEntry.toughness } : {}) }) + takeRemovalCredit();
   const unchanged = adjustment === 0 && JSON.stringify(next) === before && !ability.cost.tap;
   return { view: next, adjustment, unchanged };
 }
@@ -601,8 +656,9 @@ function applyEffect(
   x: number,
   defs: Map<string, CardDef>,
   constants: EvalConstants,
-  /** S31: the effect's source is a creature we control (an Arc Mage ping) — the Traumatizer's trigger rides it. */
-  opts: { creatureSource?: boolean } = {},
+  /** S31: the effect's source is a creature we control (an Arc Mage ping) — the Traumatizer's trigger rides it.
+   * Post-S72 (R-133): `sourceToughness` — the activating creature's toughness, for "X is this creature's toughness". */
+  opts: { creatureSource?: boolean; sourceToughness?: number } = {},
 ): number {
   const me = view.you;
   const opp = me === 0 ? 1 : 0;
@@ -646,7 +702,7 @@ function applyEffect(
       return !!d && (!p?.cardType || d.types.includes(p.cardType as never)) && (!p?.subtype || (d.subtypes ?? []).includes(p.subtype));
     }).length;
   const amt = (a: number | "X" | { ref: string; who?: string; types?: string[]; predicate?: { cardType?: string; subtype?: string; controller?: string } }): number =>
-    typeof a === "number" ? a : a === "X" ? x : a.ref === "xPaid" ? x : a.ref === "graveyardCount" ? gyCount(a) : a.ref === "count" ? countRef(a.predicate)
+    typeof a === "number" ? a : a === "X" ? x : a.ref === "xPaid" ? x : a.ref === "sourceToughness" ? Math.max(0, opts.sourceToughness ?? 0) : a.ref === "graveyardCount" ? gyCount(a) : a.ref === "count" ? countRef(a.predicate)
     // R-124: the target's power and toughness, as it stands before the effects (the engine's snapshot) — read from the target or, gone, nothing
     : a.ref === "targetPower" || a.ref === "targetToughness" ? ((o) => (o ? ((a.ref === "targetPower" ? o.power : o.toughness) ?? 0) : 0))(((t) => (t?.kind === "object" ? view.battlefield.find((b) => b.id === t.id) : undefined))(targets[(a as { target?: number }).target ?? 0])) : 0;
   const objAt = (i: number) => {
@@ -998,8 +1054,17 @@ function applyEffect(
       const gain = objectValue(defs, theirs, constants) - (mine.controlUntilEndOfTurn ? 0 : objectValue(defs, mine, constants));
       return gain + exchangeStaticsGain(view, a.id, b.id, defs, constants) - EXCHANGE_CARD_WORTH;
     }
-    case "searchLibrary":
-      return 0.5;
+    case "searchLibrary": {
+      // Book 175 (R-132): a creature search onto the battlefield puts the library's best match into the prediction
+      // (summoning-sick; its enter trigger is not played out). Off "orderfind", or an unknown library: the flat credit.
+      if (e.to !== "battlefield" || simOff.includes("orderfind") || !simLibrary) return 0.5;
+      const d = bestSearchFind(e, simLibrary, defs);
+      if (!d) return 0;
+      const creature = d.types.includes("Creature");
+      view.battlefield.push({ id: `pred_${predSeq++}`, cardId: d.id, controller: me as 0 | 1, tapped: e.entersTapped === true, damage: 0, attachedTo: null,
+        power: creature ? (d.power ?? 0) : null, toughness: creature ? (d.toughness ?? 0) : null, keywords: [...(d.keywords ?? [])], ...(creature ? { summoningSick: true } : {}) });
+      return 0;
+    }
     case "returnSelfAtCleanup":
       return 0; // the Glaciers: the fetch is the value; the return is its cost of doing business
     case "revealRandomIfNamed": {

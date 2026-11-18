@@ -1,0 +1,46 @@
+{
+ "id": "banishing_cleric",
+ "name": "Banishing Cleric",
+ "source": "custom",
+ "manaCost": "{1}{W}{W}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Human",
+  "Cleric"
+ ],
+ "power": 2,
+ "toughness": 2,
+ "text": "When this creature enters, exile target nonland permanent an opponent controls until this creature leaves the battlefield.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ENTERS_BATTLEFIELD",
+   "condition": {
+    "source": "self"
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "nonlandPermanentYouDontControl",
+     "zone": "battlefield"
+    }
+   ],
+   "effects": [
+    {
+     "type": "exile",
+     "target": 0,
+     "untilSourceLeaves": true
+    }
+   ],
+   "optional": false
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/banishing_cleric.png",
+  "fallback": "rendered"
+ },
+ "shopTier": 2,
+ "printedAsset": "banishing_cleric.jpg"
+}

@@ -228,6 +228,8 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
   it("book of shame 10 (S16): the Cathartic Adept mills the OPPONENT, never its own controller — self-mill scores below passing, opponent-mill above it", () => {
     const a = agent("control");
     const view = mkView({
+      // book 176: a creature's {T} mill is spent at the opponent's end step — the window this ordering is read in
+      activePlayer: 1, step: "END",
       battlefield: [
         { id: "adept", cardId: "cathartic_adept", controller: 0 },
         { id: "island", cardId: "island", controller: 0 },
@@ -2113,7 +2115,7 @@ describe("book of shame (permanent; ADR-049/-050 score orderings)", () => {
       const v = mkView({ hand: [{ objectId: "h", cardId: c }], battlefield: [...lands(l), ...bodies] });
       expect(at(v, { type: "castSpell", objectId: "h" }, want), c).toBeGreaterThan(at(v, { type: "castSpell", objectId: "h" }, (1 - want) as 0 | 1));
     }
-    const v = mkView({ battlefield: [...lands("island"), ...bodies, { id: "p", cardId: "cathartic_adept", controller: 0 }] });
+    const v = mkView({ activePlayer: 1, step: "END", battlefield: [...lands("island"), ...bodies, { id: "p", cardId: "cathartic_adept", controller: 0 }] }); // book 176: its window
     expect(at(v, { type: "activateAbility", objectId: "p", abilityIndex: 0 }, 1)).toBeGreaterThan(at(v, { type: "activateAbility", objectId: "p", abilityIndex: 0 }, 0));
   });
 
@@ -2917,5 +2919,79 @@ describe("book of shame 170 (post-S72 — Chris's Nothing Dear finals: Reaper's 
     const clio = (n: number) => { const v = mkView({ hand, battlefield: [...F, { id: "o0", cardId: "clio_lady_of_the_depths", controller: 1 }], activePlayer: 1, step: "END" }); return { ...v, battlefield: v.battlefield.map((o) => (o.id === "o0" ? { ...o, counters: { depth: n } } : o)) } as GameView; };
     expect(fair.entersModesBonus(clio(0), castAt("h_f"))).toBeGreaterThan(fair.entersModesBonus(clio(1), castAt("h_f")));
     expect(fair.entersModesBonus(clio(1), castAt("h_f"))).toBe(old.entersModesBonus(mkView({ hand, battlefield: F, activePlayer: 1, step: "END" }), castAt("h_f"))); // as an empty board: the tokens
+  });
+});
+
+describe("book of shame 174 (post-S72 — Nyxathid R-131 and the Banishing Cleric R-130 enter the pool)", () => {
+  const S = Array.from({ length: 3 }, (_, i) => ({ id: `s${i}`, cardId: "swamp", controller: 0 as const }));
+  const castNyx = { type: "castSpell" as const, objectId: "h_n", targets: [] };
+  const pass = { type: "pass" as const };
+  it("nyxsize: Nyxathid is priced at its size on arrival — into a seven-card hand it is a dead 0/0 and the cast loses to passing; into one card, a 6/6", () => {
+    const a = agent("midrange"), old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["nyxsize"] });
+    const v = (n: number) => mkView({ hand: [{ objectId: "h_n", cardId: "nyxathid" }], battlefield: S, opponentHandCount: n });
+    expect(a.scorePriorityAction(v(7), castNyx)).toBeLessThanOrEqual(a.scorePriorityAction(v(7), pass));
+    expect(old.scorePriorityAction(v(7), castNyx)).toBeGreaterThan(old.scorePriorityAction(v(7), pass)); // the printed 7/7
+    expect(a.scorePriorityAction(v(1), castNyx)).toBeGreaterThan(a.scorePriorityAction(v(1), pass));
+    expect(a.scorePriorityAction(v(1), castNyx)).toBeGreaterThan(a.scorePriorityAction(v(5), castNyx));
+  });
+  it("heldback: a Bolt at the Cleric holding our Serra Angel beats a Bolt at their Grizzly Bears — killing it hands the Angel back", () => {
+    const a = agent("midrange"), old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["heldback"] });
+    const v = mkView({ hand: [{ objectId: "h_b", cardId: "lightning_bolt" }], battlefield: [{ id: "m0", cardId: "mountain", controller: 0 }, { id: "bc", cardId: "banishing_cleric", controller: 1 }, { id: "gb", cardId: "grizzly_bears", controller: 1 }] });
+    const held = { ...v, battlefield: v.battlefield.map((o) => (o.id === "bc" ? { ...o, holding: [{ cardId: "serra_angel", owner: 0 as const }] } : o)) } as GameView;
+    const bolt = (id: string) => ({ type: "castSpell" as const, objectId: "h_b", targets: [{ kind: "object" as const, id }] });
+    const gap = (x: HeuristicAgent) => x.scorePriorityAction(held, bolt("bc")) - x.scorePriorityAction(held, bolt("gb"));
+    expect(gap(a)).toBeGreaterThan(1);
+    expect(gap(a)).toBeGreaterThan(gap(old) + 1);
+  });
+});
+
+describe("book of shame 175 (post-S72 — the Order Druid, R-132)", () => {
+  const deck = [{ cardId: "forest", count: 20 }, { cardId: "order_druid", count: 4 }, { cardId: "pelakka_wurm", count: 2 }, { cardId: "llanowar_elves", count: 4 }];
+  const druid = (off: string[] = []) => new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, decklist: deck, ...(off.length ? { off } : {}) });
+  const bf: Obj[] = [{ id: "f0", cardId: "forest", controller: 0 }, { id: "f1", cardId: "forest", controller: 0 }, { id: "od", cardId: "order_druid", controller: 0 }];
+  const act = { type: "activateAbility" as const, objectId: "od", abilityIndex: 0, targets: [] };
+  const pass = { type: "pass" as const };
+  it("orderfind: the search onto the battlefield takes the best body (Pelakka Wurm), not the cheap castable Elf", () => {
+    const req = { player: 0, purpose: "searchLibrary", actions: [{ type: "searchPick", objectId: "l1" }, { type: "searchPick", objectId: "l2" }, { type: "declineSearch" }], revealed: [{ objectId: "l1", cardId: "llanowar_elves" }, { objectId: "l2", cardId: "pelakka_wurm" }], source: { cardId: "order_druid", effects: [{ type: "searchLibrary", predicate: "creatureCard", color: "G", to: "battlefield" }] } } as unknown as ActionRequest;
+    expect(druid().searchChoice(mkView({ battlefield: bf }), req)).toEqual({ type: "searchPick", objectId: "l2" });
+    expect(druid(["orderfind"]).searchChoice(mkView({ battlefield: bf }), req)).toEqual({ type: "searchPick", objectId: "l1" }); // the old castable-soon pick
+  });
+  it("orderfind: the remaining library is the decklist less what we see; the activation is priced at the Wurm it finds", () => {
+    const a = druid();
+    expect(a.remainingLibrary(mkView({ battlefield: bf }))!.filter((c) => c === "order_druid")).toHaveLength(3);
+    const end = mkView({ battlefield: bf, activePlayer: 1, step: "END" });
+    expect(a.scorePriorityAction(end, act)).toBeGreaterThan(a.scorePriorityAction(end, pass) + 2);
+  });
+  it("orderfind: it fetches at the opponent's end step or when the Druid is targeted — not idly in our own main phase", () => {
+    const a = druid();
+    expect(a.selfSacSearchGated(mkView({ battlefield: bf, step: "MAIN1" }), act)).toBe(true);
+    expect(a.selfSacSearchGated(mkView({ battlefield: bf, activePlayer: 1, step: "END" }), act)).toBe(false);
+    const aimed = { ...mkView({ battlefield: bf, activePlayer: 1, step: "MAIN1" }), stack: [{ id: "s1", kind: "spell", cardId: "lightning_bolt", controller: 1, targets: [{ kind: "object", id: "od" }] }] } as unknown as GameView;
+    expect(a.selfSacSearchGated(aimed, act)).toBe(false);
+    const swept = { ...mkView({ battlefield: bf, activePlayer: 1, step: "MAIN1" }), stack: [{ id: "s1", kind: "spell", cardId: "pyroclasm", controller: 1, targets: [] }] } as unknown as GameView;
+    expect(a.selfSacSearchGated(swept, act)).toBe(false); // a sweeper on the stack: fetch in answer
+    const drawn = { ...mkView({ battlefield: bf, activePlayer: 1, step: "MAIN1" }), stack: [{ id: "s1", kind: "spell", cardId: "divination", controller: 1, targets: [] }] } as unknown as GameView;
+    expect(a.selfSacSearchGated(drawn, act)).toBe(true); // a draw spell is no threat: wait for the end step
+    expect(druid(["orderfind"]).selfSacSearchGated(mkView({ battlefield: bf, step: "MAIN1" }), act)).toBe(false);
+  });
+});
+
+describe("book of shame 176 (post-S72 — the Silt Spirit, R-133)", () => {
+  const bf: Obj[] = [{ id: "ss", cardId: "silt_spirit", controller: 0 }, { id: "wa", cardId: "wall_of_air", controller: 0 }];
+  const mill = (id: string, idx: number) => ({ type: "activateAbility" as const, objectId: id, abilityIndex: idx, targets: [{ kind: "player" as const, player: 1 as const }] });
+  const pass = { type: "pass" as const };
+  it("tapmill: a creature's {T} mill waits for the opponent's end step — not our main phase — unless it empties them or the creature is under fire", () => {
+    const a = agent("control"), old = new HeuristicAgent(1, pool, { archetype: "control", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: ["tapmill"] });
+    expect(a.tapMillTimingGated(mkView({ battlefield: bf, step: "MAIN1" }), mill("wa", 0))).toBe(true);
+    expect(old.tapMillTimingGated(mkView({ battlefield: bf, step: "MAIN1" }), mill("wa", 0))).toBe(false);
+    expect(a.tapMillTimingGated(mkView({ battlefield: bf, activePlayer: 1, step: "END" }), mill("wa", 0))).toBe(false);
+    expect(a.tapMillTimingGated(mkView({ battlefield: bf, step: "MAIN1", librarySizes: [20, 5] }), mill("wa", 0))).toBe(false); // five toughness, five cards: now
+    const aimed = { ...mkView({ battlefield: bf, activePlayer: 1, step: "MAIN1" }), stack: [{ id: "s1", kind: "spell", cardId: "lightning_bolt", controller: 1, targets: [{ kind: "object", id: "ss" }] }] } as unknown as GameView;
+    expect(a.tapMillTimingGated(aimed, mill("ss", 1))).toBe(false);
+  });
+  it("tapmill: at their end step the mills beat passing, and the Wall of Air's five beats the Spirit's three (the predictor reads the toughness)", () => {
+    const a = agent("control"), end = mkView({ battlefield: bf, activePlayer: 1, step: "END" });
+    expect(a.scorePriorityAction(end, mill("wa", 0))).toBeGreaterThan(a.scorePriorityAction(end, pass));
+    expect(a.scorePriorityAction(end, mill("wa", 0))).toBeGreaterThan(a.scorePriorityAction(end, mill("ss", 1)));
   });
 });

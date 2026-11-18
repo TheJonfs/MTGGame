@@ -1,6 +1,6 @@
 import type { EngineCtx } from "./ctx.js";
 import { characteristics, imposedEntersTapped } from "./characteristics.js";
-import { getObject, type GameObject, type PlayerId, type ZoneName } from "./state.js";
+import { getObject, opponentOf, type GameObject, type PlayerId, type ZoneName } from "./state.js";
 
 export interface MoveOptions {
   /** For library destinations. Default "top". */
@@ -94,7 +94,10 @@ export function moveObject(
   const to: ZoneName = to0 === "graveyard" && from === "battlefield" && !options.replacementDecided && diesIntoExile(ctx, objectId) ? "exile" : to0;
   // S40 (R-097): a creature's last-known power as it leaves the battlefield (CR 603.10a) — read BEFORE anything
   // detaches or the object is deleted; rides the ZONE_CHANGE payload for the leave observers (Zinnia, Meliyan).
-  const powerBefore = from === "battlefield" && ctx.defs.def(obj.cardId).types.includes("Creature") ? characteristics(ctx, objectId).power : undefined;
+  const charsBefore = from === "battlefield" && ctx.defs.def(obj.cardId).types.includes("Creature") ? characteristics(ctx, objectId) : undefined;
+  const powerBefore = charsBefore?.power;
+  // Post-S72 (R-133): its last-known P/T, for an ability of its own still on the stack (CR 608.2h).
+  if (charsBefore) (state.lastKnownPT ??= {})[objectId] = { power: charsBefore.power, toughness: charsBefore.toughness };
 
   // S46 (R-100): what was attached, for the look-back (CR 603.10a) — before the detach below clears it.
   const attachedBefore = from === "battlefield" ? Object.values(state.objects).filter((o) => o.attachedTo === objectId).map((o) => o.id) : [];
@@ -160,6 +163,8 @@ export function moveObject(
     counters: {},
     // S25: the announced X rides the permanent (battlefield entry only; stripped by any later move).
     ...(entersBattlefield && options.xPaid !== undefined ? { xPaid: options.xPaid } : {}),
+    // Post-S72 (R-131): "as this enters, choose an opponent" — forced in a two-player game.
+    ...(entersBattlefield && card.entersChoose === "opponent" ? { chosenPlayer: opponentOf(options.controller ?? obj.controller) } : {}),
   };
   state.objects[newId] = newObj;
 
@@ -217,6 +222,7 @@ export function createObject(
     attachedTo: opts.attachedTo ?? null,
     counters: {},
     ...(opts.basePT ? { basePT: opts.basePT } : {}), // A10 (S22): P/T locked at creation (the Weird)
+    ...(zone === "battlefield" && card.entersChoose === "opponent" ? { chosenPlayer: opponentOf(owner) } : {}), // R-131
   };
   ctx.state.objects[id] = obj;
   const arr = zoneArray(ctx, zone, owner);

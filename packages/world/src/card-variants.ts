@@ -51,6 +51,15 @@ export function variantDef(spec: string, cards: Map<string, CardDef>): CardDef {
       }) };
       out.abilities = abil;
     }
+    // Post-S72 (book 175, the Order Druid's study): the search's find narrowed — `search=mono` (that colour alone), `search=mv5`
+    // (mana value 5 or less), `search=any` (any creature card, the colour dropped)
+    else if (k === "search") out.abilities = (out.abilities ?? d.abilities ?? []).map((a) => (a.kind !== "activated" ? a : { ...a, effects: a.effects.map((e) => {
+      if (e.type !== "searchLibrary") return e;
+      if (v === "mono") return { ...e, monocolored: true as const };
+      if (v === "any") { const { color: _c, ...rest } = e; return rest; }
+      if (/^mv\d+$/.test(v)) return { ...e, manaValueAtMost: Number(v.slice(2)) };
+      throw new Error(`card-test: search=${v}?`);
+    }) }));
     else throw new Error(`card-test: unknown modifier ${m}`);
   }
   return out;

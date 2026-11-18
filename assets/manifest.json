@@ -510,6 +510,66 @@
         }
       }
     },
+    "card-banishing-cleric-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:dd60860cebe57f199352f727e3ed9ed2f735fcae53dd6ba93295c77e2b128c7d",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:dd60860cebe57f199352f727e3ed9ed2f735fcae53dd6ba93295c77e2b128c7d",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-banishing-cleric-1/canonical.png",
+          "rendered_at": "2026-11-18T02:22:45+00:00",
+          "thumb": "assets/thumbs/card-banishing-cleric-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-banishing-cleric-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:62f9abe9e8d34d0e6a81dbc2419433eb1336feafc068e64180b5fa1a0a5f4868",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:62f9abe9e8d34d0e6a81dbc2419433eb1336feafc068e64180b5fa1a0a5f4868",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-banishing-cleric-2/canonical.png",
+          "rendered_at": "2026-11-18T02:22:45+00:00",
+          "thumb": "assets/thumbs/card-banishing-cleric-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-banishing-cleric-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a0cac99388d382befdf681e5bf44268936f0db9f14955452784dba12b7558381",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a0cac99388d382befdf681e5bf44268936f0db9f14955452784dba12b7558381",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-banishing-cleric-3/canonical.png",
+          "rendered_at": "2026-11-18T02:22:45+00:00",
+          "thumb": "assets/thumbs/card-banishing-cleric-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-banishing-cleric-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:bfa32051e77d96d70566b99eeaac7146365198e58ef95cd449e1f4eb02295007",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:bfa32051e77d96d70566b99eeaac7146365198e58ef95cd449e1f4eb02295007",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-banishing-cleric-4/canonical.png",
+          "rendered_at": "2026-11-18T02:22:45+00:00",
+          "thumb": "assets/thumbs/card-banishing-cleric-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-burnfallow-2": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:cae76ce435b5a3def6cfe65be15d47b75b87f329ea14d719f9bd817188dd1a49",
@@ -1587,6 +1647,126 @@
         }
       }
     },
+    "card-nyxathid-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:8562649a4099f1887bb9d51785b64cdab3069ba358da73f4abafb631ee5ffca6",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:8562649a4099f1887bb9d51785b64cdab3069ba358da73f4abafb631ee5ffca6",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-nyxathid-1/canonical.png",
+          "rendered_at": "2026-11-18T02:22:35+00:00",
+          "thumb": "assets/thumbs/card-nyxathid-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-nyxathid-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:cb43b16b2123523a22e380b91111f7bcce2c1383ce266de46092b89e17963a2a",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:cb43b16b2123523a22e380b91111f7bcce2c1383ce266de46092b89e17963a2a",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-nyxathid-2/canonical.png",
+          "rendered_at": "2026-11-18T02:22:37+00:00",
+          "thumb": "assets/thumbs/card-nyxathid-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-nyxathid-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:48f595c681dee1ab501d63118353684082e18211b48d2f499615d059d63f1612",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:48f595c681dee1ab501d63118353684082e18211b48d2f499615d059d63f1612",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-nyxathid-3/canonical.png",
+          "rendered_at": "2026-11-18T02:22:35+00:00",
+          "thumb": "assets/thumbs/card-nyxathid-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-nyxathid-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:6c666d5f023e2ed537f774010f98b93bac1e0f1b1957ee8805d1e0892de65198",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:6c666d5f023e2ed537f774010f98b93bac1e0f1b1957ee8805d1e0892de65198",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-nyxathid-4/canonical.png",
+          "rendered_at": "2026-11-18T02:22:36+00:00",
+          "thumb": "assets/thumbs/card-nyxathid-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-nyxathid-5": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:dd194f4487661ce02aa3f7c00ef3d148d1cb167d0b3e8586a33e52fa1297d941",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:dd194f4487661ce02aa3f7c00ef3d148d1cb167d0b3e8586a33e52fa1297d941",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-nyxathid-5/canonical.png",
+          "rendered_at": "2026-11-18T02:34:39+00:00",
+          "thumb": "assets/thumbs/card-nyxathid-5/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-nyxathid-6": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c939f4b52868793e6d234cf89b53de478fcfb32686c3f93fd5048b4706d58771",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c939f4b52868793e6d234cf89b53de478fcfb32686c3f93fd5048b4706d58771",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-nyxathid-6/canonical.png",
+          "rendered_at": "2026-11-18T02:34:47+00:00",
+          "thumb": "assets/thumbs/card-nyxathid-6/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-nyxathid-7": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:b5b13ee100fd67edcf27e57dac2a2f67474c54dd0b3e3d8922674c59dbc88941",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:b5b13ee100fd67edcf27e57dac2a2f67474c54dd0b3e3d8922674c59dbc88941",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-nyxathid-7/canonical.png",
+          "rendered_at": "2026-11-18T02:34:56+00:00",
+          "thumb": "assets/thumbs/card-nyxathid-7/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-nyxathid-8": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:9a558ef560d4d12c40a185c880d1a4cea4cb975c5051897301b7611c938c5c4c",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:9a558ef560d4d12c40a185c880d1a4cea4cb975c5051897301b7611c938c5c4c",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-nyxathid-8/canonical.png",
+          "rendered_at": "2026-11-18T02:35:04+00:00",
+          "thumb": "assets/thumbs/card-nyxathid-8/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-obsidian-observatory-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:808c502fb4395abd4576ae89dfa343a61677f4710e2b4c2be249e8b698dee6c9",
@@ -1703,6 +1883,66 @@
           "path": "assets/images/card-odile-4/canonical.png",
           "rendered_at": "2026-09-19T21:43:33+00:00",
           "thumb": "assets/thumbs/card-odile-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-order-druid-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:15d8d23af263060e82d055083a920f12793ea20df5b1cee5d7329a96176d752d",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:15d8d23af263060e82d055083a920f12793ea20df5b1cee5d7329a96176d752d",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-order-druid-1/canonical.png",
+          "rendered_at": "2026-11-18T02:22:53+00:00",
+          "thumb": "assets/thumbs/card-order-druid-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-order-druid-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:c6b9ae2b84e412c01dae264ad7f0adb36b651b03e79e425119cccdba1c95f4ad",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:c6b9ae2b84e412c01dae264ad7f0adb36b651b03e79e425119cccdba1c95f4ad",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-order-druid-2/canonical.png",
+          "rendered_at": "2026-11-18T02:22:54+00:00",
+          "thumb": "assets/thumbs/card-order-druid-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-order-druid-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:a6ec0aa2c6190455fd1b8cbbdea5a32097c5e9814dba82157b058901f84f4c78",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:a6ec0aa2c6190455fd1b8cbbdea5a32097c5e9814dba82157b058901f84f4c78",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-order-druid-3/canonical.png",
+          "rendered_at": "2026-11-18T02:22:54+00:00",
+          "thumb": "assets/thumbs/card-order-druid-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-order-druid-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:88ad4d6c7aafe0dc63c5f8b8a385c8b474e3fadd70d6db919a58c2adfb486768",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:88ad4d6c7aafe0dc63c5f8b8a385c8b474e3fadd70d6db919a58c2adfb486768",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-order-druid-4/canonical.png",
+          "rendered_at": "2026-11-18T02:22:54+00:00",
+          "thumb": "assets/thumbs/card-order-druid-4/canonical.png",
           "variant_prompt": null
         }
       }
@@ -2367,6 +2607,66 @@
         }
       }
     },
+    "card-silt-spirit-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:d5b4f8089263539af92c0a5d23adc51980accd5b27e8514bd7aba43612919269",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:d5b4f8089263539af92c0a5d23adc51980accd5b27e8514bd7aba43612919269",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-silt-spirit-1/canonical.png",
+          "rendered_at": "2026-11-18T02:23:11+00:00",
+          "thumb": "assets/thumbs/card-silt-spirit-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-silt-spirit-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:982058ce4712297b8e5e9242589bfc18b7d2b8ed0c1e0550f8d9dd33a3ce11d6",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:982058ce4712297b8e5e9242589bfc18b7d2b8ed0c1e0550f8d9dd33a3ce11d6",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-silt-spirit-2/canonical.png",
+          "rendered_at": "2026-11-18T02:23:11+00:00",
+          "thumb": "assets/thumbs/card-silt-spirit-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-silt-spirit-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:40f98535045a61da228617d59b8def641bf1d1a0d9e2d8a1a72dd6b0aa400b26",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:40f98535045a61da228617d59b8def641bf1d1a0d9e2d8a1a72dd6b0aa400b26",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-silt-spirit-3/canonical.png",
+          "rendered_at": "2026-11-18T02:23:11+00:00",
+          "thumb": "assets/thumbs/card-silt-spirit-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-silt-spirit-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:2d127bd5c3cd5eaf4bca2e1ef4282792029f23852ea1231e8a49ca71cf413f18",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:2d127bd5c3cd5eaf4bca2e1ef4282792029f23852ea1231e8a49ca71cf413f18",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-silt-spirit-4/canonical.png",
+          "rendered_at": "2026-11-18T02:23:11+00:00",
+          "thumb": "assets/thumbs/card-silt-spirit-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "card-static-sphere-1": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:588980eb0080dc7964764457c25191044d3a9d360d7c078b6eded745d87c9e2f",
@@ -2423,6 +2723,126 @@
           "path": "assets/images/card-static-sphere-4/canonical.png",
           "rendered_at": "2026-09-19T21:48:02+00:00",
           "thumb": "assets/thumbs/card-static-sphere-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-storm-shaman-1": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:9895daffa161d76c6b036c698e4e8dabd2035d858720831efa06689d974207d6",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:9895daffa161d76c6b036c698e4e8dabd2035d858720831efa06689d974207d6",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-storm-shaman-1/canonical.png",
+          "rendered_at": "2026-11-18T02:23:02+00:00",
+          "thumb": "assets/thumbs/card-storm-shaman-1/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-storm-shaman-2": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:bc8109e620cdcb124cf42fab137bb795e6e62472591656d59668c23dc355eb23",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:bc8109e620cdcb124cf42fab137bb795e6e62472591656d59668c23dc355eb23",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-storm-shaman-2/canonical.png",
+          "rendered_at": "2026-11-18T02:23:02+00:00",
+          "thumb": "assets/thumbs/card-storm-shaman-2/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-storm-shaman-3": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:aea6f5ec71a93070ca0a76c6ee664c03c043cdc7d7efe02899b2aec1c7822062",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:aea6f5ec71a93070ca0a76c6ee664c03c043cdc7d7efe02899b2aec1c7822062",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-storm-shaman-3/canonical.png",
+          "rendered_at": "2026-11-18T02:23:02+00:00",
+          "thumb": "assets/thumbs/card-storm-shaman-3/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-storm-shaman-4": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:362858ed5adcb664ee08835e63971b2d9883aa36c364cc32e389d296d7bf9c7a",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:362858ed5adcb664ee08835e63971b2d9883aa36c364cc32e389d296d7bf9c7a",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-storm-shaman-4/canonical.png",
+          "rendered_at": "2026-11-18T02:23:02+00:00",
+          "thumb": "assets/thumbs/card-storm-shaman-4/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-storm-shaman-5": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:44374ec8fdab311cca1d004f8051e54cd217df281046ade63f04be072525f63d",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:44374ec8fdab311cca1d004f8051e54cd217df281046ade63f04be072525f63d",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-storm-shaman-5/canonical.png",
+          "rendered_at": "2026-11-18T02:35:12+00:00",
+          "thumb": "assets/thumbs/card-storm-shaman-5/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-storm-shaman-6": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:ee4d67a02b63b4b70247beff3ec7009fd3633e2360395cd76fd0cb5b8c871e14",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:ee4d67a02b63b4b70247beff3ec7009fd3633e2360395cd76fd0cb5b8c871e14",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-storm-shaman-6/canonical.png",
+          "rendered_at": "2026-11-18T02:35:20+00:00",
+          "thumb": "assets/thumbs/card-storm-shaman-6/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-storm-shaman-7": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:f418f5eaf020b04d66a943764182659764ed51c1367e6d107f10b9c3d3e2bb05",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:f418f5eaf020b04d66a943764182659764ed51c1367e6d107f10b9c3d3e2bb05",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-storm-shaman-7/canonical.png",
+          "rendered_at": "2026-11-18T02:35:28+00:00",
+          "thumb": "assets/thumbs/card-storm-shaman-7/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
+    "card-storm-shaman-8": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:8b1d52b7ac40b5c8e8ff6fc3498a79aa6f19004fb54bbe021ad9ef773dac8383",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:8b1d52b7ac40b5c8e8ff6fc3498a79aa6f19004fb54bbe021ad9ef773dac8383",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/card-storm-shaman-8/canonical.png",
+          "rendered_at": "2026-11-18T02:35:37+00:00",
+          "thumb": "assets/thumbs/card-storm-shaman-8/canonical.png",
           "variant_prompt": null
         }
       }

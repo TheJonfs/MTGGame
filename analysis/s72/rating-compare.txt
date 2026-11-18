@@ -1,0 +1,11 @@
+old run limited: {'games': 147200, 'pilotVersion': 94}  new: {'games': 73600, 'pilotVersion': 176, 'tau': 0.012}
+
+== rating: 274 cards in both; correlation old↔new 0.93
+ fell most: Evolving Wilds 1.12→0.34; Air Elemental 1.93→1.25; Reya Dawnbringer 2.73→2.11; Vampire Nighthawk 2.59→1.99; Cathartic Adept 1.08→0.51; Phyrexian Rager 1.37→0.82; Moaning Wall 1.00→0.49; Indulgent Aristocrat 1.38→0.87; Titania, Protector of Argoth 2.69→2.19; The Sapphire Sage 2.40→1.91
+ rose most: Tallyflame Court 2.33→3.34; Rage Cobra 1.34→2.12; Mox Ruby 2.41→3.16; Powerstone Minefield 2.33→3.04; Phyrexian Purge 2.17→2.87; Wrackroot 3.20→3.89; Mystic Snake 2.18→2.85; Protocol 1.50→2.12; Time Walk 3.14→3.77; Mox Emerald 2.64→3.24
+ newly rated: Hearthspire 4.09 (650); Volmaw 3.87 (561); Burnfallow 3.35 (368); Nightbower 3.32 (193); Earthrise 3.28 (489); Ranksmere 3.09 (263); Wheel of Fortune 3.03 (276); Daunting Terror 2.90 (0); Balance 2.78 (203); The Meathook Massacre 2.78 (924); Revivalist 2.72 (180); Command of the Depths 2.68 (0); Clutch Guard 2.66 (0); Correspondence 2.64 (0); Glory Hound 2.56 (0); Intuitive Mastery 2.51 (0); Domain Pouncer 2.50 (180); Terrain Collapse 2.48 (196); Discontinuous Flash 2.44 (0)
+
+== limited: 234 cards in both; correlation old↔new 0.72
+ fell most: Evolving Wilds 1.55→-0.78; Lumen, the Hearth Fire 4.23→3.06; Seraphina, the Initiative 3.54→2.51; Drakuseth, Maw of Flames 3.12→2.19; Aetherbolt 2.97→2.07; Man-o'-War 2.21→1.33; Lightning Bolt 2.29→1.44; Hordeling Outburst 1.59→0.79; Air Elemental 2.16→1.39; Ponder 1.40→0.65
+ rose most: The Pearl Cleric 0.35→2.30; Entomb -0.09→1.71; Waste Not -0.04→1.71; Scepter of Dominance 0.10→1.70; Demonic Tutor 0.74→2.30; Buried Alive -0.17→1.36; Altar of Dementia 0.25→1.71; Waterfront Bouncer -0.34→0.98; Vitalist 0.95→2.23; Graceful Restoration 1.17→2.30
+ newly rated: The Meathook Massacre 3.31 (10775); Daunting Terror 2.76 (211); Command of the Depths 2.48 (303); Clutch Guard 2.46 (447); Balance 2.30 (0); Burnfallow 2.30 (0); Hearthspire 2.30 (0); Nightbower 2.30 (0); Ranksmere 2.30 (0); Volmaw 2.30 (0); Revivalist 2.22 (360); Correspondence 2.21 (368); Glory Hound 2.18 (322); Discontinuous Flash 2.15 (332); Earthrise 2.09 (1025); Intuitive Mastery 2.07 (243); Wheel of Fortune 1.95 (592); Domain Pouncer 1.92 (294); Terrain Collapse 1.55 (345)

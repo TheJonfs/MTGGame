@@ -77,6 +77,17 @@ export function validateCard(raw: unknown): ValidationResult {
       err(`"entersChoice" must be { pay: { life: n>0 }, else: "tapped" } (A9)`);
     }
   }
+  // Post-S72 (R-131): entersChoose is a permanent's clause, and a "chosen" hand count needs it.
+  if (raw.entersChoose !== undefined && raw.entersChoose !== "opponent") err(`"entersChoose" must be "opponent" (R-131)`);
+  if (JSON.stringify(raw).includes('"who":"chosen"') && raw.entersChoose === undefined) err(`a "chosen" hand count needs "entersChoose" (R-131)`);
+  // Post-S72 (R-130): "until this leaves the battlefield" belongs to a permanent's ETB trigger — never a spell.
+  {
+    const all = JSON.stringify(raw.spellEffect ?? []) + JSON.stringify(raw.modes ?? []);
+    if (all.includes('"untilSourceLeaves"')) err(`exile.untilSourceLeaves is an ETB-trigger clause, not a spell's (R-130)`);
+    for (const a of (Array.isArray(raw.abilities) ? raw.abilities : []) as { kind?: string; event?: string }[]) {
+      if (JSON.stringify(a).includes('"untilSourceLeaves"') && !(a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD")) err(`exile.untilSourceLeaves is an ETB-trigger clause (R-130)`);
+    }
+  }
   // A8 (S20): range counts — {min≥0, max≥min≥…}; a range spec must be the LAST spec of its list.
   // A10 word 4 (S22): count "any" (the request-loop) is a SPELL-level SOLE spec — Purge's shape.
   const checkSpecs = (specs: unknown, where: string) => {
@@ -295,11 +306,14 @@ function isAnyValueRef(v: unknown): boolean {
   if (v.ref === "sacrificedPower") return true;
   // S40 (R-097): the spell's mana spent (Sacred Helix), the source's power (Odile), the leaving creature's LKI power (Zinnia, Meliyan).
   if (v.ref === "manaSpent" || v.ref === "sourcePower" || v.ref === "eventPower") return true;
+  if (v.ref === "sourceToughness") return true; // post-S72 (R-133)
   // S46 (R-100): the life gained in the LIFE_GAINED event (Vitalist).
   if (v.ref === "eventLife") return true;
   // S50 (R-102): the nonland cards this resolution has discarded (Seasoned Pyromancer).
   if (v.ref === "discardedNonland") return true;
   // S26 (member eight): counters of a kind on the source, times a bounded nonzero literal (Clio).
+  // Post-S72 (R-131, Nyxathid): cards in a hand, times −1 at most.
+  if (v.ref === "handCount") return ["you", "opponent", "chosen"].includes(v.who as string) && (v.times === undefined || v.times === -1);
   if (v.ref === "countersOnSelf") return validCounterKind(v.kind) && (v.times === undefined || (Number.isInteger(v.times) && v.times !== 0));
   return false;
 }
@@ -540,6 +554,7 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
   destroyAll: (e, err) => { needScope(e, err); const n = (e as { powerAtLeast?: unknown }).powerAtLeast; if (n !== undefined && !(Number.isInteger(n) && (n as number) > 0)) err(`destroyAll.powerAtLeast must be a positive integer (R-109)`); },
   exile: (e, err) => {
     // S27: target OR scope (the Manafleur's "exile all laws"); S36: OR a range spec's index (the Angel of the Ruins' "up to two").
+    if (e.untilSourceLeaves !== undefined && (e.untilSourceLeaves !== true || !Number.isInteger(e.target))) err(`exile.untilSourceLeaves must be true and need a single "target" (R-130)`);
     if (Number.isInteger(e.targetSpec)) return;
     needTargetOrScope(e, err);
   },
@@ -692,6 +707,9 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     if (e.to !== "hand" && e.to !== "battlefield" && e.to !== "graveyard") err(`searchLibrary "to" must be hand|battlefield|graveyard (S30)`);
     if (e.entersTapped !== undefined && e.to !== "battlefield") err(`searchLibrary entersTapped only applies to battlefield destination`);
     if (e.count !== undefined && (!Number.isInteger(e.count) || (e.count as number) < 1)) err(`searchLibrary count must be a positive integer (S30: "up to N")`);
+    if (e.color !== undefined && !["W", "U", "B", "R", "G"].includes(e.color as string)) err(`searchLibrary color must be W|U|B|R|G (R-132)`);
+    if (e.monocolored !== undefined && (e.monocolored !== true || e.color === undefined)) err(`searchLibrary monocolored must be true and needs a color (R-132)`);
+    if (e.manaValueAtMost !== undefined && (!Number.isInteger(e.manaValueAtMost) || (e.manaValueAtMost as number) < 0)) err(`searchLibrary manaValueAtMost must be a non-negative integer (R-132)`);
   },
   grantAbility: () => {
     // A10 word 8 (S22): static-only — the deep shape (zone/scope/ability) is validated in the

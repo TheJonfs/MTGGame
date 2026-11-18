@@ -1,0 +1,64 @@
+{
+ "id": "storm_shaman",
+ "name": "Storm Shaman",
+ "source": "custom",
+ "manaCost": "{1}{R}{R}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Elemental",
+  "Shaman"
+ ],
+ "power": 2,
+ "toughness": 2,
+ "text": "When this creature enters, return target instant or sorcery card from your graveyard to your hand.\nWhenever you cast an instant or sorcery spell, add {R}.",
+ "abilities": [
+  {
+   "kind": "triggered",
+   "event": "ENTERS_BATTLEFIELD",
+   "condition": {
+    "source": "self"
+   },
+   "targets": [
+    {
+     "count": 1,
+     "predicate": "instantOrSorceryCardInYourGraveyard",
+     "zone": "graveyard"
+    }
+   ],
+   "effects": [
+    {
+     "type": "returnFromGraveyard",
+     "target": 0,
+     "to": "hand"
+    }
+   ],
+   "optional": false
+  },
+  {
+   "kind": "triggered",
+   "event": "SPELL_CAST",
+   "condition": {
+    "controller": "you",
+    "type": [
+     "Instant",
+     "Sorcery"
+    ]
+   },
+   "effects": [
+    {
+     "type": "addMana",
+     "mana": "{R}"
+    }
+   ],
+   "optional": false
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/storm_shaman.png",
+  "fallback": "rendered"
+ },
+ "shopTier": 2,
+ "printedAsset": "storm_shaman.jpg"
+}

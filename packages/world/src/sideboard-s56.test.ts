@@ -47,9 +47,10 @@ describe("broader sideboarding (S56)", () => {
   });
 
   it("each shape comes in against the list it is for, and not otherwise", () => {
-    // a steal against prizes (the Larder's fatties), none against the Tally
-    expect(ins("depths", "larder", "steal").length).toBeGreaterThan(0); // (S58: the Locks have a guided fifteen now; the Depths' is the builder's)
-    expect(ins("depths", "larder", "steal").every((s) => stealsCreatures(d(s.in)))).toBe(true);
+    // a steal against prizes, none against the Tally (post-S72: the pilot-176 table rates only the Larder's Reeves at 2.5 or
+    // more — two prizes, under the three — so the Levy, which still shows three, stands in)
+    expect(ins("depths", "levy", "steal").length).toBeGreaterThan(0); // (S58: the Locks have a guided fifteen now; the Depths' is the builder's)
+    expect(ins("depths", "levy", "steal").every((s) => stealsCreatures(d(s.in)))).toBe(true);
     expect(ins("locks", "tally", "steal")).toEqual([]);
     // creature counters against twenty creatures, for a general counter and never the reverse; not against the Tally
     for (const s of ins("locks", "muster", "creatureCounters")) { expect(isCreatureCounter(d(s.in))).toBe(true); expect(isCounter(d(s.out)) && !isCreatureCounter(d(s.out))).toBe(true); }

@@ -1,0 +1,56 @@
+{
+ "id": "silt_spirit",
+ "name": "Silt Spirit",
+ "source": "custom",
+ "manaCost": "{1}{U}{U}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Spirit",
+  "Wizard"
+ ],
+ "power": 0,
+ "toughness": 3,
+ "text": "Creatures you control have \"{T}: Target player mills X cards, where X is this creature's toughness.\"",
+ "abilities": [
+  {
+   "kind": "static",
+   "effects": [
+    {
+     "type": "grantAbility",
+     "zone": "battlefield",
+     "scope": "creaturesYouControl",
+     "ability": {
+      "kind": "activated",
+      "cost": {
+       "tap": true
+      },
+      "targets": [
+       {
+        "count": 1,
+        "predicate": "player",
+        "zone": "any"
+       }
+      ],
+      "effects": [
+       {
+        "type": "mill",
+        "count": {
+         "ref": "sourceToughness"
+        },
+        "who": "target"
+       }
+      ]
+     }
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/silt_spirit.png",
+  "fallback": "rendered"
+ },
+ "shopTier": 2,
+ "printedAsset": "silt_spirit.jpg"
+}

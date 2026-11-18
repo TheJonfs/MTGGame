@@ -1,0 +1,42 @@
+{
+ "id": "order_druid",
+ "name": "Order Druid",
+ "source": "custom",
+ "manaCost": "{1}{G}{G}",
+ "types": [
+  "Creature"
+ ],
+ "subtypes": [
+  "Elf",
+  "Druid"
+ ],
+ "power": 2,
+ "toughness": 2,
+ "text": "{G}, {T}, Sacrifice this creature: Search your library for a green creature card, put it onto the battlefield, then shuffle.",
+ "abilities": [
+  {
+   "kind": "activated",
+   "cost": {
+    "mana": "{G}",
+    "tap": true,
+    "sacrifice": {
+     "predicate": "self"
+    }
+   },
+   "effects": [
+    {
+     "type": "searchLibrary",
+     "predicate": "creatureCard",
+     "color": "G",
+     "to": "battlefield"
+    }
+   ]
+  }
+ ],
+ "art": {
+  "asset": "/custom-art/order_druid.png",
+  "fallback": "rendered"
+ },
+ "shopTier": 2,
+ "printedAsset": "order_druid.jpg"
+}

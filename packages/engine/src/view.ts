@@ -55,6 +55,11 @@ export interface GameView {
      * controls it (a stolen permanent); and `token` for a token (CR 111.8: a token that leaves does not come back). Both
      * public. */
     owner?: PlayerId;
+    /** Post-S72 (R-130): the cards this permanent holds in exile until it leaves (the Banisher), with their owners — the
+     * player each returns to (CR 610.3c). Public: exile is a public zone and the link is printed on the card. */
+    holding?: { cardId: string; owner: PlayerId }[];
+    /** Post-S72 (R-131): the player it chose as it entered (Nyxathid) — public. */
+    chosenPlayer?: PlayerId;
     token?: boolean;
   }[];
   /** S32: `targets` (public — the stack's targets are announced) so a creature under fire is visible
@@ -124,6 +129,8 @@ export function buildView(ctx: EngineCtx, player: PlayerId): GameView {
         ...(borrowedThisTurn(s, id, o.controller) ? { controlUntilEndOfTurn: true } : {}),
         ...(o.owner !== o.controller ? { owner: o.owner } : {}),
         ...(o.isToken ? { token: true } : {}),
+        ...((s.linkedExiles ?? []).some((l) => l.sourceId === id) ? { holding: s.linkedExiles.filter((l) => l.sourceId === id && s.objects[l.exiledId]?.zone === "exile").map((l) => ({ cardId: s.objects[l.exiledId]!.cardId, owner: s.objects[l.exiledId]!.owner })) } : {}),
+        ...(o.chosenPlayer !== undefined ? { chosenPlayer: o.chosenPlayer } : {}),
       };
     }),
     stack: s.stack.map((item) => ({

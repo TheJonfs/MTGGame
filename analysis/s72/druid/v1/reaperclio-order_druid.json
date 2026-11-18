@@ -1,0 +1,222 @@
+{
+ "name": "open_rr_1",
+ "when": "2026-11-18T00:08:49.310Z",
+ "games": 3040,
+ "table": {
+  "reaperclio": {
+   "marducontrol": [
+    74,
+    160
+   ],
+   "funpolice": [
+    69,
+    160
+   ],
+   "depths": [
+    110,
+    160
+   ],
+   "writ": [
+    83,
+    160
+   ],
+   "emeraldsnakes": [
+    82,
+    160
+   ],
+   "levy": [
+    117,
+    160
+   ],
+   "pall": [
+    77,
+    160
+   ],
+   "kiln": [
+    107,
+    160
+   ],
+   "countersnake": [
+    108,
+    160
+   ],
+   "pinnacle": [
+    88,
+    160
+   ],
+   "minefield": [
+    63,
+    160
+   ],
+   "wurmspeaker": [
+    128,
+    160
+   ],
+   "tollgate": [
+    78,
+    160
+   ],
+   "lumenclio": [
+    88,
+    160
+   ],
+   "muster": [
+    128,
+    160
+   ],
+   "warband": [
+    111,
+    160
+   ],
+   "sweep": [
+    102,
+    160
+   ],
+   "rabble": [
+    91,
+    160
+   ],
+   "earthrise": [
+    46,
+    160
+   ]
+  },
+  "marducontrol": {
+   "reaperclio": [
+    86,
+    160
+   ]
+  },
+  "funpolice": {
+   "reaperclio": [
+    91,
+    160
+   ]
+  },
+  "depths": {
+   "reaperclio": [
+    50,
+    160
+   ]
+  },
+  "writ": {
+   "reaperclio": [
+    77,
+    160
+   ]
+  },
+  "emeraldsnakes": {
+   "reaperclio": [
+    77,
+    160
+   ]
+  },
+  "levy": {
+   "reaperclio": [
+    43,
+    160
+   ]
+  },
+  "pall": {
+   "reaperclio": [
+    83,
+    160
+   ]
+  },
+  "kiln": {
+   "reaperclio": [
+    53,
+    160
+   ]
+  },
+  "countersnake": {
+   "reaperclio": [
+    51,
+    160
+   ]
+  },
+  "pinnacle": {
+   "reaperclio": [
+    72,
+    160
+   ]
+  },
+  "minefield": {
+   "reaperclio": [
+    97,
+    160
+   ]
+  },
+  "wurmspeaker": {
+   "reaperclio": [
+    32,
+    160
+   ]
+  },
+  "tollgate": {
+   "reaperclio": [
+    82,
+    160
+   ]
+  },
+  "lumenclio": {
+   "reaperclio": [
+    72,
+    160
+   ]
+  },
+  "muster": {
+   "reaperclio": [
+    32,
+    160
+   ]
+  },
+  "warband": {
+   "reaperclio": [
+    49,
+    160
+   ]
+  },
+  "sweep": {
+   "reaperclio": [
+    58,
+    160
+   ]
+  },
+  "rabble": {
+   "reaperclio": [
+    69,
+    160
+   ]
+  },
+  "earthrise": {
+   "reaperclio": [
+    114,
+    160
+   ]
+  }
+ },
+ "means": {
+  "muster": 20,
+  "warband": 31,
+  "wurmspeaker": 20,
+  "levy": 27,
+  "sweep": 36,
+  "depths": 31,
+  "pall": 52,
+  "kiln": 33,
+  "writ": 48,
+  "rabble": 43,
+  "countersnake": 32,
+  "tollgate": 51,
+  "reaperclio": 58,
+  "marducontrol": 54,
+  "emeraldsnakes": 48,
+  "pinnacle": 45,
+  "minefield": 61,
+  "lumenclio": 45,
+  "earthrise": 71,
+  "funpolice": 57
+ },
+ "report": "# The Open's round-robin (S46) — 3040 games, master both, 20 life, no entrances; the ROW's win rate\n\n| | muster | warband | wurmspeaker | levy | sweep | depths | pall | kiln | writ | rabble | countersnake | tollgate | reaperclio | marducontrol | emeraldsnakes | pinnacle | minefield | lumenclio | earthrise | funpolice | **mean** |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| **muster** | — | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **20** |\n| **warband** | 0 | — | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 31 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **31** |\n| **wurmspeaker** | 0 | 0 | — | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **20** |\n| **levy** | 0 | 0 | 0 | — | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 27 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **27** |\n| **sweep** | 0 | 0 | 0 | 0 | — | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **36** |\n| **depths** | 0 | 0 | 0 | 0 | 0 | — | 0 | 0 | 0 | 0 | 0 | 0 | 31 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **31** |\n| **pall** | 0 | 0 | 0 | 0 | 0 | 0 | — | 0 | 0 | 0 | 0 | 0 | 52 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **52** |\n| **kiln** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | — | 0 | 0 | 0 | 0 | 33 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **33** |\n| **writ** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | — | 0 | 0 | 0 | 48 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **48** |\n| **rabble** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | — | 0 | 0 | 43 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **43** |\n| **countersnake** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | — | 0 | 32 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **32** |\n| **tollgate** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | — | 51 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | **51** |\n| **reaperclio** | 80 | 69 | 80 | 73 | 64 | 69 | 48 | 67 | 52 | 57 | 68 | 49 | — | 46 | 51 | 55 | 39 | 55 | 29 | 43 | **58** |\n| **marducontrol** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 54 | — | 0 | 0 | 0 | 0 | 0 | 0 | **54** |\n| **emeraldsnakes** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 48 | 0 | — | 0 | 0 | 0 | 0 | 0 | **48** |\n| **pinnacle** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 45 | 0 | 0 | — | 0 | 0 | 0 | 0 | **45** |\n| **minefield** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 61 | 0 | 0 | 0 | — | 0 | 0 | 0 | **61** |\n| **lumenclio** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 45 | 0 | 0 | 0 | 0 | — | 0 | 0 | **45** |\n| **earthrise** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 71 | 0 | 0 | 0 | 0 | 0 | — | 0 | **71** |\n| **funpolice** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 57 | 0 | 0 | 0 | 0 | 0 | 0 | — | **57** |\n\nSolvable (a list over 65% against the field): earthrise. Under 35%: muster, warband, wurmspeaker, levy, depths, kiln, countersnake.\nMuster vs Warband: the Muster 0% (0 games).\n\n## Staples (ADR-170)\n\nIn more than half of the 20 lists: none. The most played: Flametongue Kavu 8 · Birds of Paradise 6 · Clio, Lady of the Depths 6 · Lightning Bolt 6 · Sacred Helix 6 · Reaper's Forerunner 5 · Vampire Nighthawk 5 · Wall of Blossoms 5.\n\n## Restricted cards — % of the list's games in which it was cast (or, a land, played)\n\n- **muster**: black_lotus 32% · mox_pearl 34% · mox_ruby 29%\n- **warband**: black_lotus 24% · mox_ruby 29% · mox_pearl 27%\n- **wurmspeaker**: black_lotus 26% · mox_emerald 18%\n- **levy**: obsidian_observatory 29% · black_lotus 26% · mox_pearl 27% · mox_jet 25%\n- **sweep**: black_lotus 23% · mox_emerald 26% · mox_jet 27% · mox_ruby 28% · cairnbrand 25% · tallyflame_court 23% · obsidian_observatory 30% · shevelport 24% · mox_sapphire 27% · mox_pearl 26%\n- **depths**: demonic_tutor 28% · time_walk 32% · black_lotus 33% · mox_emerald 32% · mox_sapphire 34% · mox_jet 36% · library_of_alexandria 39% · wrackroot 37% · mox_pearl 33% · mox_ruby 31%\n- **pall**: demonic_tutor 28% · mox_jet 27% · black_lotus 31% · mox_ruby 27% · mox_pearl 33% · cairnbrand 23%\n- **kiln**: time_walk 23% · tallyflame_court 26% · black_lotus 19% · mox_sapphire 26% · mox_ruby 32% · library_of_alexandria 27%\n- **writ**: library_of_alexandria 31% · tallyflame_court 37% · wrackroot 51% · cairnbrand 41% · black_lotus 33% · mox_jet 34% · mox_sapphire 36% · demonic_tutor 34% · time_walk 36%\n- **rabble**: cairnbrand 33% · tallyflame_court 28% · mox_sapphire 31% · mox_ruby 28% · mox_jet 31% · black_lotus 23%\n- **countersnake**: obsidian_observatory 34% · wrackroot 43% · black_lotus 33% · mox_emerald 32% · mox_pearl 32% · mox_sapphire 40% · shevelport 40% · demonic_tutor 29% · time_walk 37%\n- **tollgate**: shevelport 56% · black_lotus 51% · mox_ruby 56% · mox_pearl 55% · mox_emerald 59%\n- **reaperclio**: time_walk 33% · black_lotus 38% · mox_emerald 35% · mox_jet 36% · mox_ruby 36% · mox_sapphire 35% · cairnbrand 37% · tallyflame_court 37% · wrackroot 37%\n- **marducontrol**: demonic_tutor 31% · mox_jet 32% · mox_pearl 40% · mox_ruby 34% · black_lotus 29% · cairnbrand 34% · obsidian_observatory 29%\n- **emeraldsnakes**: black_lotus 34% · mox_emerald 29% · mox_jet 28% · mox_pearl 34% · mox_ruby 37% · mox_sapphire 31% · time_walk 29% · tallyflame_court 33% · wrackroot 32% · shevelport 33% · cairnbrand 32%\n- **pinnacle**: burnfallow 18% · hearthspire 26% · cairnbrand 31% · tallyflame_court 26% · wheel_of_fortune 12% · earthrise 4% · black_lotus 34% · mox_emerald 29% · mox_jet 29% · mox_pearl 34% · mox_ruby 28% · mox_sapphire 23%\n- **minefield**: earthrise 6% · black_lotus 55% · mox_emerald 49% · mox_pearl 49% · mox_ruby 55% · balance 49% · wheel_of_fortune 28% · library_of_alexandria 49% · burnfallow 55% · hearthspire 50% · shevelport 57%\n- **lumenclio**: black_lotus 38% · mox_jet 31% · mox_pearl 33% · mox_ruby 36% · mox_sapphire 33% · time_walk 33% · demonic_tutor 27% · cairnbrand 36% · hearthspire 33% · library_of_alexandria 24% · obsidian_observatory 41% · tallyflame_court 29% · volmaw 33% · ranksmere 37%\n- **earthrise**: cairnbrand 53% · hearthspire 51% · library_of_alexandria 55% · nightbower 48% · obsidian_observatory 58% · shevelport 59% · tallyflame_court 57% · volmaw 60% · wrackroot 48% · black_lotus 56% · mox_emerald 55% · mox_jet 51% · mox_pearl 54% · mox_ruby 51% · mox_sapphire 51% · demonic_tutor 48% · earthrise 6% · time_walk 50%\n- **funpolice**: demonic_tutor 34% · earthrise 5% · time_walk 29% · black_lotus 43% · mox_emerald 40% · mox_jet 41% · mox_pearl 38% · mox_ruby 46% · mox_sapphire 44% · wrackroot 46% · volmaw 46% · tallyflame_court 43% · shevelport 46% · obsidian_observatory 49% · nightbower 41% · library_of_alexandria 44% · cairnbrand 46% · hearthspire 44% · ranksmere 43%\n\n## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)\n\n- **muster**: glorious_anthem 73% · vitalist 0% · emeria_angel 55%\n- **warband**: siege_gang_commander 44% · goblin_chieftain 68% · goblin_grenade 63%\n- **wurmspeaker**: seedborn_muse 51% · rampaging_baloths 29% · gaean_wurm 49%\n- **levy**: emeria_angel 54% · dread_presence 50% · isaura_the_levy 34%\n- **sweep**: \n- **depths**: \n- **pall**: \n- **kiln**: \n- **writ**: \n- **rabble**: \n- **countersnake**: \n- **tollgate**: \n- **reaperclio**: \n- **marducontrol**: \n- **emeraldsnakes**: \n- **pinnacle**: \n- **minefield**: \n- **lumenclio**: \n- **earthrise**: \n- **funpolice**: \n\n## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play\n\nAssembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00."
+}

@@ -1,0 +1,7 @@
+seeds: 4200 games
+noise: 7200 games over 90 variant decks
+# The Peasant score — 11400 games (4200 among the 15 seeds, 7200 with 90 noise decks); 134 of 157 nonland cards seen a hundred times or more
+percentiles 10/25/50/75/90: 0.77 / 1.28 / 1.70 / 2.25 / 2.77 (tau 0.019; tier means {"1":0,"2":0.008})
+top 25: Loxodon Warhammer 4.94 (1419); Vigil Keeper 3.72 (322); Vampire Nighthawk 3.71 (5634); Nekrataal 3.46 (4538); Air Elemental 3.41 (1207); Glorious Anthem 3.37 (2391); Nyxathid 3.28 (69); Wall of Reverence 3.27 (1328); Inspiring Overseer 3.12 (3407); Pacifism 3.12 (792); Unearth 3.02 (1439); Karmic Mentor 3.02 (2981); Flametongue Kavu 3.00 (8731); Captain of the Watch 2.84 (1760); Traumatizer 2.84 (3380); Youthful Valkyrie 2.81 (3473); Soul Warden 2.77 (5285); Gaean Wurm 2.75 (2129); Blood Artist 2.71 (5382); Fencing Ace 2.71 (2282); Vitalist 2.67 (2281); Counterspell 2.63 (2276); Order Druid 2.62 (107); Phyrexian Rager 2.60 (330); Essence Scatter 2.55 (896)
+bottom 15: Savannah Lions 0.75 (1181); Buried Alive 0.74 (362); Rumbling Baloth 0.71 (1104); Giant Growth 0.67 (164); Dragon Fodder 0.66 (2145); Goblin Grenade 0.63 (1214); Curiosity 0.63 (105); Centaur Courser 0.56 (2047); Hill Giant 0.52 (298); Goblin Piker 0.46 (1244); Darksteel Myr 0.39 (794); Skirk Prospector 0.38 (234); Tormod's Crypt -0.07 (616); Dungrove Elder -0.08 (1236); Altar of Dementia -0.81 (618)
+written: each legal card's `peasant` score in /Users/christopherjones/MTGGame/data/convocation/card-rating.json

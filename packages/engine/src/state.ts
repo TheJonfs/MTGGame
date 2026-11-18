@@ -52,6 +52,8 @@ export interface GameObject {
   /** S25 (ADR-088): the X announced at this permanent's own cast, stamped at battlefield entry —
    * its ETB trigger reads it (via eventContext LKI; the Emerald Keeper). Battlefield-only state. */
   xPaid?: number;
+  /** Post-S72 (R-131, Nyxathid): the player chosen as this permanent entered (`entersChoose`). Battlefield-only state. */
+  chosenPlayer?: PlayerId;
 }
 
 /** Pool slots per producible symbol; {C} is colorless, spendable only on generic costs (S3). */
@@ -193,6 +195,13 @@ export interface GameState {
   lawSequence: LawSequence;
   /** S42a (R-098, Time Walk): extra turns owed, in creation order — the LAST created is taken first (CR 500.7). */
   extraTurns: PlayerId[];
+  /** Post-S72 (R-130, the Banisher): cards exiled "until this leaves the battlefield" — the source permanent's id and the
+   * exiled card's id. Once the source is no longer on the battlefield the card returns under its owner's control
+   * (CR 610.3), applied before the next SBA check; an entry whose card has left exile some other way is dropped. */
+  linkedExiles: { sourceId: string; exiledId: string }[];
+  /** Post-S72 (R-133): a creature's last-known P/T as it left the battlefield, keyed by its battlefield id (CR 608.2h) — read
+   * by `sourceToughness` when the ability's source is gone. Cleared whenever the stack and the pending triggers are empty. */
+  lastKnownPT?: Record<string, { power: number; toughness: number }>;
 }
 
 export interface LawSequence {
@@ -239,6 +248,7 @@ export function initialGameState(startingLife: number): GameState {
     cleanupReturns: [],
     lawSequence: { order: [...DEFAULT_LAW_ORDER], next: 0, mode: "sequence" },
     extraTurns: [],
+    linkedExiles: [],
   };
 }
 

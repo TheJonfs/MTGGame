@@ -1,5 +1,7 @@
 import { resolveEffect, type TargetSpec,
   parseManaProduction,
+  cardColors,
+  type SearchFilter,
   parseManaCost,
   manaValue,
   type Amount,
@@ -229,6 +231,12 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       }
       // S40 (R-097): the spell's mana spent (captured at payment); the source's live power; the leaving creature's LKI power.
       if (a.ref === "manaSpent") return item.manaSpent ?? 0;
+      if (a.ref === "sourceToughness") {
+        // Post-S72 (R-133): live on the battlefield; gone, the toughness it had as it left (CR 608.2h).
+        const src = item.sourceId ? ctx.state.objects[item.sourceId] : undefined;
+        if (src && src.zone === "battlefield") return Math.max(0, characteristics(ctx, src.id).toughness);
+        return Math.max(0, (item.sourceId ? ctx.state.lastKnownPT?.[item.sourceId]?.toughness : undefined) ?? 0);
+      }
       if (a.ref === "sourcePower") {
         const src = item.sourceId ? ctx.state.objects[item.sourceId] : undefined;
         return src && src.zone === "battlefield" ? Math.max(0, characteristics(ctx, src.id).power) : 0;
@@ -465,7 +473,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
       moveBatchToGraveyard(ctx, chosen);
     },
 
-    ...sharedOps(ctx, controller, requester),
+    ...sharedOps(ctx, controller, requester, item.sourceId),
     ...discardOp(ctx, controller, requester, (cardId) => { if (!ctx.defs.def(cardId).types.includes("Land")) discardedNonland += 1; }),
     ...searchOp(ctx, requester, { cardId: item.sourceCardId, effects: item.effects }),
   };
@@ -479,7 +487,7 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
  * (CR 701.19) through the logged game RNG, so replay reproduces it. */
 function searchOp(ctx: EngineCtx, requester?: EffectRequester, source?: { cardId: string; effects: Effect[] }) {
   return {
-    async searchLibrary(playerNum: number, predicate: "basicLand" | "landCard" | "anyCard" | "creatureCard" | `subtype:${string}`, to: "hand" | "battlefield" | "graveyard", entersTapped: boolean, count = 1): Promise<void> {
+    async searchLibrary(playerNum: number, predicate: "basicLand" | "landCard" | "anyCard" | "creatureCard" | `subtype:${string}`, to: "hand" | "battlefield" | "graveyard", entersTapped: boolean, count = 1, filter: SearchFilter = {}): Promise<void> {
       const player = playerNum as PlayerId;
       const p = ctx.state.players[player];
       // S30 (R-093, Buried Alive): "up to N" — one logged pick per card (the picked card leaves the
@@ -487,6 +495,9 @@ function searchOp(ctx: EngineCtx, requester?: EffectRequester, source?: { cardId
       for (let n = 0; n < count; n++) {
         const matches = p.library.filter((id) => {
           const def = ctx.defs.def(getObject(ctx.state, id).cardId);
+          // Post-S72 (R-132): the colour and mana-value filters (a card's colours from its mana cost, ADR-019).
+          if (filter.color) { const cs = cardColors(def); if (!cs.includes(filter.color) || (filter.monocolored && cs.length !== 1)) return false; }
+          if (filter.manaValueAtMost !== undefined && manaValue(parseManaCost(def.manaCost)) > filter.manaValueAtMost) return false;
           if (predicate === "anyCard") return true;
           if (predicate === "creatureCard") return def.types.includes("Creature");
           if (predicate === "landCard") return def.types.includes("Land"); // post-S70 (the green restricted card under study): any land card
@@ -528,7 +539,8 @@ function searchOp(ctx: EngineCtx, requester?: EffectRequester, source?: { cardId
  * effect's controller — battlefield returns enter under THEIR control (CR 611.2-family: the player
  * instructed to put it there controls it). Own-graveyard customers never noticed (owner == effect
  * controller); the ADR-038 who:"any" amendment makes it load-bearing (the Usher claims the guest). */
-function sharedOps(ctx: EngineCtx, asController: PlayerId, requester?: EffectRequester) {
+/** `sourceId` (post-S72, R-130): the resolving ability's source — what a linked exile is linked to. */
+function sharedOps(ctx: EngineCtx, asController: PlayerId, requester?: EffectRequester, sourceId?: string) {
   return {
     // Post-S70 (R-121, Balance): how many of `what` the player has above the fewest any player has, read now.
     overFewest(player: number, what: "land" | "hand" | "creature"): number {
@@ -606,10 +618,14 @@ function sharedOps(ctx: EngineCtx, asController: PlayerId, requester?: EffectReq
       untapPermanent(ctx, objectId); // post-S65 (R-113): a stun counter is removed instead (CR 122.1d)
     },
 
-    exile(objectId: string): void {
+    exile(objectId: string, linked?: boolean): void {
       const obj = ctx.state.objects[objectId];
       if (!obj || (obj.zone !== "battlefield" && obj.zone !== "graveyard")) return; // S55: a graveyard card too (Faerie Macabre)
-      moveObject(ctx, objectId, "exile"); // not a death: no DIES trigger fires (700.4)
+      // Post-S72 (R-130): "until this leaves the battlefield" — with the source already gone, nothing happens (CR 610.3b).
+      const src = linked && sourceId ? ctx.state.objects[sourceId] : undefined;
+      if (linked && (!src || src.zone !== "battlefield")) return;
+      const exiled = moveObject(ctx, objectId, "exile"); // not a death: no DIES trigger fires (700.4)
+      if (linked && exiled) (ctx.state.linkedExiles ??= []).push({ sourceId: sourceId!, exiledId: exiled }); // a token is gone (CR 111.7)
     },
 
     putOnBottom(objectId: string): void {
@@ -945,8 +961,8 @@ export function makeInitEffectContext(ctx: EngineCtx, player: PlayerId): EffectC
  * (Tendrils), statics (Gaean Wurm, Werebear's threshold) and cost reduction (Baru). */
 /** Refs that only a resolving stack item can answer (its targets, its event, its payment) — statics and cost
  * reductions read them as zero. S40: one guard for the three live-evaluation sites. */
-export type StackOnlyRef = Extract<ValueRef, { ref: "targetPower" | "targetToughness" | "targetManaValue" | "eventDamage" | "xPaid" | "sacrificedPower" | "manaSpent" | "sourcePower" | "eventPower" | "eventLife" | "discardedNonland" }>;
-const STACK_ONLY = new Set(["targetPower", "targetToughness", "targetManaValue", "eventDamage", "xPaid", "sacrificedPower", "manaSpent", "sourcePower", "eventPower", "eventLife", "discardedNonland"]);
+export type StackOnlyRef = Extract<ValueRef, { ref: "targetPower" | "targetToughness" | "targetManaValue" | "eventDamage" | "xPaid" | "sacrificedPower" | "manaSpent" | "sourcePower" | "sourceToughness" | "eventPower" | "eventLife" | "discardedNonland" }>;
+const STACK_ONLY = new Set(["targetPower", "targetToughness", "targetManaValue", "eventDamage", "xPaid", "sacrificedPower", "manaSpent", "sourcePower", "sourceToughness", "eventPower", "eventLife", "discardedNonland"]);
 export function isStackOnlyRef(v: ValueRef): v is StackOnlyRef {
   return STACK_ONLY.has(v.ref);
 }
@@ -964,6 +980,12 @@ export function evaluateValueRef(ctx: EngineCtx, ref: Exclude<ValueRef, StackOnl
     const src = sourceId ? ctx.state.objects[sourceId] : undefined;
     const host = src?.attachedTo ? ctx.state.objects[src.attachedTo] : undefined;
     return host && host.zone === "battlefield" ? characteristics(ctx, host.id).power ?? 0 : 0;
+  }
+  if (ref.ref === "handCount") {
+    // Post-S72 (R-131, Nyxathid): a hand's size, live. `chosen` reads the source's stamped choice — zero without one.
+    const src = sourceId ? ctx.state.objects[sourceId] : undefined;
+    const who = ref.who === "you" ? controller : ref.who === "opponent" ? opponentOf(controller) : src?.chosenPlayer;
+    return who === undefined ? 0 : ctx.state.players[who].hand.length * (ref.times ?? 1);
   }
   if (ref.ref === "graveyardCount") {
     const who = ref.who === "you" ? controller : opponentOf(controller);

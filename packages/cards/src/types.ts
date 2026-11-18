@@ -98,6 +98,8 @@ export const TARGET_PREDICATES = [
   // pattern widened to permanents ("for each player, choose target permanent that player controls").
   "permanentYouControl",
   "permanentYouDontControl",
+  // Post-S72 (R-130, the Banisher): "target nonland permanent an opponent controls" (two players: one you don't control).
+  "nonlandPermanentYouDontControl",
   // S26 (Seraphina, the Initiative): the status-predicate door — a creature that is tapped.
   // Re-checked at resolution like every predicate: an untap in response fizzles the kill (CR 608.2b).
   "tappedCreature",
@@ -213,6 +215,10 @@ export type ValueRef =
   /** S40 (R-097, Odile): the resolving ability's own SOURCE's power — live while it is on the battlefield,
    * zero once it has left (no LKI is kept for a trigger source; registered as a simplification). */
   | { ref: "sourcePower" }
+  /** Post-S72 (R-133, Chris's Silt Spirit — "X is this creature's toughness"): the resolving ability's SOURCE's toughness,
+   * live while it is on the battlefield; once it has left, its LAST-KNOWN toughness as it left (CR 608.2h) — unlike
+   * sourcePower's registered zero. Stack-only. */
+  | { ref: "sourceToughness" }
   /** S40 (R-097, Zinnia / Meliyan): the last-known POWER of the triggering zone-change event's creature
    * (captured as it leaves the battlefield, CR 603.10a). DIES / LEAVES_BATTLEFIELD observers only
    * (validator-confined). */
@@ -222,7 +228,11 @@ export type ValueRef =
   | { ref: "eventLife" }
   /** S50 (R-102, Seasoned Pyromancer): the nonland cards discarded so far by THIS resolution ("for each nonland card
    * discarded this way"). Stack-only; zero anywhere else. */
-  | { ref: "discardedNonland" };
+  | { ref: "discardedNonland" }
+  /** Post-S72 (R-131, Nyxathid): the number of cards in a player's hand, live, times a bounded literal (−1 only:
+   * "−1/−1 for each card in the chosen player's hand"). `chosen` is the player this permanent chose as it entered
+   * (`entersChoose`); it stays fixed through control changes (CR 614.12, the printed ruling). */
+  | { ref: "handCount"; who: "you" | "opponent" | "chosen"; times?: -1 };
 /** Counter kinds. +1/+1 and −1/−1 are the P/T pair characteristics() reads (S1 slots); S26 opens the
  * accumulator class — a NAMED kind (lowercase word) is inert state the card's own refs and costs
  * read (Clio's depth counters). Named kinds never touch P/T. */
@@ -272,7 +282,10 @@ export type EffectBase =
   /** S36: `targetSpec` fans out over a range spec (the Angel of the Ruins' "up to two"), as tapTarget's does. */
   /** S42a (R-098, the Cinquefont): `ifLawsAtLeast` — the scope-laws exile happens only while that many laws stand on the
    * battlefield, BOTH sides counted (a stolen law is still a law); otherwise the clause does nothing. */
-  | { type: "exile"; target?: number; targetSpec?: number; scope?: Scope; ifLawsAtLeast?: number }
+  /** Post-S72 (R-130, the Banisher): `untilSourceLeaves` — "exile … until this leaves the battlefield" (CR 610.3): the
+   * exiled card is linked to the ability's source and returns under its owner's control once the source has left;
+   * if the source has already left as the ability resolves, nothing is exiled (CR 610.3b). ETB triggers only. */
+  | { type: "exile"; target?: number; targetSpec?: number; scope?: Scope; ifLawsAtLeast?: number; untilSourceLeaves?: true }
   /** S66 (R-115, Chris's white graveyard answer — Hallowed Rites, the Sexton): a card in a graveyard is put on the bottom
    * of its owner's library (a hallowing, not an exile: the card may come again). A no-op if it has left the graveyard. */
   | { type: "putOnBottom"; target?: number; targetSpec?: number }
@@ -360,7 +373,9 @@ export type EffectBase =
    * ADR-076: predicate may be `subtype:<Subtype>` (Goblin Matron). */
   /** S30 (R-093, Buried Alive): `to: "graveyard"` and `count` ("up to N" — one logged pick per card, decline
    * ends it); `creatureCard` beside the land/any/subtype predicates. */
-  | { type: "searchLibrary"; predicate: "basicLand" | "landCard" | "anyCard" | "creatureCard" | `subtype:${string}`; to: "hand" | "battlefield" | "graveyard"; entersTapped?: boolean; count?: number }
+  /** Post-S72 (R-132, the Order Druid: "a green creature card"): `color` narrows the find to cards of that colour (CR 105.2,
+   * 202.2 — read off the mana cost, ADR-019); the study filters `monocolored` (that colour alone) and `manaValueAtMost`. */
+  | { type: "searchLibrary"; predicate: "basicLand" | "landCard" | "anyCard" | "creatureCard" | `subtype:${string}`; to: "hand" | "battlefield" | "graveyard"; entersTapped?: boolean; count?: number; color?: "W" | "U" | "B" | "R" | "G"; monocolored?: true; manaValueAtMost?: number }
   /** ADR-075 A8: blink — exile the target and return it to the battlefield under your control as a new object (ETBs fire).
    * Post-S71a (R-129, Chris's Discontinuous Flash): `under: "owner"` — under its OWNER's control (a stolen permanent goes home). */
   | { type: "exileThenReturn"; target: number; under: "yourControl" | "owner" }
@@ -683,6 +698,10 @@ export interface CardDef {
   entersChoice?: { pay: { life: number }; else: "tapped" };
   /** S20: unconditional "this land enters tapped" (the cycling-land cycle). Play and put paths both tap. */
   entersTapped?: boolean;
+  /** Post-S72 (R-131, Nyxathid): "As this enters, choose an opponent" (CR 614.12 — a replacement on entry, not a
+   * trigger). Two-player games: the choice is forced (the one opponent of the controller it enters under), so it
+   * asks nothing; it is stamped on the object (`chosenPlayer`) and never re-chosen while it stays. */
+  entersChoose?: "opponent";
   art?: { asset?: string; fallback: "rendered" };
   /** ADR-082 (S22): custom cards' printed-view image (Chris-produced via an external card creator) —
    * the parallel of real cards' Scryfall `normal`. Filename under the printed-art asset root; the

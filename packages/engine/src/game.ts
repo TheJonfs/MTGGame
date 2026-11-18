@@ -21,6 +21,7 @@ import { untapPermanent } from "./untap.js";
 import { applyModifiers, type Modifier } from "./modifiers.js";
 import { loseLife, discardCard, drawCard } from "./ops.js";
 import { runSBAs } from "./sba.js";
+import { returnLinkedExiles } from "./linked-exile.js";
 import { sacrificeCandidates, returnToHandCandidates, tapCreatureCandidates } from "./sacrifice.js";
 import { abilitiesOf } from "./granted.js";
 import {
@@ -493,6 +494,9 @@ export class Game {
     // No priority in cleanup unless something triggered (CR 514.3a); the
     // general path exists for safety.
     await runSBAs(this.ctx, (player, purpose, actions) => this.request(player, purpose, actions));
+    if (await returnLinkedExiles(this.ctx, (player, purpose, actions, revealed, source) => this.request(player, purpose, actions, revealed, source))) {
+      await runSBAs(this.ctx, (player, purpose, actions) => this.request(player, purpose, actions)); // R-130
+    }
     if (state.pendingTriggers.length > 0) await this.priorityRound();
   }
 
@@ -503,6 +507,10 @@ export class Game {
     for (;;) {
       await runSBAs(this.ctx, (player, purpose, actions) => this.request(player, purpose, actions));
       if (this.state.result) return;
+      // Post-S72 (R-130): a card exiled until its source leaves comes back once the source is gone — then SBAs again.
+      if (await returnLinkedExiles(this.ctx, (player, purpose, actions, revealed, source) => this.request(player, purpose, actions, revealed, source))) continue;
+      // Post-S72 (R-133): with nothing on the stack and nothing waiting, no ability can still ask for last-known P/T.
+      if (this.state.stack.length === 0 && this.state.pendingTriggers.length === 0 && this.state.lastKnownPT) delete this.state.lastKnownPT;
       const placed = await placePendingTriggers(this.ctx, (player, purpose, actions, source) =>
         this.request(player, purpose, actions, undefined, source),
       );
