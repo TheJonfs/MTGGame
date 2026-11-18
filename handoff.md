@@ -21,8 +21,8 @@ The ten-card hybrid two-drop cycle is complete in the pool: 315 cards, R-125 to 
 
 `docs/decision-updates/s72.md` is the full record. Run the app with `pnpm viewer` and the tests with `pnpm test`.
 
-## Session 73, Part 1 — the vintage audit (2026-11-18; the fresh session, uncommitted)
-The brief's Part 1 only. Parts 0 (its code items), 2, 3, 4 and 5 are untouched and owed to the regular implementer. `docs/decision-updates/s73.md` is the record; `docs/reference/vintage-audit-s73.md` is the table. **No list was edited**: every row is a trial.
+## Session 73, Part 1 — the vintage audit (2026-11-18; the fresh session, commit 2f172a8)
+The brief's Part 1, then Part 0's code items (the section after this one). Parts 2, 3, 4 and 5 are owed. `docs/decision-updates/s73.md` is the record; `docs/reference/vintage-audit-s73.md` is the table. **No list was edited**: every row is a trial.
 
 - **ADR-199 built**: `poolAt` on all 187 lists, and `portOf` on the 102 ports (Chris's ruling: a port is read at its source's vintage). `data/convocation/pool-history.json` holds each card's place in the pool. `pnpm vintage-audit` prints a list's vintage and its delta. `world/src/vintage.test.ts` pins all three.
 - **61 trial rows** (160 matches a pairing, paired, seed 91; four on seed 173), none failed. 39 of the planner's lists have rows, 68 lists are Chris's or ports of his (reported to him), 69 are owed.
@@ -35,12 +35,12 @@ The brief's Part 1 only. Parts 0 (its code items), 2, 3, 4 and 5 are untouched a
   6. **Storm Shaman** in the Kindling (pooled +5.0 ± 1.6) and the Tally's Ponder slot (+2.6 ± 1.2); **Dawnwing Marshal** in the Open's Muster (+3.2 ± 1.1).
 - **Not clears**: Banishing Cleric in five hosts (best +2.3 ± 2.3); Revivalist in four; nothing moved the Undertow or the Levy; Nyxathid in BR Removal is conditional (it loses the Tally in both formats).
 - **Deviations** (eight, in s73.md): ports read at the source's vintage; the Open's seeds at 260 (the brief's 244 leaves out the tokens); **no Naya row for Clutch Guard** (it is blue at Naya's and Jund's gates, ADR-197); the second seed only under +5; restricted cards named, not trialled; the top halves not reached.
-- **Tests**: 1,347 passed, 2 skipped (178 files; typecheck clean): `vintage.test.ts` adds five. `pnpm test` still exits non-zero on five vitest errors, the same count as the known "Timeout calling onTaskUpdate" load errors (only the run's tail was kept, so their text was not re-read); every assertion passes.
+- **Tests**: `vintage.test.ts` adds five (the count is in the Part 0 section below).
 - **How to run**: `pnpm vintage-audit [--format <id>] [--list <key>] [--bottom N] [--summary]`; `zsh analysis/s73/trial.sh <format> <list> <tag> '<from:n:to>' [seed]`; `zsh analysis/s73/queue.sh <batch-file> [seed]`; `pnpm -s vintage-audit --summary --json analysis/s73/census.json && python3 analysis/s73/audit-doc.py` rebuilds the table. The shards are in `analysis/s73/audit/` (local, about 320 MB).
 
 **Concerns from the audit** (59–66; they continue the list below):
 
-59. **The sideboard builder reads a hybrid card as both its colours** (`buildSideboard`, `constructed-builder.ts`: `colors` from `cardColors`). A list that plays an off-colour hybrid card and has no registered fifteen is built one it cannot cast. BR Removal with Revivalist stops casting Phyrexian Purge after sideboarding. Four audit rows are read on game one because of it. This is live in the field wherever a builder-made fifteen meets a hybrid card. The fix is the regular implementer's; the four rows are owed a re-run after it.
+59. **FIXED in S73 (the section above).** The sideboard builder read a hybrid card as both its colours (`buildSideboard`, `constructed-builder.ts`: `colors` from `cardColors`). A list that plays an off-colour hybrid card and has no registered fifteen is built one it cannot cast. BR Removal with Revivalist stops casting Phyrexian Purge after sideboarding. Four audit rows are read on game one because of it. This is live in the field wherever a builder-made fifteen meets a hybrid card. The fix is the regular implementer's; the four rows are owed a re-run after it.
 60. **The tables of record are far from the pilot now.** The audit's base arms (v1.5, pilot 176, 160 matches) against the recorded match rates: the Undertow in Nothing Dear 37.2 → 23.5, the Open's Levy 38.0 → 26.2, Bodies' Stampede 46.6 → 35.6; Abzan Warden 39.0 → 48.9, the Kindling in Mardu 35.9 → 44.6. Part 5's re-run will move the tables more than concerns 48 and 55 suggest.
 61. **The Undertow's fall may be a regression.** Book 176 moved tap-to-mill to the opponent's end step after that table was recorded. A probe before the re-run.
 62. **About sixty High Ground gaps are untried.** The census in the audit table lists every planner list in a pair without its High Ground, the five older ones included. The fifteen rows run all clear. Whether to trial the rest or adopt by rule is the planner's and Chris's call.
@@ -48,6 +48,26 @@ The brief's Part 1 only. Parts 0 (its code items), 2, 3, 4 and 5 are untouched a
 64. **Clutch Guard's gain in Emerald Snakes is mostly sideboarding** (Bodies: game one +2.1, later games +9.1). The fifteen is the same; the pilot's out-rule takes the Visionary out and leaves the Guard in. Real under this pilot; it would shrink if the out-rule learned the Guard.
 65. **The Gaean Wurm carries the Wurmspeaker**: replacing three costs eleven points in two formats. S72's Druid study read the Druid in that slot.
 66. **Pool gaps seen in the slot pass** (for the Cube count, 320 of 360): mill beyond Silt Spirit; a white-black token payoff; control finishers outside the legends; two-drops outside the hybrid cycle; an answer to nonbasic lands and legends. In the audit table.
+
+## Session 73, Part 0 — the code items (2026-11-18; after the audit)
+- **Clutch Guard adopted in Nothing Dear's Emerald Snakes** (the brief's ruling): four for the four Elvish Visionaries, in place; `open:gen` re-run (`open-decks.ts`, `docs/reference/nothing-dear-lists.md`). Nothing Dear's table of record predates it.
+- **`sourcePower` reads last-known information** (R-097 amended; CR 608.2h): `effect-context.ts` reads `state.lastKnownPT` once the source has left, as `sourceToughness` does. Census: Notion Flayer and Odile. `engine/test/s73-source-power.test.ts` (five; three fail on the old read). **Ladder PASS**, every number identical to `ladder-siltspirit.log` (`analysis/s73/ladder-sourcepower.log`). Concern 53 is resolved by it.
+- **Not done**: the audit's adoptions (they wait for the planner's read of the table, as the brief says).
+- **Tests**: see the next section.
+
+## Session 73 — the builder fix, Part 3 and Part 4 (2026-11-18)
+- **Concern 59 fixed** (Chris's word): `buildSideboard`, the builder's tinker and `aiSideboard` read the colours a list casts with (`castingColours`, `castableWith` in `cards/src/mana.ts`), not `cardColors`. The gates are unchanged. `world/src/s73-casting-colours.test.ts`. The four confounded audit rows are re-run (`analysis/s73/audit/*-fix59/`) and their match columns now agree with game one; **Daunting Terror for Centaur Courser in Bodies' Stampede clears on two seeds** (pooled +5.3 ± 1.7). The audit table is rebuilt: **34 clears**.
+- **Part 3**: `landdeck` built (four or more lands that do more than make mana; a land that sacrifices or discards itself is not counted). The Warband's row keyed on it, against the whole Open field: **+2.4 ± 1.0 on seed 91, +0.7 ± 0.9 on seed 173, pooled +1.5 ± 0.6: below the bar, not adopted.** The shape costs nothing where it does not fire and loses no pairing where it does.
+- **Part 4**: the narration of Chris's eleven Naya Valakut games against Mardu Control (`analysis/s73/minefield/narration.txt`) and the table of Wall, Minefield and Wrath turns (in s73.md). The AI wins 8 of 87 with the list and casts Wood Elves and Wall of Blossoms about half as often a game as he does. No rule.
+- **Tests**: **1,360 passed**, 2 skipped (181 files; typecheck clean). `pnpm test` exits non-zero on the five vitest "Timeout calling onTaskUpdate" load errors, as before. **Re-baselined**: `constructed-builder.test.ts`'s repair test reads castability (mage:oriel's repair now takes a Revivalist).
+- **Owed**: Part 2 (the forced-inclusion rating run and the Bolt probe) and Part 5 (the re-run of record, after the planner reads the audit).
+
+**Concerns from this pass** (67–70):
+
+67. **`landdeck` fires against eight Open lists, not three.** Any list with four High Grounds has it: Lumen Clio (7), the Sweep, the Writ and Emerald Snakes (4 each), beside the three land decks and the Fun Police. As more planner lists take their High Grounds (the audit's first finding), more lists will have the shape. A threshold of six names the land decks, the Fun Police and Lumen Clio only. The planner's to rule.
+68. **S72's +7.3 for the Warband's row was one seed.** Against the three land decks: +8.5 on seed 91, +2.6 on seed 173.
+69. **The hybrid colour read is still in the Limited builder, the drafter and three tools** (`limited-builder.ts`, `drafter.ts`, `rating-format-cli.ts`, `tinker-cli.ts`, `flood-sim-cli.ts`). Changing the Limited two changes what the rating runs build, which ADR-150 treats as a new table. Not changed.
+70. **The builder fix changes the journey's repaired decks**: a one-colour list may now be repaired with a hybrid card of that colour (mage:oriel takes a Revivalist). Intended by the fix; said here because it reaches beyond the field.
 
 ## Since Session 72 (2026-11-15 to 18; commits a780ae3 to ec233c3)
 Everything below came after the S72 handoff, at Chris's direction. The S72 sections further down are unchanged.
@@ -141,7 +161,7 @@ Open concerns carry their numbers. Resolved ones keep a line.
 10. **The predictor prices a land search flat (0.5)**, whatever it fetches.
 11. **The consequence model (ADR-191)** is unchanged.
 12. **The AI cannot pilot WB Basilisk** (29.5, last in Peasant, against Chris's 11–3). The Collar move is the line to read first.
-13. **No guide shape names a land deck.**
+13. **No guide shape names a land deck.** *(S73: `landdeck` built; the Warband's row is below the bar on two seeds — the S73 section above.)*
     - Land destruction from the sideboard is real against the land decks: the Warband +7.3 ± 1.9 (Part 5).
     - Neither a main-deck copy (S70) nor a guide can deliver it.
     - Candidate shapes for the planner (ADR-188's list):
@@ -204,7 +224,7 @@ Open concerns carry their numbers. Resolved ones keep a line.
 50. **Clutch Guard is +3.9 ± 1.0 in Emerald Snakes** (Nothing Dear, for Elvish Visionary), above ADR-168's bar. It is not adopted: the brief made it a first read, and adopting it is the planner's and Chris's call. Chris's own Bodies Snakes plays four.
 51. **His Bodies Snakes' remaining habits** (from the 18-against-79 read): the Forerunner's mode (he makes the tokens 12 to 6; the AI fights 45 to 19), Den of Vipers onto 0–1 Snakes (30 of 77), the Keeper onto a small board, and the AI blocking three times as often. The list reads 47.8 against his 89%.
 52. **`open:gen` wrote a hyphenated format id as a bare key**, so the generated `open-decks.ts` did not parse. Fixed: such ids are quoted. The broken file was patched by hand once so the fixed generator could run, because `open:gen` imports the file it writes.
-53. **`sourcePower` reads 0 once its source has left** (R-097), where the new `sourceToughness` reads last-known information (CR 608.2h). They could share `lastKnownPT`; left alone so existing behaviour does not move. The planner's to rule.
+53. ~~`sourcePower` reads 0 once its source has left~~: **resolved in S73** (it reads last-known power; R-097 amended). The original note: **`sourcePower` read 0 once its source had left** (R-097), where the new `sourceToughness` reads last-known information (CR 608.2h). They could share `lastKnownPT`; left alone so existing behaviour does not move. The planner's to rule.
 54. **The Limited rating has a blind spot.** The Sealed builder and the drafters pick by the current table, so a card rated low goes unplayed and is never re-measured; the noise run's ±0.4 does not lift it. Fourteen cards with 500 to 16,000 old sightings had 0 to 93 new ones and would have read their tier mean (Entomb −0.09 → 1.71, Demonic Tutor 0.74 → 2.30). **They carry their pilot-94 numbers** (Chris), marked `limitedCarried`: Altar of Dementia, Curiosity, Demonic Tutor, Disenchant, Duress, Entomb, Giant Growth, Orcish Lumberjack, Ovna, Scepter of Dominance, the Bailiff, the Pearl Cleric, Waste Not, Zinnia. ADR-150 forbids pooling across pilots, so this is an interim, not a measurement.
 55. **A rating rebuild moves the field's sideboards.** The builder makes the fifteen of every list without an authored one, and the guide shapes fire on rating thresholds (a steal against three prizes rated 2.5 or more). Under v1.5 the Larder shows two prizes (its Reeves), so the Depths no longer brings in Control Magic against it. The tables of record were played under v1.4.
 56. **Lightning Bolt fell in Limited**, 2.29 → 1.44 on 8,960 sightings; Evolving Wilds 1.55 → −0.78. Possibly the burn holds are too patient on Limited boards. Unprobed.

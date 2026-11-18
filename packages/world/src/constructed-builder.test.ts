@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadCardPool } from "@shandalar/cards/loader";
-import { cardColors, manaValue, parseManaCost } from "@shandalar/cards";
+import { cardColors, castableWith, castingColours, manaValue, parseManaCost } from "@shandalar/cards";
 import { CONSTRUCTED_FORMATS, OPEN_FORMAT, PEASANT_FORMAT, PAUPER_FORMAT, BODIES_FORMAT, HALF_GROUND_FORMAT, NOTHING_DEAR_FORMAT, NOTHING_SMALL_FORMAT, NOTHING_SUDDEN_FORMAT } from "./formats.js";
 import { authoredLists } from "./authored-lists.js";
 import { buildConstructedDeck, cardLegal, copyCap, legalShare, OPEN_MEANS, selectCandidates, tuneVariation, VARIATION_TERMS } from "./constructed-builder.js";
@@ -86,8 +86,10 @@ describe("the Constructed builder (S52)", () => {
       expect(b.from).toBe(key);
       expect(b.check.problems, key).toEqual([]);
       expect(size(b.deck)).toBe(60);
-      const colours = new Set(src.decklist.filter((e) => !d(e.cardId).types.includes("Land")).flatMap((e) => cardColors(d(e.cardId))));
-      for (const e of b.deck) for (const c of cardColors(d(e.cardId))) expect(colours.has(c), `${key}: ${e.cardId}`).toBe(true);
+      // S73 (concern 59): "its own colours" are the colours the source CASTS with — a hybrid card either of whose colours
+      // the list makes is in them (mage:oriel takes a {W/B} Revivalist), and a list's own hybrid card adds no second colour
+      const colours = castingColours(src.decklist.filter((e) => !d(e.cardId).types.includes("Land")).map((e) => d(e.cardId)));
+      for (const e of b.deck) if (!d(e.cardId).types.includes("Land")) expect(castableWith(d(e.cardId), colours), `${key}: ${e.cardId}`).toBe(true);
       const landShare = (l: { cardId: string; count: number }[]) => count(l, (id) => d(id).types.includes("Land")) / size(l);
       expect(Math.abs(landShare(b.deck) - landShare(src.decklist))).toBeLessThan(0.06); // a land for a land
       expect(size(b.added)).toBeGreaterThanOrEqual(60 - size(src.decklist) - 1);

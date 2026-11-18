@@ -4,7 +4,8 @@
 # Five shards an arm. Never edit source or run tests while this runs (the sims import the live tree).
 set -u
 fmt=$1; list=$2; tag=$3; swap=$4; seed=${5:-91}; n=${6:-160}
-dir=analysis/s73/audit/${fmt}-${list}; mkdir -p $dir
+# AUDIT_SUFFIX: a second set of arms for the same list under changed code (the concern-59 re-runs use -fix59)
+dir=analysis/s73/audit/${fmt}-${list}${AUDIT_SUFFIX:-}; mkdir -p $dir
 base=$dir/base-s${seed}; arm=$dir/${tag}-s${seed}
 pids=()
 if [[ ! -f ${base}.done ]]; then

@@ -73,3 +73,32 @@ export function parseManaProduction(text: string): { symbol: ManaSymbol }[] {
   }
   return out;
 }
+
+/** S73 (handoff concern 59): the colours a pile of cards NEEDS in order to be cast — every plain coloured pip, and the
+ * explicit colour of a card with no mana cost. A hybrid pip adds nothing when one of those colours already pays it; a
+ * pip none of them pays adds both its colours (the pile makes one of them, and which is not known here).
+ * This is NOT `cardColors`: a hybrid card IS both its colours at every gate (ADR-197, CR 202.2d), but a red-black list
+ * holding a {W/B} card does not make white. Builders and sideboarding read this; legality reads `cardColors`. */
+export function castingColours(cards: Iterable<{ manaCost: string; colors?: readonly Color[] | undefined }>): Set<Color> {
+  const firm = new Set<Color>(), hybrid: Color[][] = [];
+  for (const d of cards) {
+    const cost = parseManaCost(d.manaCost);
+    for (const c of COLORS) if (cost.colored[c] > 0) firm.add(c);
+    if (d.manaCost === "" && d.colors) for (const c of d.colors) firm.add(c);
+    hybrid.push(...cost.hybrid);
+  }
+  const open = hybrid.filter((h) => !h.some((c) => firm.has(c)));
+  for (const h of open) for (const c of h) firm.add(c);
+  return firm;
+}
+
+/** S73: whether a card can be cast with mana of those colours — each plain coloured pip is one of them and each hybrid
+ * pip has a colour among them. A card with no mana cost goes by its explicit colours; a colourless card always can. */
+export function castableWith(def: { manaCost: string; colors?: readonly Color[] | undefined }, colours: ReadonlySet<Color> | readonly Color[]): boolean {
+  const has = (c: Color) => (colours instanceof Set ? colours.has(c) : (colours as readonly Color[]).includes(c));
+  const cost = parseManaCost(def.manaCost);
+  for (const c of COLORS) if (cost.colored[c] > 0 && !has(c)) return false;
+  for (const h of cost.hybrid) if (!h.some(has)) return false;
+  if (def.manaCost === "" && def.colors && !def.colors.every(has)) return false;
+  return true;
+}

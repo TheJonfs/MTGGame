@@ -8,13 +8,13 @@
   1. **The planner's lists never got their High Grounds.** All fourteen Hearthspire rows and the one Nightbower row clear (+5.2 to +30.2), each a single land for a land. Chris's ruling (2026-11-18): the High Grounds are Power-class, and a list in the pair needs a reason not to play its own. The census below lists every planner list still without one.
   2. **Order Druid belongs in the Wurmspeaker's ramp slot** (for Rampant Growth): +10.3 to +13.9 in all seven formats the list is in. S72's study had it in the Gaean Wurm's slot and read −1.5.
   3. **Clutch Guard beats Elvish Visionary and Wall of Blossoms in every Snake list it is legal in** (four rows, +8.5 to +15.3). All four lists are Chris's or ports of his.
-  4. **Daunting Terror for Child of Night in BR Removal**: +16.9 in Nothing Dear, +12.8 in Grixis.
+  4. **Daunting Terror for Child of Night in BR Removal**: +16.9 in Nothing Dear, +12.8 in Grixis. For Centaur Courser in Bodies' Stampede: +5.3 pooled over two seeds.
   5. **Nyxathid's clean home is Peasant's Mono-Black Removal** (+10.8 for the Gallows Djinn). In the Barrow it clears pooled over two seeds (+3.0 ± 1.8). In BR Removal it gains against the field and loses the Tally in both formats: conditional.
   6. **Two smaller clears held on a second seed**: Storm Shaman in the Kindling (pooled +5.0 ± 1.6) and in the Tally's Ponder slot (+2.6 ± 1.2); Dawnwing Marshal for the Muster's Hawks and Ace (+3.2 ± 1.1).
 - **Banishing Cleric has no home by the bar**, as Chris expects of it: five hosts, best +2.3 ± 2.3.
 - **The Undertow and the Levy took nothing** from the cards added since they were seeded.
 - **Silt Spirit beyond Sultai Mill**: level in the Undertow; +3.1 in UR Pyroclasm Control with two pairings lost.
-- **Four hybrid rows are confounded** by the field's sideboard builder (below) and are read on game one.
+- **Four hybrid rows were confounded** by a defect in the field's sideboard builder. It is fixed and the rows are re-run (below); one of them, Daunting Terror in the Stampede, now clears.
 
 ## The trial rows
 160 matches a pairing against the format's whole field, seed 91, paired match by match. The gain is in matches; game one is beside it. "Pairings lost" are those lost clear of their own error.
@@ -24,11 +24,19 @@
 ### Notes on rows
 {{NOTES}}
 
-### The confounded rows
-The field's sideboard builder takes a list's colours from `cardColors` of its nonland cards (`constructed-builder.ts`, `buildSideboard`). A hybrid card has both its colours, so a list that gains Revivalist ({W/B}) is built a fifteen with white cards whether or not it can make white. BR Removal with Revivalist stops casting Phyrexian Purge after sideboarding (0.47 a game to none) because the slots hold cards it cannot cast.
-- This reaches any trial that puts a hybrid card in a list without both its colours, where the list has no registered fifteen.
-- The error runs against the swap only, so a row that clears anyway stands.
-- The affected rows are marked and read on the paired game-one column. Their match columns are owed a re-run once the builder reads a hybrid card by what the list can cast.
+### The rows the sideboard builder confounded, re-run
+The audit's first pass found a defect (handoff concern 59): the field's sideboard builder took a list's colours from `cardColors` of its nonland cards. A hybrid card has both its colours, so a list that gained Revivalist ({W/B}) was built a fifteen of white cards whether or not it could make white. BR Removal with Revivalist stopped casting Phyrexian Purge after sideboarding (0.47 a game to none).
+- **Fixed in S73**: the builder, its tinker and the sideboarding rules read the colours a list casts with (`castingColours`, `castableWith` in `cards/src/mana.ts`). The gates still read `cardColors` (ADR-197).
+- **The four affected rows were re-run** with fresh base arms (`analysis/s73/audit/*-fix59/`), and the table above shows the re-runs. Each match column now agrees with its game-one column:
+
+| row | matches, first run | matches, re-run | game one |
+|---|---|---|---|
+| Revivalist in Nothing Dear's BR Removal | −14.8 | −3.7 ± 2.0 | −3.1 ± 1.5 |
+| Daunting Terror in Bodies' Stampede | −1.0 | +4.7 ± 2.3 | +3.8 ± 1.8 |
+| Domain Pouncer in Bodies' Stampede | −8.0 | −0.8 ± 2.4 | −1.0 ± 1.6 |
+| Command of the Depths in the Barrow | −7.0 | −0.5 ± 2.5 | +0.9 ± 2.1 |
+
+- **Daunting Terror for Centaur Courser in the Stampede now clears**, on two seeds (seed 173: +5.9 ± 2.4).
 
 ## The High Grounds census
 A list is in a High Ground's pair when it plays both colours and the format allows both. Peasant is left out (the High Grounds are not legal there). Ranksmere has no home by S72's ruling, and Burnfallow read −5.8 in Emerald Snakes in S70; both are listed for completeness.

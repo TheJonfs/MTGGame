@@ -25,7 +25,7 @@
  * Deterministic (ties by card id). Stateless: it is computed from the REGISTERED deck each game, so it follows the
  * opponent's current list (a human who sideboards) and never drifts.
  */
-import { cardColors, manaValue, parseManaCost, type CardDef } from "@shandalar/cards";
+import { castingColours, castableWith, isManaAbility, manaValue, parseManaCost, type CardDef } from "@shandalar/cards";
 import type { Decklist } from "./state.js";
 import { isBasic } from "./legality.js";
 import { cardRating, type CardRatingTable } from "./rating.js";
@@ -98,6 +98,12 @@ export const isWall = (d: CardDef) => d.types.includes("Creature") && (d.keyword
 type AnyEffect = { type: string; to?: string; scope?: string };
 const everyEffect = (d: CardDef): AnyEffect[] => [...((d.spellEffect ?? []) as AnyEffect[]), ...(d.abilities ?? []).flatMap((a) => ("effects" in a ? (a.effects as AnyEffect[]) : []))];
 /** S55 (rule 4): graveyard exile — a player's whole graveyard, or cards targeted in one (Tormod's Crypt, Faerie Macabre). */
+/** S73 (the `landdeck` shape; the brief's ruling on concern 13): a land that does more than make mana — it has an ability
+ * that is not a mana ability and that the land stays on the battlefield to use. Valakut's trigger, a High Ground's
+ * corner and the Library count. A land that sacrifices or discards ITSELF for its ability does not (Evolving Wilds, the
+ * cycling lands: once used they are not a land to destroy) — the implementer's reading of "do more", logged in s73.md. */
+export const landDoesMore = (d: CardDef) => d.types.includes("Land") && (d.abilities ?? []).some((a) => !isManaAbility(a) && !(a.kind === "activated" && ((a.cost as { discardSelf?: boolean }).discardSelf || (a.cost as { sacrifice?: { predicate?: string } }).sacrifice?.predicate === "self")));
+export const LANDDECK_AT = 4;
 export const answersGraveyards = (d: CardDef) => everyEffect(d).some((e) => e.type === "exileGraveyard") || (d.abilities ?? []).some((a) => a.kind === "activated" && a.effects.some((e) => e.type === "exile") && (a.targets ?? []).some((t) => t.zone === "graveyard"));
 /** S55 (rule 4): a card that works from the graveyard — it returns a creature card (not itself) to the battlefield, or searches a card into a graveyard. */
 export const usesGraveyard = (d: CardDef) => everyEffect(d).some((e) => (e.type === "returnFromGraveyard" && e.to === "battlefield" && e.scope !== "self") || (e.type === "searchLibrary" && e.to === "graveyard"));
@@ -112,9 +118,9 @@ export const usableByAnyDeck = (d: CardDef) => d.manaCost === "{0}" || (d.abilit
 /** Post-S59 (Reaper Control's guide): `small` — fifteen or more creatures of toughness two or less (what a Pyroclasm
  * answers; the rules' own sweeper shape counts power); `someGraveyard` — four or more cards that work from a graveyard
  * (the Coin and the Hearth, which `graveyard` at eight does not reach). */
-export type GuideShape = "creatureDeck" | "fewLarge" | "control" | "plan" | "counters" | "graveyard" | "relics" | "small" | "someGraveyard" | /** post-S60: eight or more creatures of toughness three or more — a sweeper's deck, not a Pyroclasm's */ "large" | /** S63: four or more hexproof or shroud creatures that are threats — printed power two or more, or a size the card sets for itself (Dungrove Elder's `*`) */ "hexproof" | /** S64 (Chris: the Mentor against the black lists): eight or more cards that destroy or exile a creature — spells and enters triggers aimed at a creature (the kill decks, not the burn decks) */ "killers" | /** post-S65 (Chris, the Snake Keeper's guide): two or more board sweepers (`isSweeper`: Wrath, Pyroclasm, Savage Twister — not Retribution's large-only) */ "sweepers" | /** post-S65 (the same): two or more cards with a static that lowers the power of creatures their opponent controls (Clio's depth) */ "shrinks" | /** S66 (Chris, Esper's sweeper round: `small` counts creature cards and misses a deck that goes wide through token makers — the Roll): eight or more cards that create tokens */ "wide";
+export type GuideShape = "creatureDeck" | "fewLarge" | "control" | "plan" | "counters" | "graveyard" | "relics" | "small" | "someGraveyard" | /** post-S60: eight or more creatures of toughness three or more — a sweeper's deck, not a Pyroclasm's */ "large" | /** S63: four or more hexproof or shroud creatures that are threats — printed power two or more, or a size the card sets for itself (Dungrove Elder's `*`) */ "hexproof" | /** S64 (Chris: the Mentor against the black lists): eight or more cards that destroy or exile a creature — spells and enters triggers aimed at a creature (the kill decks, not the burn decks) */ "killers" | /** post-S65 (Chris, the Snake Keeper's guide): two or more board sweepers (`isSweeper`: Wrath, Pyroclasm, Savage Twister — not Retribution's large-only) */ "sweepers" | /** post-S65 (the same): two or more cards with a static that lowers the power of creatures their opponent controls (Clio's depth) */ "shrinks" | /** S66 (Chris, Esper's sweeper round: `small` counts creature cards and misses a deck that goes wide through token makers — the Roll): eight or more cards that create tokens */ "wide" | /** S73 (the brief's ruling; concern 13): four or more LANDS that do more than make mana (`landDoesMore`) — Valakut, the High Grounds, the Library. A dual makes mana and nothing else. */ "landdeck";
 /** S67 (ADR-188): every shape a guide may name — the one list (open:gen validates against it; the table in aiSideboard is typed by it). */
-export const GUIDE_SHAPES = ["creatureDeck", "fewLarge", "control", "plan", "counters", "graveyard", "relics", "small", "someGraveyard", "large", "hexproof", "killers", "sweepers", "shrinks", "wide"] as const satisfies readonly GuideShape[];
+export const GUIDE_SHAPES = ["creatureDeck", "fewLarge", "control", "plan", "counters", "graveyard", "relics", "small", "someGraveyard", "large", "hexproof", "killers", "sweepers", "shrinks", "wide", "landdeck"] as const satisfies readonly GuideShape[];
 const _everyShape: Exclude<GuideShape, (typeof GUIDE_SHAPES)[number]> extends never ? true : never = true; void _everyShape;
 export interface GuideRow { in: string; n: number; out?: string[]; when: GuideShape[]; /** not against these, whatever `when` says */ unless?: GuideShape[] }
 export interface SideboardGuide { key: string; fifteen: Decklist; rows: GuideRow[]; /** post-S59: the guide is the whole plan — the rules do not run after it (they took Reaper Control's Walls out for removal in every matchup) */ only?: true }
@@ -134,8 +140,9 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
   if (!terms.out61 && !terms.noOutRules) { const adopted = SIDEBOARD_OUT_RULES.find((r) => sameCards(r.sixty, deck)); if (adopted) terms = { ...terms, out61: adopted.out61 }; }
   const expand = (l: Decklist) => l.flatMap((e) => Array.from({ length: e.count }, () => e.cardId));
   const main = expand(deck), side = expand(sideboard).filter((id) => !isBasic(id));
-  const colors = new Set(main.filter((id) => !def(id).types.includes("Land")).flatMap((id) => cardColors(def(id))));
-  const castable = (id: string) => !def(id).types.includes("Land") && cardColors(def(id)).every((c) => colors.has(c));
+  // S73 (concern 59): the colours the sixty casts with — a hybrid card in it does not make its other colour castable
+  const colors = castingColours(main.filter((id) => !def(id).types.includes("Land")).map(def));
+  const castable = (id: string) => !def(id).types.includes("Land") && castableWith(def(id), colors);
   const opp = expand(opponentDeck).map(def);
   const oppCreatures = opp.filter((d) => d.types.includes("Creature")).length;
   // post-S54: a permanent whose every ability only makes mana (a Mox, the Lotus) is not what such removal is brought
@@ -186,6 +193,7 @@ export function aiSideboard(deck: Decklist, sideboard: Decklist, opponentDeck: D
       sweepers: opp.filter(isSweeper).length >= 2,
       shrinks: opp.filter(shrinksTheirs).length >= 2,
       wide: opp.filter(makesTokens).length >= 8,
+      landdeck: opp.filter(landDoesMore).length >= LANDDECK_AT,
       hexproof: oppCr.filter((d) => ((d.keywords ?? []).includes("hexproof") || (d.keywords ?? []).includes("shroud")) && ((d.power ?? 0) >= 2 || (d.abilities ?? []).some((a) => a.kind === "static" && a.effects.some((e) => e.type === "modifyPT" && e.scope === "self" && typeof e.power === "object")))).length >= 4,
     };
     for (const row of guide.rows) {

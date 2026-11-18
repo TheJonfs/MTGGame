@@ -19,7 +19,7 @@
 import { FORMAT_STRENGTH, OPEN_MEANS } from "./open-matches.generated.js";
 /** S63 (Part 2): the game-one means are generated from data/convocation/formats/<id>/means.json (`open:rr --merge … --record`). */
 export { OPEN_MEANS };
-import { cardColors, manaValue, parseManaCost, colourPips, type CardDef } from "@shandalar/cards";
+import { cardColors, castingColours, castableWith, manaValue, parseManaCost, colourPips, type CardDef } from "@shandalar/cards";
 import type { Decklist } from "./state.js";
 import { BASIC_LANDS, COPY_CAP, checkDeck, isBasic, offColourMana, type DeckCheck, type DeckRule } from "./legality.js";
 import type { ConstructedFormat } from "./formats.js";
@@ -151,8 +151,9 @@ export function buildConstructedDeck(format: ConstructedFormat, rating: CardRati
     if (keep > 0) deck.set(e.cardId, keep);
     if (keep < e.count) cut.push({ cardId: e.cardId, count: e.count - keep });
   }
-  const colours = [...new Set(source.decklist.filter((e) => role(e.cardId) !== "land").flatMap((e) => cardColors(def(e.cardId))))];
-  const inColours = (id: string) => cardColors(def(id)).every((c) => colours.includes(c));
+  // S73 (concern 59): the colours the list CASTS with — a hybrid card it holds does not make it a deck of both colours
+  const colours = [...castingColours(source.decklist.filter((e) => role(e.cardId) !== "land").map((e) => def(e.cardId)))];
+  const inColours = (id: string) => castableWith(def(id), colours);
   const count = (r: Role) => [...deck].reduce((n, [id, k]) => n + (role(id) === r ? k : 0), 0);
   const deckSize = () => [...deck.values()].reduce((a, b) => a + b, 0);
   const add = (id: string) => { deck.set(id, (deck.get(id) ?? 0) + 1); added.set(id, (added.get(id) ?? 0) + 1); };
@@ -237,12 +238,14 @@ export function buildSideboard(deck: Decklist, format: ConstructedFormat, rating
   rating = formatView(rating, format.id); // S62
   const rule = format.rule;
   const inDeck = new Map(deck.map((e) => [e.cardId, e.count]));
-  const colors = new Set(deck.flatMap((e) => { const d = cards.get(e.cardId); return d && !d.types.includes("Land") ? cardColors(d) : []; }));
+  // S73 (concern 59): the colours the deck casts with, not `cardColors` — BR Removal with a {W/B} Revivalist was built a
+  // fifteen of white cards it could not cast (the audit's row read −14.8 in matches and −3.3 in game one)
+  const colors = castingColours(deck.flatMap((e) => { const d = cards.get(e.cardId); return d && !d.types.includes("Land") ? [d] : []; }));
   const room = (d: CardDef) => Math.max(0, Math.min(copyCap(d.id, rule), COPY_CAP) - (inDeck.get(d.id) ?? 0));
   // S55 (ADR-162): graveyard exile is a sideboard card by nature — any deck may register it (it is used for no mana),
   // two of each, in slots of its own; it is never among "the best of the rest"
   const hate = [...cards.values()].filter((d) => cardLegal(d, rule) && answersGraveyards(d) && usableByAnyDeck(d) && room(d) > 0).sort((a, b) => a.id.localeCompare(b.id));
-  const pool = [...cards.values()].filter((d) => !d.types.includes("Land") && cardLegal(d, rule) && cardColors(d).every((c) => colors.has(c)) && room(d) > 0 && !answersGraveyards(d))
+  const pool = [...cards.values()].filter((d) => !d.types.includes("Land") && cardLegal(d, rule) && castableWith(d, colors) && room(d) > 0 && !answersGraveyards(d))
     .sort((a, b) => cardRating(b, rating) - cardRating(a, rating) || a.id.localeCompare(b.id));
   const side = new Map<string, number>();
   const size = () => [...side.values()].reduce((n, x) => n + x, 0);

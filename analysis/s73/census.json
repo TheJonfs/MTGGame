@@ -5444,7 +5444,6 @@
   "top": 4,
   "candidates": [
    "burnfallow_exuberant",
-   "clutch_guard",
    "correspondence",
    "daunting_terror",
    "domain_pouncer",
@@ -5463,7 +5462,9 @@
    "valakut_the_molten_pinnacle",
    "volmaw"
   ],
-  "adopted": []
+  "adopted": [
+   "clutch_guard"
+  ]
  },
  {
   "format": "nothing-dear",

@@ -212,12 +212,12 @@ export type ValueRef =
   /** S40 (R-097, Sacred Helix): the total mana spent to cast the resolving SPELL (X included), captured on
    * the stack item as the cost is paid (CR 601.2h). Spell effects only (validator-confined). */
   | { ref: "manaSpent" }
-  /** S40 (R-097, Odile): the resolving ability's own SOURCE's power — live while it is on the battlefield,
-   * zero once it has left (no LKI is kept for a trigger source; registered as a simplification). */
+  /** S40 (R-097, Odile): the resolving ability's own SOURCE's power — live while it is on the battlefield; once it has
+   * left, its LAST-KNOWN power as it left (CR 608.2h; S73 — before S73 it read zero, a registered simplification). */
   | { ref: "sourcePower" }
   /** Post-S72 (R-133, Chris's Silt Spirit — "X is this creature's toughness"): the resolving ability's SOURCE's toughness,
-   * live while it is on the battlefield; once it has left, its LAST-KNOWN toughness as it left (CR 608.2h) — unlike
-   * sourcePower's registered zero. Stack-only. */
+   * live while it is on the battlefield; once it has left, its LAST-KNOWN toughness as it left (CR 608.2h), as
+   * sourcePower reads since S73. Stack-only. */
   | { ref: "sourceToughness" }
   /** S40 (R-097, Zinnia / Meliyan): the last-known POWER of the triggering zone-change event's creature
    * (captured as it leaves the battlefield, CR 603.10a). DIES / LEAVES_BATTLEFIELD observers only

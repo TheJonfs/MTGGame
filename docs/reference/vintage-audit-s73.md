@@ -4,17 +4,17 @@
 
 ## The reading in brief
 - **172 active lists** were given a vintage. **39** have trial rows (58 rows), **68** are Chris's or ports of his and are reported to him, and **69** are owed.
-- **33 rows clear ADR-168's bar.** They are six findings, not 33:
+- **34 rows clear ADR-168's bar.** They are six findings, not 34:
   1. **The planner's lists never got their High Grounds.** All fourteen Hearthspire rows and the one Nightbower row clear (+5.2 to +30.2), each a single land for a land. Chris's ruling (2026-11-18): the High Grounds are Power-class, and a list in the pair needs a reason not to play its own. The census below lists every planner list still without one.
   2. **Order Druid belongs in the Wurmspeaker's ramp slot** (for Rampant Growth): +10.3 to +13.9 in all seven formats the list is in. S72's study had it in the Gaean Wurm's slot and read −1.5.
   3. **Clutch Guard beats Elvish Visionary and Wall of Blossoms in every Snake list it is legal in** (four rows, +8.5 to +15.3). All four lists are Chris's or ports of his.
-  4. **Daunting Terror for Child of Night in BR Removal**: +16.9 in Nothing Dear, +12.8 in Grixis.
+  4. **Daunting Terror for Child of Night in BR Removal**: +16.9 in Nothing Dear, +12.8 in Grixis. For Centaur Courser in Bodies' Stampede: +5.3 pooled over two seeds.
   5. **Nyxathid's clean home is Peasant's Mono-Black Removal** (+10.8 for the Gallows Djinn). In the Barrow it clears pooled over two seeds (+3.0 ± 1.8). In BR Removal it gains against the field and loses the Tally in both formats: conditional.
   6. **Two smaller clears held on a second seed**: Storm Shaman in the Kindling (pooled +5.0 ± 1.6) and in the Tally's Ponder slot (+2.6 ± 1.2); Dawnwing Marshal for the Muster's Hawks and Ace (+3.2 ± 1.1).
 - **Banishing Cleric has no home by the bar**, as Chris expects of it: five hosts, best +2.3 ± 2.3.
 - **The Undertow and the Levy took nothing** from the cards added since they were seeded.
 - **Silt Spirit beyond Sultai Mill**: level in the Undertow; +3.1 in UR Pyroclasm Control with two pairings lost.
-- **Four hybrid rows are confounded** by the field's sideboard builder (below) and are read on game one.
+- **Four hybrid rows were confounded** by a defect in the field's sideboard builder. It is fixed and the rows are re-run (below); one of them, Daunting Terror in the Stampede, now clears.
 
 ## The trial rows
 160 matches a pairing against the format's whole field, seed 91, paired match by match. The gain is in matches; game one is beside it. "Pairings lost" are those lost clear of their own error.
@@ -51,6 +51,7 @@
 | Nothing Dear | BR Removal | 4 Nyxathid for 2 Gravedigger, 2 Reassembling Skeleton | a threat for the list's two value bodies | 40.9 → 47.9 | **+7.1 ± 2.2** | +5.5 ± 1.7 | the Tally -12 | conditional |
 | Nothing Dear | the Muster | 1 Hearthspire for 1 Plains | a land for a land: the pair's High Ground | 57.0 → 64.0 | **+7.0 ± 1.2** | +4.9 ± 1.0 | — | **clears** |
 | Mardu | the Warband (Mardu) | 1 Hearthspire for 1 Mountain | a land for a land: the pair's High Ground | 46.9 → 52.0 | **+5.2 ± 1.3** | +3.8 ± 1.0 | — | **clears** |
+| Bodies | the Stampede | 4 Daunting Terror for 4 Centaur Courser | the same 3/3 a mana cheaper, with menace | 35.2 → 39.9 | **+4.7 ± 2.3** | +3.8 ± 1.8 | — | **clears** on two seeds (seed 173 +5.9 ± 2.4; pooled +5.3 ± 1.7) |
 | Grixis | BR Removal | 4 Nyxathid for 2 Gravedigger, 2 Reassembling Skeleton | a threat for the list's two value bodies | 40.2 → 43.9 | **+3.8 ± 2.1** | +2.5 ± 1.6 | the Tally -11 | conditional |
 | the Open | the Wurmspeaker | 4 Sapwell Dryad for 4 Rampant Growth | a ramp piece for a ramp piece, with a body | 28.5 → 32.2 | **+3.7 ± 1.4** | +2.9 ± 1.1 | Countersnake -6 | runner-up |
 | Esper | the Barrow | 2 Nyxathid for 2 Gravedigger | a threat for the list's value body | 40.5 → 44.2 | **+3.7 ± 2.5** | +2.7 ± 1.6 | — | **clears** pooled over two seeds; seed 173 alone is under the bar (seed 173 +2.3 ± 2.5; pooled +3.0 ± 1.8) |
@@ -67,18 +68,17 @@
 | the Open | the Levy | 4 Dawnwing Marshal for 4 Raise the Alarm | a two-drop for a two-drop in an Anthem list | 26.2 → 26.4 | **+0.2 ± 1.5** | +0.5 ± 1.1 | the Depths -9, the Pinnacle -9 | below the bar |
 | Naya | the Chantry | 4 Banishing Cleric for 2 Karmic Mentor, 2 Dazzling Angel | a three-drop body for three-drop bodies | 49.1 → 49.2 | **+0.2 ± 1.9** | +1.1 ± 1.7 | the Minefield -7 | below the bar |
 | Nothing Dear | the Levy | 2 Banishing Cleric for 2 Vampire Nighthawk | a three-drop body for a three-drop body | 30.5 → 30.4 | **-0.1 ± 1.2** | +0.4 ± 1.0 | — | below the bar |
+| Esper | the Barrow | 3 Command of the Depths for 3 Diabolic Edict | removal for removal | 40.5 → 40.1 | **-0.5 ± 2.5** | +0.9 ± 2.1 | the Undertow -9, the Writ -9 | below the bar |
 | Nothing Dear | the Undertow | 3 Silt Spirit for 3 Vampire Nighthawk | a mill body for the list's non-mill body | 23.5 → 22.9 | **-0.7 ± 1.5** | -1.4 ± 1.4 | Bant Auras (working name) -7, the Levy -18 | below the bar |
-| Bodies | the Stampede | 4 Daunting Terror for 4 Centaur Courser | the same 3/3 a mana cheaper, with menace | 35.6 → 34.6 | **-1.0 ± 2.3** | +3.8 ± 1.8 | — | confounded (game one +3.8 ± 1.8) |
+| Bodies | the Stampede | 4 Domain Pouncer for 4 Centaur Courser | the brief's host: a list with Mountains | 35.2 → 34.4 | **-0.8 ± 2.4** | -1.0 ± 1.6 | — | below the bar |
 | the Open | the Muster | 3 Banishing Cleric for 3 Vigil Keeper | a three-drop body for a three-drop body | 40.3 → 38.9 | **-1.3 ± 1.4** | -0.1 ± 1.2 | the Pall -22, the Pinnacle -8, the Rabble -9, the Tollgate -8 | below the bar |
 | Abzan | Abzan Warden (working name) | 4 Revivalist for 4 Dazzling Angel | a lifegain body for a lifegain body | 48.9 → 45.9 | **-3.0 ± 2.1** | -5.1 ± 1.9 | Abzan Tokens (working name) -6, the Levy -12, White Skies -11 | below the bar |
 | the Open | the Levy | 4 Revivalist for 4 Soul Warden | a lifegain body for a lifegain body | 26.2 → 23.2 | **-3.0 ± 1.3** | -2.5 ± 1.2 | the Kiln -8, the Muster -6, the Sweep -11, the Writ -8, the Wurmspeaker -10 | below the bar |
+| Nothing Dear | BR Removal | 4 Revivalist for 2 Gravedigger, 2 Reassembling Skeleton | a recursion body for the recursion bodies | 39.5 → 35.8 | **-3.7 ± 2.0** | -3.1 ± 1.5 | Emerald Snakes -8, the Minefield -5, the Tally -22 | below the bar |
 | Nothing Dear | the Tally | 2 Correspondence for 2 Control Magic | a steal for a steal, cheaper | 41.6 → 37.9 | **-3.7 ± 1.7** | -4.5 ± 1.3 | BR Removal -7, Emerald Snakes -8, Mardu Control -11, the Muster -9 | below the bar |
 | Nothing Dear | the Levy | 4 Revivalist for 4 Soul Warden | a lifegain body for a lifegain body | 30.5 → 25.2 | **-5.4 ± 1.7** | -4.9 ± 1.5 | Bant Auras (working name) -12, Mardu Control -6, the Tally -8, the Thicket -14, the Undertow -6 | below the bar |
-| Esper | the Barrow | 3 Command of the Depths for 3 Diabolic Edict | removal for removal | 40.5 → 33.6 | **-7.0 ± 2.6** | +0.9 ± 2.1 | the Locks -9, the Eddy -12, the Undertow -14, the Chancel -10, the Writ -11 | confounded (game one +0.9 ± 2.1) |
-| Bodies | the Stampede | 4 Domain Pouncer for 4 Centaur Courser | the brief's host: a list with Mountains | 35.6 → 27.6 | **-8.0 ± 2.3** | -1.0 ± 1.6 | Jund Dragons -12, Emerald Snakes -9, Mono-Black Clio -12, the Wurmspeaker -18 | confounded (game one -1.0 ± 1.6) |
 | Bodies | the Wurmspeaker | 3 Dungrove Elder for 3 Gaean Wurm | a body for a four-mana body | 20.2 → 9.2 | **-11.0 ± 1.7** | -10.3 ± 1.7 | the Aerie -9, Bant Countersnake -8, Jund Dragons -15, Emerald Snakes -11, Mardu Control -6, Mono-Black Clio -6, the Muster -20, the Rabble -20, Reaper Clio -2, the Stampede -14 | wrong slot |
 | the Open | the Wurmspeaker | 3 Dungrove Elder for 3 Gaean Wurm | a body for a four-mana body | 28.5 → 17.3 | **-11.1 ± 1.3** | -10.9 ± 1.3 | Countersnake -9, 5C Earthrise -17, Emerald Snakes -4, the Fun Police -14, the Kiln -18, the Levy -18, Lumen Clio -13, the Minefield -18, the Muster -17, the Pall -11, the Pinnacle -11, the Rabble -12, the Sweep -6, the Tollgate -23, the Warband (Chris's list to test against the Muster) -10, the Writ -4 | wrong slot |
-| Nothing Dear | BR Removal | 4 Revivalist for 2 Gravedigger, 2 Reassembling Skeleton | a recursion body for the recursion bodies | 40.9 → 26.1 | **-14.8 ± 2.1** | -3.3 ± 1.5 | Emerald Snakes -24, the Levy -22, Mardu Control -11, Massocrafts -14, Mono-Black Clio -9, the Minefield -6, the Muster -21, the Tally -22, the Thicket -9, the Undertow -28 | confounded (game one -3.3 ± 1.5) |
 
 ### Notes on rows
 - **Jeskai's Jeskai Sweepers (working name), Hearthspire**: The list was losing 957 of 4,233 games by decking itself (three Serra Angels are its only way to win); with Hearthspire 526. The land is also the list's second win condition.
@@ -88,20 +88,32 @@
 - **Bodies's Emerald Snakes, Clutch Guard**: Game one +2.1; the rest is the sideboarded games, as in the Open.
 - **the Open's Emerald Snakes, Clutch Guard**: The brief's first trial. Most of the gain is in the sideboarded games: the pilot boards the Visionary out and keeps the Guard in.
 - **Nothing Dear's BR Removal, Nyxathid**: Clears on the estimate but loses the Tally pairing clear of its error (-12 +/- 7): the planner's call under ADR-168's second clause.
+- **Bodies's the Stampede, Daunting Terror**: Re-run after the builder fix (concern 59); the first run read -1.0 in matches against +3.8 in game one.
 - **Grixis's BR Removal, Nyxathid**: The same shape as Nothing Dear's row: a gain on the estimate with the Tally pairing lost (-11 +/- 7). Nyxathid shrinks against a full hand, and the Tally keeps one.
 - **the Open's the Wurmspeaker, Sapwell Dryad**: Clears on seed 91, but Order Druid reads +12.4 in the same slot; no second seed run.
 - **Jeskai's UR Pyroclasm Control, Silt Spirit**: Clears on the estimate but loses the Muster and the Warband by 15 each.
 - **Esper's the Chancel, Banishing Cleric**: The Cleric's best row: the estimate is over +2 and the lower bound is at zero.
+- **Esper's the Barrow, Command of the Depths**: Re-run after the builder fix (concern 59); the first run read -7.0 in matches.
+- **Bodies's the Stampede, Domain Pouncer**: Re-run after the builder fix (concern 59); the first run read -8.0 in matches. Even switched on by the Stampede's Mountains, the Pouncer does not beat a plain 3/3.
 - **the Open's the Muster, Banishing Cleric**: Loses the Pall by 22: the Keeper's exile is why it is in the list (S67).
+- **Nothing Dear's BR Removal, Revivalist**: Re-run after the builder fix (concern 59). The first run read -14.8 in matches against -3.3 in game one: the builder had given the list a white fifteen.
 - **Nothing Dear's the Tally, Correspondence**: Concern 33: the AI cannot make Correspondence good. A pilot floor, not a verdict on the card.
 - **Bodies's the Wurmspeaker, Dungrove Elder**: A slot misread: the Gaean Wurm is a Wurm for Baru. Not a verdict on the Elder.
 - **the Open's the Wurmspeaker, Dungrove Elder**: The same misread, confirmed in a second format. The size of the loss says the Gaean Wurm carries this list.
 
-### The confounded rows
-The field's sideboard builder takes a list's colours from `cardColors` of its nonland cards (`constructed-builder.ts`, `buildSideboard`). A hybrid card has both its colours, so a list that gains Revivalist ({W/B}) is built a fifteen with white cards whether or not it can make white. BR Removal with Revivalist stops casting Phyrexian Purge after sideboarding (0.47 a game to none) because the slots hold cards it cannot cast.
-- This reaches any trial that puts a hybrid card in a list without both its colours, where the list has no registered fifteen.
-- The error runs against the swap only, so a row that clears anyway stands.
-- The affected rows are marked and read on the paired game-one column. Their match columns are owed a re-run once the builder reads a hybrid card by what the list can cast.
+### The rows the sideboard builder confounded, re-run
+The audit's first pass found a defect (handoff concern 59): the field's sideboard builder took a list's colours from `cardColors` of its nonland cards. A hybrid card has both its colours, so a list that gained Revivalist ({W/B}) was built a fifteen of white cards whether or not it could make white. BR Removal with Revivalist stopped casting Phyrexian Purge after sideboarding (0.47 a game to none).
+- **Fixed in S73**: the builder, its tinker and the sideboarding rules read the colours a list casts with (`castingColours`, `castableWith` in `cards/src/mana.ts`). The gates still read `cardColors` (ADR-197).
+- **The four affected rows were re-run** with fresh base arms (`analysis/s73/audit/*-fix59/`), and the table above shows the re-runs. Each match column now agrees with its game-one column:
+
+| row | matches, first run | matches, re-run | game one |
+|---|---|---|---|
+| Revivalist in Nothing Dear's BR Removal | −14.8 | −3.7 ± 2.0 | −3.1 ± 1.5 |
+| Daunting Terror in Bodies' Stampede | −1.0 | +4.7 ± 2.3 | +3.8 ± 1.8 |
+| Domain Pouncer in Bodies' Stampede | −8.0 | −0.8 ± 2.4 | −1.0 ± 1.6 |
+| Command of the Depths in the Barrow | −7.0 | −0.5 ± 2.5 | +0.9 ± 2.1 |
+
+- **Daunting Terror for Centaur Courser in the Stampede now clears**, on two seeds (seed 173: +5.9 ± 2.4).
 
 ## The High Grounds census
 A list is in a High Ground's pair when it plays both colours and the format allows both. Peasant is left out (the High Grounds are not legal there). Ranksmere has no home by S72's ruling, and Burnfallow read −5.8 in Emerald Snakes in S70; both are listed for completeness.
@@ -282,7 +294,7 @@ The base arms were played under `card-rating.json` v1.5 and pilot 176; the table
 |---|---|---|---|---|
 | Nothing Dear | the Undertow | 37.2 | 23.5 | -13.7 |
 | the Open | the Levy | 38.0 | 26.2 | -11.8 |
-| Bodies | the Stampede | 46.6 | 35.6 | -11.0 |
+| Bodies | the Stampede | 46.6 | 35.2 | -11.4 |
 | Naya | Mono-Green Wurms | 47.9 | 37.6 | -10.3 |
 | Temur | the Wurmspeaker | 33.8 | 24.2 | -9.6 |
 | Nothing Dear | the Levy | 38.9 | 30.5 | -8.4 |
@@ -543,7 +555,7 @@ Every active list: its vintage, the vintage it is read at (a port's root in brac
 | the Muster | 40 | 42.5 | 305 | 260 (open:muster) | 29 | 1 | trialled: 1 clear |
 | the Aerie | 40.3 | — | 305 | 283 (esper:skies) | 19 | 0 | owed |
 | the Rabble | 42.9 | — | 305 | 263 (open:rabble) | 17 | 0 | contributed: to Chris |
-| the Stampede | 46.6 | 35.6 | 305 | 283 (naya:stompy) | 20 | 2 | trialled: nothing clears |
+| the Stampede | 46.6 | 35.2 | 305 | 283 (naya:stompy) | 20 | 2 | trialled: 1 clear |
 | Bant Countersnake | 55.7 | — | 305 | 305 | 12 | 0 | contributed: to Chris |
 | Emerald Snakes | 58.6 | 60.1 | 305 | 285 (open:emeraldsnakes) | 19 | 1 | contributed: to Chris (1 row run at the brief's word) |
 | Mono-Black Clio | 62.5 | — | 305 | 286 (grixis:mbclio) | 20 | 0 | contributed: to Chris |
@@ -554,7 +566,7 @@ Every active list: its vintage, the vintage it is read at (a port's root in brac
 
 | list | matches of record | base arm now | poolAt | read at | delta | rows run | status |
 |---|---|---|---|---|---|---|---|
-| BR Removal | 33.7 | 40.9 | 315 | 276 (peasant:br) | 25 | 3 | trialled: 1 clear |
+| BR Removal | 33.7 | 39.5 | 315 | 276 (peasant:br) | 25 | 3 | trialled: 1 clear |
 | the Undertow | 37.2 | 23.5 | 315 | 260 (open:undertow) | 26 | 2 | trialled: nothing clears |
 | the Tally | 37.9 | 41.6 | 315 | 260 (open:tally) | 26 | 2 | trialled: 1 clear |
 | the Levy | 38.9 | 30.5 | 315 | 260 (open:levy) | 33 | 3 | trialled: nothing clears |
@@ -565,7 +577,7 @@ Every active list: its vintage, the vintage it is read at (a port's root in brac
 | Mardu Control | 56.1 | — | 315 | 265 (open:marducontrol) | 38 | 0 | contributed: to Chris |
 | the Rabble | 57.3 | — | 315 | 263 (open:rabble) | 17 | 0 | contributed: to Chris |
 | Bant Auras (working name) | 57.3 | — | 315 | 287 (bant:hexaura) | 17 | 0 | owed |
-| Emerald Snakes | 61.1 | — | 315 | 285 (open:emeraldsnakes) | 19 | 0 | contributed: to Chris |
+| Emerald Snakes | 61.1 | — | 315 | 285 (open:emeraldsnakes) | 18 | 0 | contributed: to Chris |
 | the Minefield | 67.6 | — | 315 | 304 (open:minefield) | 12 | 0 | contributed: to Chris |
 
 ## Owed, by format

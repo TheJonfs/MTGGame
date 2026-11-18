@@ -1,60 +1,205 @@
 {
- "open:emeraldsnakes guard": {"role": "a cantrip two-drop for a cantrip two-drop, and a Snake", "note": "The brief's first trial. Most of the gain is in the sideboarded games: the pilot boards the Visionary out and keeps the Guard in."},
- "temur:emeraldsnakes guard": {"role": "a cantrip two-drop for a cantrip two-drop, and a Snake", "note": "In place of the brief's Naya row: the Guard is blue, so it is not legal in Naya or Jund (ADR-197)."},
- "bodies:emeraldsnakes guard": {"role": "a cantrip two-drop for a cantrip two-drop, and a Snake", "note": "Game one +2.1; the rest is the sideboarded games, as in the Open."},
- "temur:reaper guard": {"role": "a cantrip body for a cantrip body, and a Snake", "note": "Game one carries it (+7.6)."},
- "nothing-dear:br terror": {"role": "a two-drop body for a two-drop body"},
- "grixis:br terror": {"role": "a two-drop body for a two-drop body"},
- "nothing-dear:br nyx": {"role": "a threat for the list's two value bodies", "verdict": "conditional", "note": "Clears on the estimate but loses the Tally pairing clear of its error (-12 +/- 7): the planner's call under ADR-168's second clause."},
- "grixis:br nyx": {"role": "a threat for the list's two value bodies", "verdict": "conditional", "note": "The same shape as Nothing Dear's row: a gain on the estimate with the Tally pairing lost (-11 +/- 7). Nyxathid shrinks against a full hand, and the Tally keeps one."},
- "nothing-dear:br reviv": {"role": "a recursion body for the recursion bodies", "confounded": true},
- "nothing-dear:undertow silt": {"role": "a mill body for the list's non-mill body"},
- "nothing-dear:undertow protocol": {"role": "a steal for a steal, cheaper"},
- "nothing-dear:tally shaman": {"role": "the brief's slot: Ponder's"},
- "nothing-dear:tally corr": {"role": "a steal for a steal, cheaper", "note": "Concern 33: the AI cannot make Correspondence good. A pilot floor, not a verdict on the card."},
- "nothing-dear:levy marshal": {"role": "a two-drop for a two-drop in an Anthem list"},
- "nothing-dear:levy cleric": {"role": "a three-drop body for a three-drop body"},
- "nothing-dear:levy reviv": {"role": "a lifegain body for a lifegain body"},
- "bodies:wurmspeaker elder": {"role": "a body for a four-mana body", "verdict": "wrong slot", "note": "A slot misread: the Gaean Wurm is a Wurm for Baru. Not a verdict on the Elder."},
- "open:wurmspeaker elder": {"role": "a body for a four-mana body", "verdict": "wrong slot", "note": "The same misread, confirmed in a second format. The size of the loss says the Gaean Wurm carries this list."},
- "bodies:wurmspeaker dryad": {"role": "a ramp piece for a ramp piece, with a body"},
- "open:wurmspeaker dryad": {"role": "a ramp piece for a ramp piece, with a body", "verdict": "runner-up", "note": "Clears on seed 91, but Order Druid reads +12.4 in the same slot; no second seed run."},
- "bodies:wurmspeaker druid": {"role": "a ramp piece for a ramp piece: it fetches the top end", "note": "S72's study put the Druid in the Gaean Wurm slot and read -1.5; this is the right slot."},
- "open:wurmspeaker druid": {"role": "a ramp piece for a ramp piece: it fetches the top end"},
- "sultai:wurmspeaker druid": {"role": "a ramp piece for a ramp piece: it fetches the top end"},
- "jund:wurmspeaker druid": {"role": "a ramp piece for a ramp piece: it fetches the top end"},
- "temur:wurmspeaker druid": {"role": "a ramp piece for a ramp piece: it fetches the top end"},
- "bant:wurmspeaker druid": {"role": "a ramp piece for a ramp piece: it fetches the top end"},
- "naya:wurms druid": {"role": "a ramp piece for a ramp piece: it fetches the top end"},
- "bodies:stampede terror": {"role": "the same 3/3 a mana cheaper, with menace", "confounded": true},
- "bodies:stampede pouncer": {"role": "the brief's host: a list with Mountains", "confounded": true},
- "open:muster spire": {"role": "a land for a land: the pair's High Ground"},
- "open:warband spire": {"role": "a land for a land: the pair's High Ground"},
- "open:tollgate spire": {"role": "a land for a land: the pair's High Ground"},
- "naya:lifegain spire": {"role": "a land for a land: the pair's High Ground"},
- "jeskai:sweepers spire": {"role": "a land for a land: the pair's High Ground", "note": "The list was losing 957 of 4,233 games by decking itself (three Serra Angels are its only way to win); with Hearthspire 526. The land is also the list's second win condition."},
- "naya:muster spire": {"role": "a land for a land: the pair's High Ground"},
- "naya:warband spire": {"role": "a land for a land: the pair's High Ground"},
- "naya:tollgate spire": {"role": "a land for a land: the pair's High Ground"},
- "mardu:muster spire": {"role": "a land for a land: the pair's High Ground"},
- "mardu:warband spire": {"role": "a land for a land: the pair's High Ground"},
- "jeskai:muster spire": {"role": "a land for a land: the pair's High Ground"},
- "jeskai:warband spire": {"role": "a land for a land: the pair's High Ground"},
- "bodies:muster spire": {"role": "a land for a land: the pair's High Ground"},
- "nothing-dear:muster spire": {"role": "a land for a land: the pair's High Ground"},
- "abzan:warden bower": {"role": "a land for a land: the pair's High Ground"},
- "open:muster marshal": {"role": "a flier for the fliers"},
- "open:muster cleric": {"role": "a three-drop body for a three-drop body", "note": "Loses the Pall by 22: the Keeper's exile is why it is in the list (S67)."},
- "open:levy marshal": {"role": "a two-drop for a two-drop in an Anthem list"},
- "open:levy reviv": {"role": "a lifegain body for a lifegain body"},
- "naya:lifegain cleric": {"role": "a three-drop body for three-drop bodies"},
- "esper:mbc nyx": {"role": "a threat for the list's value body"},
- "esper:mbc command": {"role": "removal for removal", "confounded": true},
- "mardu:burn valakut": {"role": "a land for a land in a 21-Mountain list"},
- "mardu:burn shaman": {"role": "a spells body for the list's two weakest bodies"},
- "jeskai:urcontrol silt": {"role": "a wall for a wall, with a win condition", "verdict": "conditional", "note": "Clears on the estimate but loses the Muster and the Warband by 15 each."},
- "abzan:warden reviv": {"role": "a lifegain body for a lifegain body"},
- "peasant:naya cleric": {"role": "a three-drop body for a three-drop body"},
- "peasant:mbc nyx": {"role": "a finisher for a finisher, a mana cheaper"},
- "esper:wbcontrol cleric": {"role": "a three-drop body for a three-drop body", "note": "The Cleric's best row: the estimate is over +2 and the lower bound is at zero."}
+ "open:emeraldsnakes guard": {
+  "role": "a cantrip two-drop for a cantrip two-drop, and a Snake",
+  "note": "The brief's first trial. Most of the gain is in the sideboarded games: the pilot boards the Visionary out and keeps the Guard in."
+ },
+ "temur:emeraldsnakes guard": {
+  "role": "a cantrip two-drop for a cantrip two-drop, and a Snake",
+  "note": "In place of the brief's Naya row: the Guard is blue, so it is not legal in Naya or Jund (ADR-197)."
+ },
+ "bodies:emeraldsnakes guard": {
+  "role": "a cantrip two-drop for a cantrip two-drop, and a Snake",
+  "note": "Game one +2.1; the rest is the sideboarded games, as in the Open."
+ },
+ "temur:reaper guard": {
+  "role": "a cantrip body for a cantrip body, and a Snake",
+  "note": "Game one carries it (+7.6)."
+ },
+ "nothing-dear:br terror": {
+  "role": "a two-drop body for a two-drop body"
+ },
+ "grixis:br terror": {
+  "role": "a two-drop body for a two-drop body"
+ },
+ "nothing-dear:br nyx": {
+  "role": "a threat for the list's two value bodies",
+  "verdict": "conditional",
+  "note": "Clears on the estimate but loses the Tally pairing clear of its error (-12 +/- 7): the planner's call under ADR-168's second clause."
+ },
+ "grixis:br nyx": {
+  "role": "a threat for the list's two value bodies",
+  "verdict": "conditional",
+  "note": "The same shape as Nothing Dear's row: a gain on the estimate with the Tally pairing lost (-11 +/- 7). Nyxathid shrinks against a full hand, and the Tally keeps one."
+ },
+ "nothing-dear:br reviv": {
+  "role": "a recursion body for the recursion bodies",
+  "suffix": "-fix59",
+  "note": "Re-run after the builder fix (concern 59). The first run read -14.8 in matches against -3.3 in game one: the builder had given the list a white fifteen."
+ },
+ "nothing-dear:undertow silt": {
+  "role": "a mill body for the list's non-mill body"
+ },
+ "nothing-dear:undertow protocol": {
+  "role": "a steal for a steal, cheaper"
+ },
+ "nothing-dear:tally shaman": {
+  "role": "the brief's slot: Ponder's"
+ },
+ "nothing-dear:tally corr": {
+  "role": "a steal for a steal, cheaper",
+  "note": "Concern 33: the AI cannot make Correspondence good. A pilot floor, not a verdict on the card."
+ },
+ "nothing-dear:levy marshal": {
+  "role": "a two-drop for a two-drop in an Anthem list"
+ },
+ "nothing-dear:levy cleric": {
+  "role": "a three-drop body for a three-drop body"
+ },
+ "nothing-dear:levy reviv": {
+  "role": "a lifegain body for a lifegain body"
+ },
+ "bodies:wurmspeaker elder": {
+  "role": "a body for a four-mana body",
+  "verdict": "wrong slot",
+  "note": "A slot misread: the Gaean Wurm is a Wurm for Baru. Not a verdict on the Elder."
+ },
+ "open:wurmspeaker elder": {
+  "role": "a body for a four-mana body",
+  "verdict": "wrong slot",
+  "note": "The same misread, confirmed in a second format. The size of the loss says the Gaean Wurm carries this list."
+ },
+ "bodies:wurmspeaker dryad": {
+  "role": "a ramp piece for a ramp piece, with a body"
+ },
+ "open:wurmspeaker dryad": {
+  "role": "a ramp piece for a ramp piece, with a body",
+  "verdict": "runner-up",
+  "note": "Clears on seed 91, but Order Druid reads +12.4 in the same slot; no second seed run."
+ },
+ "bodies:wurmspeaker druid": {
+  "role": "a ramp piece for a ramp piece: it fetches the top end",
+  "note": "S72's study put the Druid in the Gaean Wurm slot and read -1.5; this is the right slot."
+ },
+ "open:wurmspeaker druid": {
+  "role": "a ramp piece for a ramp piece: it fetches the top end"
+ },
+ "sultai:wurmspeaker druid": {
+  "role": "a ramp piece for a ramp piece: it fetches the top end"
+ },
+ "jund:wurmspeaker druid": {
+  "role": "a ramp piece for a ramp piece: it fetches the top end"
+ },
+ "temur:wurmspeaker druid": {
+  "role": "a ramp piece for a ramp piece: it fetches the top end"
+ },
+ "bant:wurmspeaker druid": {
+  "role": "a ramp piece for a ramp piece: it fetches the top end"
+ },
+ "naya:wurms druid": {
+  "role": "a ramp piece for a ramp piece: it fetches the top end"
+ },
+ "bodies:stampede terror": {
+  "role": "the same 3/3 a mana cheaper, with menace",
+  "suffix": "-fix59",
+  "note": "Re-run after the builder fix (concern 59); the first run read -1.0 in matches against +3.8 in game one."
+ },
+ "bodies:stampede pouncer": {
+  "role": "the brief's host: a list with Mountains",
+  "suffix": "-fix59",
+  "note": "Re-run after the builder fix (concern 59); the first run read -8.0 in matches. Even switched on by the Stampede's Mountains, the Pouncer does not beat a plain 3/3."
+ },
+ "open:muster spire": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "open:warband spire": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "open:tollgate spire": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "naya:lifegain spire": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "jeskai:sweepers spire": {
+  "role": "a land for a land: the pair's High Ground",
+  "note": "The list was losing 957 of 4,233 games by decking itself (three Serra Angels are its only way to win); with Hearthspire 526. The land is also the list's second win condition."
+ },
+ "naya:muster spire": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "naya:warband spire": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "naya:tollgate spire": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "mardu:muster spire": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "mardu:warband spire": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "jeskai:muster spire": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "jeskai:warband spire": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "bodies:muster spire": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "nothing-dear:muster spire": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "abzan:warden bower": {
+  "role": "a land for a land: the pair's High Ground"
+ },
+ "open:muster marshal": {
+  "role": "a flier for the fliers"
+ },
+ "open:muster cleric": {
+  "role": "a three-drop body for a three-drop body",
+  "note": "Loses the Pall by 22: the Keeper's exile is why it is in the list (S67)."
+ },
+ "open:levy marshal": {
+  "role": "a two-drop for a two-drop in an Anthem list"
+ },
+ "open:levy reviv": {
+  "role": "a lifegain body for a lifegain body"
+ },
+ "naya:lifegain cleric": {
+  "role": "a three-drop body for three-drop bodies"
+ },
+ "esper:mbc nyx": {
+  "role": "a threat for the list's value body"
+ },
+ "esper:mbc command": {
+  "role": "removal for removal",
+  "suffix": "-fix59",
+  "note": "Re-run after the builder fix (concern 59); the first run read -7.0 in matches."
+ },
+ "mardu:burn valakut": {
+  "role": "a land for a land in a 21-Mountain list"
+ },
+ "mardu:burn shaman": {
+  "role": "a spells body for the list's two weakest bodies"
+ },
+ "jeskai:urcontrol silt": {
+  "role": "a wall for a wall, with a win condition",
+  "verdict": "conditional",
+  "note": "Clears on the estimate but loses the Muster and the Warband by 15 each."
+ },
+ "abzan:warden reviv": {
+  "role": "a lifegain body for a lifegain body"
+ },
+ "peasant:naya cleric": {
+  "role": "a three-drop body for a three-drop body"
+ },
+ "peasant:mbc nyx": {
+  "role": "a finisher for a finisher, a mana cheaper"
+ },
+ "esper:wbcontrol cleric": {
+  "role": "a three-drop body for a three-drop body",
+  "note": "The Cleric's best row: the estimate is over +2 and the lower bound is at zero."
+ }
 }

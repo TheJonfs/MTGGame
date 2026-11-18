@@ -26,7 +26,7 @@ def paired(vals):
     n = len(vals); m = sum(vals) / n; sd = math.sqrt(sum((v - m) ** 2 for v in vals) / (n - 1))
     return 100 * m, 196 * sd / math.sqrt(n)
 def read(fmt, lst, tag, seed):
-    d = f'{A}audit/{fmt}-{lst}/'
+    d = f"{A}audit/{fmt}-{lst}{rowsmeta.get(f'{fmt}:{lst} {tag}', {}).get('suffix', '')}/"
     if not (os.path.exists(f'{d}{tag}-s{seed}.done') and os.path.exists(f'{d}base-s{seed}.done')): return None
     B, S = load(f'{d}base-s{seed}', lst), load(f'{d}{tag}-s{seed}', lst); keys = sorted(set(B) & set(S)); assert len(keys) == len(B) == len(S)
     r = lambda X, f: 100 * sum(X[k][f] for k in keys) / len(keys)

@@ -717,7 +717,7 @@
    "name": "Emerald Snakes",
    "title": "Snake Keeper (G R)",
    "archetype": "midrange",
-   "source": "S72 (the Nothing Dear seeds): Emerald Snakes as Bodies plays it (the Open's without the Power: two Forests, a third Harmonize, Rancor and Bolt) — nothing above four; its fifteen's Pelakka and Penumbra Wurms (seven) for two more Walls of Razors and two more Savage Twisters.",
+   "source": "S72 (the Nothing Dear seeds): Emerald Snakes as Bodies plays it (the Open's without the Power: two Forests, a third Harmonize, Rancor and Bolt) — nothing above four; its fifteen's Pelakka and Penumbra Wurms (seven) for two more Walls of Razors and two more Savage Twisters. S73 (Part 0; ADR-168): four Clutch Guards for the four Elvish Visionaries — +3.9 ± 1.0 in matches (S72 Part 4, 160 a pairing, paired).",
    "poolAt": 315,
    "portOf": "bodies:emeraldsnakes",
    "decklist": [
@@ -750,7 +750,7 @@
      "count": 4
     },
     {
-     "cardId": "elvish_visionary",
+     "cardId": "clutch_guard",
      "count": 4
     },
     {

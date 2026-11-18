@@ -200,7 +200,7 @@ export interface GameState {
    * (CR 610.3), applied before the next SBA check; an entry whose card has left exile some other way is dropped. */
   linkedExiles: { sourceId: string; exiledId: string }[];
   /** Post-S72 (R-133): a creature's last-known P/T as it left the battlefield, keyed by its battlefield id (CR 608.2h) — read
-   * by `sourceToughness` when the ability's source is gone. Cleared whenever the stack and the pending triggers are empty. */
+   * by `sourceToughness` and (S73) `sourcePower` when the ability's source is gone. Cleared whenever the stack and the pending triggers are empty. */
   lastKnownPT?: Record<string, { power: number; toughness: number }>;
 }
 

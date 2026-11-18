@@ -73,12 +73,12 @@ The most played: Flametongue Kavu 6 · Vampire Nighthawk 6 · Lightning Bolt 5 �
 `emeraldsnakes` · midrange · game one 59 · matches 61.1
 
 - **Lands (21):** 2 Bayou · 4 Taiga · 4 Stomping Ground · 1 Tallyflame Court · 1 Wrackroot · 1 Shevelport · 1 Cairnbrand · 4 Tropical Island · 1 Volcanic Island · 2 Forest
-- **Creatures (32):** 4 Birds of Paradise · 4 Manaba · 4 Rage Cobra · 4 The Emerald Keeper · 4 Reaper's Forerunner · 4 Flametongue Kavu · 4 Gaean Wurm · 4 Elvish Visionary
+- **Creatures (32):** 4 Birds of Paradise · 4 Manaba · 4 Rage Cobra · 4 The Emerald Keeper · 4 Reaper's Forerunner · 4 Flametongue Kavu · 4 Gaean Wurm · 4 Clutch Guard
 - **Other (7):** 3 Harmonize · 2 Rancor · 2 Lightning Bolt
 - **Its fifteen (registered):** 2 Airship Crash · 2 Foxglove Dose · 4 Savage Twister · 2 Tormod's Crypt · 1 Baru, Wurmspeaker · 4 Wall of Razors
 - **Its sideboard guide:** none — the general rules sideboard it.
 - **History:**
-  - contributed — S72 (the Nothing Dear seeds): Emerald Snakes as Bodies plays it (the Open's without the Power: two Forests, a third Harmonize, Rancor and Bolt) — nothing above four; its fifteen's Pelakka and Penumbra Wurms (seven) for two more Walls of Razors and two more Savage Twisters.
+  - contributed — S72 (the Nothing Dear seeds): Emerald Snakes as Bodies plays it (the Open's without the Power: two Forests, a third Harmonize, Rancor and Bolt) — nothing above four; its fifteen's Pelakka and Penumbra Wurms (seven) for two more Walls of Razors and two more Savage Twisters. S73 (Part 0; ADR-168): four Clutch Guards for the four Elvish Visionaries — +3.9 ± 1.0 in matches (S72 Part 4, 160 a pairing, paired).
 
 ## Bant Auras (working name) — Bant Hexproof Auras (G w u)
 

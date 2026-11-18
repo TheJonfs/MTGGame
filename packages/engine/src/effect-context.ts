@@ -238,8 +238,11 @@ export function makeEffectContext(ctx: EngineCtx, item: StackItem, requester?: E
         return Math.max(0, (item.sourceId ? ctx.state.lastKnownPT?.[item.sourceId]?.toughness : undefined) ?? 0);
       }
       if (a.ref === "sourcePower") {
+        // S73 (R-097 amended): as sourceToughness reads — live on the battlefield; gone, the power it had as it left
+        // (CR 608.2h). One `lastKnownPT`, two readers. Before S73 a source that had left read 0.
         const src = item.sourceId ? ctx.state.objects[item.sourceId] : undefined;
-        return src && src.zone === "battlefield" ? Math.max(0, characteristics(ctx, src.id).power) : 0;
+        if (src && src.zone === "battlefield") return Math.max(0, characteristics(ctx, src.id).power);
+        return Math.max(0, (item.sourceId ? ctx.state.lastKnownPT?.[item.sourceId]?.power : undefined) ?? 0);
       }
       if (a.ref === "eventPower") return Math.max(0, item.eventContext?.power ?? 0);
       if (a.ref === "xPaid") {
