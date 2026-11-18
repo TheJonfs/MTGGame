@@ -15,7 +15,7 @@
  * Deterministic: ties break by card id; no randomness.
  */
 import { WorldRng } from "./rng.js";
-import { cardColors, manaValue, parseManaCost, colourPips, type CardDef } from "@shandalar/cards";
+import { cardColors, castableWith, manaValue, parseManaCost, colourPips, type CardDef } from "@shandalar/cards";
 import type { Decklist } from "./state.js";
 import { packColors, type PackColor } from "./packs.js";
 import { cardRating, type CardRatingTable } from "./rating.js";
@@ -194,4 +194,27 @@ export function buildLimitedDeck(poolIds: readonly string[], rating: CardRatingT
   const curve = [0, 0, 0, 0, 0, 0, 0, 0];
   for (const id of picked) curve[Math.min(7, mv(id))]! += 1;
   return { deck, sideboard, colors: [...pair], splash, spells: picked.length, lands: landCount, creatures: picked.filter(isCreature).length, curve, avgMv: avg(picked), rating: picked.reduce((n, id) => n + rate(id), 0) / Math.max(1, picked.length) };
+}
+
+/**
+ * S73 Part 2 (concern 54 — forced inclusion): a deck built from a pool that holds `cardId`, with that card PLAYED. The
+ * build rates the card above everything (so the pair leans to its colours); if the builder's own rules still leave it
+ * out (a quota, a cap), one copy takes the place of the deck's lowest-rated nonland card. Returns null when the deck
+ * could not cast it — its colours are not the deck's pair and splash — because a card stuck in hand measures the mana,
+ * not the card. A land is seeded for the lowest-rated nonland card the same way.
+ */
+export const FORCED_BONUS = 10;
+export function buildForcedDeck(poolIds: readonly string[], cardId: string, rating: CardRatingTable, cards: Map<string, CardDef>, opts: LimitedBuildOptions = {}): LimitedBuild | null {
+  if (!poolIds.includes(cardId)) throw new Error(`buildForcedDeck: the pool does not hold ${cardId}`);
+  const def = cards.get(cardId); if (!def) throw new Error(`buildForcedDeck: ${cardId} is not in the card pool`);
+  const build = buildLimitedDeck(poolIds, rating, cards, { ...opts, noise: (id) => (id === cardId ? FORCED_BONUS : 0) + (opts.noise ? opts.noise(id) : 0) });
+  if (!def.types.includes("Land") && !castableWith(def, [...build.colors, ...(build.splash ? [build.splash] : [])])) return null;
+  if (build.deck.some((e) => e.cardId === cardId)) return build;
+  const out = build.deck.filter((e) => !isBasic(e.cardId) && !cards.get(e.cardId)!.types.includes("Land")).sort((a, b) => cardRating(cards.get(a.cardId)!, rating) - cardRating(cards.get(b.cardId)!, rating) || a.cardId.localeCompare(b.cardId))[0];
+  if (!out) return null;
+  const deck = build.deck.map((e) => (e.cardId === out.cardId ? { ...e, count: e.count - 1 } : e)).filter((e) => e.count > 0);
+  deck.push({ cardId, count: 1 });
+  const sideboard = build.sideboard.map((e) => (e.cardId === cardId ? { ...e, count: e.count - 1 } : e)).filter((e) => e.count > 0);
+  const back = sideboard.find((e) => e.cardId === out.cardId); if (back) back.count += 1; else sideboard.push({ cardId: out.cardId, count: 1 });
+  return { ...build, deck, sideboard };
 }

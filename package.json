@@ -42,6 +42,7 @@
     "rating:build": "tsx packages/world/src/rating-build-cli.ts",
     "rating:view": "tsx packages/world/src/rating-view-cli.ts",
     "rating:format": "tsx packages/world/src/rating-format-cli.ts",
+    "rating:forced": "tsx packages/world/src/rating-forced-cli.ts",
     "booster": "tsx packages/world/src/pack-cli.ts",
     "sealed-pool": "tsx packages/world/src/pack-cli.ts --sealed",
     "sealed-sim": "tsx packages/world/src/sealed-sim-cli.ts",

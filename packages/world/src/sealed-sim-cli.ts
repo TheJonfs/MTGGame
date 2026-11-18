@@ -16,7 +16,7 @@ import { loadCardPool } from "@shandalar/cards/loader";
 import { runMatch, type Action, type ActionRequest, type Agent, type GameView, type MatchSpec } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { rollSealedPool, packColors, type ConvocationPackData } from "./packs.js";
-import { buildLimitedDeck, pairScores, LIMITED_TARGETS, type LimitedBuild } from "./limited-builder.js";
+import { buildForcedDeck, buildLimitedDeck, pairScores, LIMITED_TARGETS, type LimitedBuild } from "./limited-builder.js";
 import { WorldRng } from "./rng.js";
 import type { PackColor } from "./packs.js";
 import { isBasic } from "./legality.js";
@@ -41,9 +41,22 @@ const noisy = (i: number) => NOISE > 0 && i % Math.round(1 / NOISE_SHARE) === 0;
 const PACKS = Number(arg("packs", "6")); // post-S52: 3 = a draft seat's card count (is black's Sealed strength depth?)
 const VARY = Number(arg("vary", "0"));
 const poolOf = (i: number) => rollSealedPool(set, recipe, cards, data.power, seed0 * 100003 + i, PACKS).flat();
-const builds: { pool: string[]; build: LimitedBuild; noisy: boolean }[] = Array.from({ length: N }, (_, i) => {
-  const pool = poolOf(i);
+// S73 Part 2 (concern 54, the Limited rating's blind spot): `--force a,b,c --force-decks K` — the first K × (cards) pools
+// each get ONE copy of a forced card added (card i mod n) and are built with it played (limited-builder.buildForcedDeck:
+// rated above everything, and seeded for the lowest-rated card if the builder still leaves it out; a deck that cannot
+// cast it is built as usual and not counted). The rest of the field is built as usual. The card's lift is read against
+// its own deck's mean (rating-compute.computeForcedLimited), so a deck it drags down is not charged to it.
+const FORCE = arg("force", "").split(",").filter(Boolean), FORCE_DECKS = Number(arg("force-decks", "8"));
+for (const id of FORCE) if (!cards.has(id)) throw new Error(`sealed-sim --force: no card ${id}`);
+if (FORCE.length * FORCE_DECKS > N) throw new Error(`sealed-sim --force: ${FORCE.length} cards × ${FORCE_DECKS} decks is more than ${N} pools`);
+const forcedOf = (i: number): string | undefined => (i < FORCE.length * FORCE_DECKS ? FORCE[i % FORCE.length] : undefined);
+const builds: { pool: string[]; build: LimitedBuild; noisy: boolean; forced?: string }[] = Array.from({ length: N }, (_, i) => {
+  const forced = forcedOf(i), pool = forced ? [...poolOf(i), forced] : poolOf(i);
   const vary = VARY ? { pairChoice: { seed: seed0 * 6007 + i, top: VARY } } : {}; // S53 (ADR-154): --vary 3
+  if (forced) { // a pool whose deck could not cast its card is built as usual, from the pool as rolled
+    const build = buildForcedDeck(pool, forced, rating, cards, vary);
+    return build ? { pool, build, noisy: false, forced } : { pool: poolOf(i), build: buildLimitedDeck(poolOf(i), rating, cards, vary), noisy: false };
+  }
   if (!noisy(i)) return { pool, build: buildLimitedDeck(pool, rating, cards, vary), noisy: false };
   const rng = new WorldRng(seed0 * 7919 + i);
   return { pool, build: buildLimitedDeck(pool, rating, cards, { ...vary, noise: () => NOISE * gauss(rng) }), noisy: true };
@@ -84,7 +97,7 @@ async function run(): Promise<void> {
   }
   const out = arg("out", join(ROOT, `analysis/runs/sealed_shard${si}.json`));
   mkdirSync(dirname(out), { recursive: true });
-  writeFileSync(out, JSON.stringify({ pools: N, games: G, opponents: OPP, seed: seed0, set: set.id, recipe: recipe.id, rating: ratingFile, noise: NOISE, pilotVersion: pilotVersion(), shard: `${si}/${sn}`, results: games }));
+  writeFileSync(out, JSON.stringify({ pools: N, games: G, opponents: OPP, seed: seed0, set: set.id, recipe: recipe.id, rating: ratingFile, noise: NOISE, ...(FORCE.length ? { force: FORCE, forceDecks: FORCE_DECKS, forcedPools: Object.fromEntries(builds.flatMap((b, i) => (b.forced ? [[key(i), b.forced]] : []))) } : {}), pilotVersion: pilotVersion(), shard: `${si}/${sn}`, results: games }));
 }
 
 // ---------- S49 Part 1: the forced-pair experiment ----------

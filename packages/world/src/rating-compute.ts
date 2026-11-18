@@ -106,7 +106,8 @@ export interface LimitedRow { limited: number; limitedSeen: number; limitedLift:
 export interface LimitedOutput { cards: Record<string, LimitedRow>; tierMeans: Record<string, number>; tau: number; scale: { a: number; b: number }; games: number }
 const tierKey = (d: CardDef) => (d.shopTier === undefined ? "R" : String(d.shopTier));
 export const LIMITED_SCALE = { mean: 1.8, sd: 0.8 } as const;
-export function computeLimitedRating(runs: RatingGameLike[][], rated: CardDef[], scaleOver: readonly string[], minSeen = 100): LimitedOutput {
+/** A card's lift over Limited runs, each game against its own deck's mean in its own run (ADR-151). */
+function limitedObs(runs: RatingGameLike[][]): { games: number; acc: Record<string, { n: number; d: number; d2: number }>; obs: (id: string) => { n: number; m: number; se2: number } | null } {
   const acc: Record<string, { n: number; d: number; d2: number }> = {};
   let games = 0;
   for (const run of runs) {
@@ -115,6 +116,12 @@ export function computeLimitedRating(runs: RatingGameLike[][], rated: CardDef[],
     for (const g of run) for (const [k, r, s] of sides(g)) for (const c of s) { const x = (acc[c] ??= { n: 0, d: 0, d2: 0 }); const v = r - rec[k]!.w / rec[k]!.n; x.n += 1; x.d += v; x.d2 += v * v; }
   }
   const obs = (id: string) => { const x = acc[id]; if (!x || x.n < 2) return null; const m = x.d / x.n; return { n: x.n, m, se2: Math.max(1e-9, x.d2 / x.n - m * m) / x.n }; };
+  return { games, acc, obs };
+}
+/** The Limited score's FRAME from a set of runs: each tier's mean lift, τ², and the line that places the posterior on
+ * the (1.8, 0.8) scale over the pack cards. Unrounded — `computeLimitedRating` rounds what it reports. */
+function limitedFrame(runs: RatingGameLike[][], rated: CardDef[], scaleOver: readonly string[], minSeen: number) {
+  const { games, acc, obs } = limitedObs(runs);
   const tiers: Record<string, { w: number; s: number }> = {};
   for (const d of rated) { const o = obs(d.id); if (!o) continue; const t = (tiers[tierKey(d)] ??= { w: 0, s: 0 }); t.w += o.n; t.s += o.n * o.m; }
   const tierMeans = Object.fromEntries(Object.entries(tiers).map(([t, v]) => [t, v.s / v.w]));
@@ -122,15 +129,43 @@ export function computeLimitedRating(runs: RatingGameLike[][], rated: CardDef[],
   let ss = 0, k = 0;
   for (const d of rated) { const o = obs(d.id); if (!o || o.n < minSeen) continue; ss += (o.m - mu(d)) ** 2 - o.se2; k += 1; }
   const tau2 = Math.max(1e-6, k ? ss / k : 1e-6);
-  const postOf = (d: CardDef) => { const o = obs(d.id), m = mu(d); return o ? m + (tau2 / (tau2 + o.se2)) * (o.m - m) : m; };
+  const post = (d: CardDef, o: { m: number; se2: number } | null) => { const m = mu(d); return o ? m + (tau2 / (tau2 + o.se2)) * (o.m - m) : m; };
   const byId = new Map(rated.map((d) => [d.id, d]));
-  const xs = scaleOver.filter((id) => byId.has(id)).map((id) => postOf(byId.get(id)!));
+  const xs = scaleOver.filter((id) => byId.has(id)).map((id) => post(byId.get(id)!, obs(id)));
   const mx = xs.reduce((n, x) => n + x, 0) / Math.max(1, xs.length), sx = Math.sqrt(xs.reduce((n, x) => n + (x - mx) ** 2, 0) / Math.max(1, xs.length)) || 1;
   const b = LIMITED_SCALE.sd / sx, a = LIMITED_SCALE.mean - b * mx;
+  return { games, acc, obs, tierMeans, tau2, post, a, b };
+}
+export function computeLimitedRating(runs: RatingGameLike[][], rated: CardDef[], scaleOver: readonly string[], minSeen = 100): LimitedOutput {
+  const { games, acc, obs, tierMeans, tau2, post: postWith, a, b } = limitedFrame(runs, rated, scaleOver, minSeen);
   const cards: Record<string, LimitedRow> = {};
   for (const d of [...rated].sort((x, y) => x.id.localeCompare(y.id))) {
-    const o = obs(d.id), post = postOf(d);
+    const o = obs(d.id), post = postWith(d, o);
     cards[d.id] = { limited: r3(a + b * post), limitedSeen: acc[d.id]?.n ?? 0, limitedLift: o ? r3(o.m) : null, limitedSe: o ? r3(Math.sqrt(o.se2)) : null, limitedPost: r3(post) };
   }
   return { cards, tierMeans: Object.fromEntries(Object.entries(tierMeans).map(([t, v]) => [t, r3(v)])), tau: r3(Math.sqrt(tau2)), scale: { a: r3(a), b: r3(b) }, games };
+}
+
+/**
+ * S73 Part 2 (handoff concern 54 — the Limited rating's blind spot). The Sealed builder and the drafters pick by the
+ * current table, so a card rated low goes unplayed and is never re-measured. `underSeen` names those cards; a
+ * FORCED-INCLUSION run (`sealed-sim --force`, `draft-cards --force`) seeds each into built decks until it has been seen
+ * enough; `computeForcedLimited` gives each its Limited row from the forced runs ALONE (never pooled with an older
+ * pilot's sightings, ADR-150, nor with the few the normal runs gave it), read on the FRAME of the normal runs — their
+ * tier means, their τ, their scale — so the number sits on the same line as every other card's. The lift is against the
+ * deck's own mean, so a forced card that drags its deck down is not charged for the deck.
+ */
+export const FORCED_MIN_SEEN = 500;
+export function underSeen(rows: Readonly<Record<string, { limitedSeen?: number | undefined; limitedCarried?: number | undefined }>>, packCards: readonly string[], min = 100): string[] {
+  return packCards.filter((id) => rows[id] && ((rows[id]!.limitedSeen ?? 0) < min || rows[id]!.limitedCarried !== undefined)).sort();
+}
+export function computeForcedLimited(baseRuns: RatingGameLike[][], forcedRuns: RatingGameLike[][], ids: readonly string[], rated: CardDef[], scaleOver: readonly string[], minSeen = 100): Record<string, LimitedRow> {
+  const frame = limitedFrame(baseRuns, rated, scaleOver, minSeen), forced = limitedObs(forcedRuns), byId = new Map(rated.map((d) => [d.id, d]));
+  const out: Record<string, LimitedRow> = {};
+  for (const id of [...ids].sort()) {
+    const d = byId.get(id); if (!d) throw new Error(`computeForcedLimited: ${id} is not a rated card`);
+    const o = forced.obs(id), post = frame.post(d, o);
+    out[id] = { limited: r3(frame.a + frame.b * post), limitedSeen: forced.acc[id]?.n ?? 0, limitedLift: o ? r3(o.m) : null, limitedSe: o ? r3(Math.sqrt(o.se2)) : null, limitedPost: r3(post) };
+  }
+  return out;
 }

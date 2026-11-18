@@ -1,0 +1,18 @@
+rating:forced — 14 cards from forced176, fdraft176 (pilot 176), on the frame of sealed176, noise176, draft176
+
+| card | tier | before | seen before | forced seen | forced lift (pts) | Limited now |
+|---|---|---|---|---|---|---|
+| Altar of Dementia | 2 | 0.254 (pilot 94) | 1926 | 1699 | -3.4 ± 1.2 | 0.10 |
+| Curiosity | 1 | 0.81 (pilot 94) | 4072 | 2087 | -2.2 ± 1.1 | 0.33 |
+| Demonic Tutor | R | 0.741 (pilot 94) | 929 | 1128 | -2.2 ± 1.5 | 1.15 |
+| Disenchant | 1 | 0.664 (pilot 94) | 16372 | 1998 | -1.3 ± 1.1 | 0.70 |
+| Duress | 2 | 0.533 (pilot 94) | 3913 | 1553 | -1.5 ± 1.2 | 0.86 |
+| Entomb | 2 | -0.09 (pilot 94) | 12626 | 1197 | -4.1 ± 1.4 | 0.19 |
+| Giant Growth | 1 | 0.319 (pilot 94) | 1615 | 1533 | 0.1 ± 1.2 | 1.27 |
+| Orcish Lumberjack | 1 | 0.428 (pilot 94) | 13151 | 1501 | -1.5 ± 1.3 | 0.75 |
+| Ovna, the Enchantress | prize | 1.876 (pilot 94) | 501 | 1185 | -0.9 ± 1.4 | 1.51 |
+| Scepter of Dominance | 2 | 0.102 (pilot 94) | 2706 | 1701 | -3.0 ± 1.2 | 0.27 |
+| The Bailiff | prize | 2.397 (pilot 94) | 777 | 541 | 0.6 ± 2.0 | 2.08 |
+| The Pearl Cleric | prize | 0.348 (pilot 94) | 500 | 1438 | -3.9 ± 1.3 | 0.40 |
+| Waste Not | 2 | -0.04 (pilot 94) | 14624 | 1436 | -2.4 ± 1.3 | 0.56 |
+| Zinnia, the Undertow | prize | 1.323 (pilot 94) | 598 | 1046 | 0.1 ± 1.5 | 1.84 |

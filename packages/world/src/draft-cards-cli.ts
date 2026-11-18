@@ -18,7 +18,7 @@ import { cardColors, type CardDef } from "@shandalar/cards";
 import { runMatch, type Action, type ActionRequest, type Agent, type GameView, type MatchSpec } from "@shandalar/engine";
 import { HeuristicAgent, difficultyProfile } from "@shandalar/agents";
 import { packTier, type ConvocationPackData } from "./packs.js";
-import { buildLimitedDeck } from "./limited-builder.js";
+import { buildForcedDeck, buildLimitedDeck } from "./limited-builder.js";
 import { cardRating, limitedView, type CardRatingTable } from "./rating.js";
 import { runDraft } from "./drafter.js";
 import type { RatingGame } from "./rating-run-cli.js";
@@ -49,10 +49,18 @@ async function play(): Promise<void> {
   const PODS = Number(arg("pods", "300")), G = Number(arg("games", "4")), seed0 = Number(arg("seed", "53"));
   const [si, sn] = arg("shard", "0/1").split("/").map(Number) as [number, number];
   const seats: SeatRecord[] = [], games: RatingGame[] = [];
+  const FORCE = arg("force", "").split(",").filter(Boolean);
+  for (const id of FORCE) if (!cards.has(id)) throw new Error(`draft-cards --force: no card ${id}`);
   for (let p = 0; p < PODS; p++) {
     if (p % sn !== si) continue;
     const d = runDraft(set, recipe, data, cards, rating, seed0 * 1000 + p, 8, 3, true);
-    const builds = d.picks.map((x) => buildLimitedDeck(x, rating, cards));
+    // S73 Part 2 (concern 54): `--force a,b,c` — seat 0 of each pod gets one copy of a forced card (card p mod n) added
+    // to its picks and builds with it played (sealed-sim --force's method, limited-builder.buildForcedDeck).
+    const forced = FORCE.length ? FORCE[p % FORCE.length]! : undefined;
+    const builds = d.picks.map((x, s) => {
+      if (!forced || s !== 0) return buildLimitedDeck(x, rating, cards);
+      return buildForcedDeck([...x, forced], forced, rating, cards) ?? buildLimitedDeck(x, rating, cards); // a seat that cannot cast it builds as usual
+    });
     const key = (s: number) => `pod:${p}:${s}`;
     builds.forEach((b, s) => seats.push({ key: key(s), colors: b.colors, picks: d.picks[s]!, deck: b.deck.flatMap((e) => Array<string>(e.count).fill(e.cardId)) }));
     for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) for (let g = 0; g < G; g++) {
@@ -67,7 +75,7 @@ async function play(): Promise<void> {
   }
   const out = arg("out", join(ROOT, `analysis/runs/draftcards_shard${si}.json`));
   mkdirSync(dirname(out), { recursive: true });
-  writeFileSync(out, JSON.stringify({ pods: PODS, games: G, seed: seed0, set: set.id, recipe: recipe.id, pilotVersion: pilotVersion(), shard: `${si}/${sn}`, seats, results: games }));
+  writeFileSync(out, JSON.stringify({ pods: PODS, games: G, seed: seed0, set: set.id, recipe: recipe.id, ...(FORCE.length ? { force: FORCE } : {}), pilotVersion: pilotVersion(), shard: `${si}/${sn}`, seats, results: games }));
 }
 
 type Side = [string, number, string[], string[]];

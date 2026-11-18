@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CardDef } from "@shandalar/cards";
-import { computeLimitedRating, computeRating, LIMITED_SCALE, type RatingGameLike } from "./rating-compute.js";
+import { computeForcedLimited, computeLimitedRating, computeRating, FORCED_MIN_SEEN, LIMITED_SCALE, underSeen, type RatingGameLike } from "./rating-compute.js";
 import { limitedView } from "./rating.js";
 
 /** S52 (ADR-151): the rating pipeline, tested. The fixture is the S49–S51 bug's own shape — two Sealed runs whose
@@ -109,5 +109,36 @@ describe("the rating pipeline (ADR-151)", () => {
     const v = limitedView(table);
     expect([v.cards.a!.rating, v.cards.b!.rating]).toEqual([0.4, 2.0]);
     expect(table.cards.a.rating).toBe(1.5);
+  });
+
+  it("S73 — the blind spot: a pack card seen under the floor, or carrying an older pilot's number, is owed a forced run", () => {
+    const rows = { a: { limitedSeen: 4000 }, b: { limitedSeen: 99 }, c: { limitedSeen: 12626, limitedCarried: 94 }, d: {}, e: { limitedSeen: 100 }, notInPacks: { limitedSeen: 0 } };
+    expect(underSeen(rows, ["a", "b", "c", "d", "e", "ghost"])).toEqual(["b", "c", "d"]);
+    expect(FORCED_MIN_SEEN).toBe(500);
+  });
+
+  it("S73 — forced inclusion: a card's row comes from the forced run ALONE, on the frame of the normal runs", () => {
+    // the normal run: "many" +0.2 over 100 sightings, "base" in every game; "shunned" was played in 4 games and lost them all
+    const won = (seen: string[]) => g("pool:0", "pool:1", "a", ["base", ...seen], []), lost = (seen: string[]) => g("pool:0", "pool:1", "b", ["base", ...seen], []);
+    const base = [...times(70, won(["many"])), ...times(30, lost(["many"])), ...times(30, won([])), ...times(66, lost([])), ...times(4, lost(["shunned"]))];
+    const pool = [card("many", 1), card("base", 1), card("shunned", 1), card("other", 1)];
+    const frame = computeLimitedRating([base], pool, ["many", "base", "shunned"], 5);
+    expect(frame.cards.shunned!.limitedSeen).toBe(4);
+    // the forced run: its own decks (the names repeat the normal run's — kept apart), "shunned" seen 600 times at +0.1
+    const fw = (seen: string[]) => g("pool:0", "pool:1", "a", seen, []), fl = (seen: string[]) => g("pool:0", "pool:1", "b", seen, []);
+    const forced = [...times(360, fw(["shunned"])), ...times(240, fl(["shunned"])), ...times(240, fw([])), ...times(360, fl([]))];
+    const rows = computeForcedLimited([base], [forced], ["shunned"], pool, ["many", "base", "shunned"], 5);
+    expect(Object.keys(rows)).toEqual(["shunned"]);
+    expect(rows.shunned!.limitedSeen).toBe(600); // the four old sightings are not pooled in
+    expect(rows.shunned!.limitedLift).toBe(0.1); // 0.6 seen, against the forced deck's own 0.5
+    // on the normal runs' frame: the same line that places "many" and "base"
+    const { a, b } = frame.scale;
+    expect(rows.shunned!.limited).toBeCloseTo(a + b * rows.shunned!.limitedPost, 1);
+    expect(rows.shunned!.limitedPost).toBeGreaterThan(frame.tierMeans["1"]!); // above its tier's mean …
+    expect(rows.shunned!.limitedPost).toBeLessThanOrEqual(0.1); // … shrunk toward it, never past its own lift
+    expect(rows.shunned!.limited).toBeGreaterThan(frame.cards.shunned!.limited); // four lost games had read it at the floor
+    expect(() => computeForcedLimited([base], [forced], ["nobody"], pool, ["many"], 5)).toThrow(/not a rated card/);
+    // a card the forced run never saw reads its tier's mean with no sightings — the caller refuses to write it
+    expect(computeForcedLimited([base], [forced], ["other"], pool, ["many", "base", "shunned"], 5).other).toMatchObject({ limitedSeen: 0, limitedLift: null });
   });
 });
