@@ -4,75 +4,75 @@
  "matchesAPairing": 60,
  "byList": {
   "abzantokens": {
-   "matches": 44.5,
+   "matches": 44.2,
    "gameOne": 50.5,
-   "later": 43.9,
+   "later": 43.3,
    "n": 600
   },
   "auras": {
-   "matches": 49.2,
+   "matches": 51.2,
    "gameOne": 47.5,
-   "later": 49.6,
+   "later": 52,
    "n": 600
   },
   "bfh": {
-   "matches": 37.3,
+   "matches": 38.5,
    "gameOne": 42.5,
-   "later": 41.8,
+   "later": 42.4,
    "n": 600
   },
   "bw": {
-   "matches": 48.3,
+   "matches": 46.5,
    "gameOne": 43.8,
-   "later": 51.4,
+   "later": 49.8,
    "n": 600
   },
   "bwmassacrats": {
-   "matches": 51.3,
+   "matches": 51.5,
    "gameOne": 48.7,
-   "later": 53.3,
+   "later": 53.2,
    "n": 600
   },
   "chancel": {
-   "matches": 62,
+   "matches": 61.7,
    "gameOne": 59.2,
-   "later": 59.5,
+   "later": 58.9,
    "n": 600
   },
   "levy": {
-   "matches": 54.8,
+   "matches": 54.5,
    "gameOne": 50.8,
-   "later": 53.4,
+   "later": 53.2,
    "n": 600
   },
   "roll": {
-   "matches": 58,
+   "matches": 58.3,
    "gameOne": 57.3,
-   "later": 54.4,
+   "later": 54.6,
    "n": 600
   },
   "thicket": {
-   "matches": 44.8,
+   "matches": 44.2,
    "gameOne": 47.5,
-   "later": 46.1,
+   "later": 45.5,
    "n": 600
   },
   "warden": {
-   "matches": 50.2,
+   "matches": 50.5,
    "gameOne": 53.3,
-   "later": 48.3,
+   "later": 48.8,
    "n": 600
   },
   "wskies": {
-   "matches": 49.5,
+   "matches": 49,
    "gameOne": 48.8,
-   "later": 48.7,
+   "later": 48.3,
    "n": 600
   }
  },
  "byPair": {
   "abzantokens|auras": {
-   "w": 20,
+   "w": 22,
    "n": 60
   },
   "abzantokens|bfh": {
@@ -104,51 +104,51 @@
    "n": 60
   },
   "abzantokens|warden": {
-   "w": 35,
+   "w": 32,
    "n": 60
   },
   "abzantokens|wskies": {
-   "w": 30,
-   "n": 60
-  },
-  "auras|abzantokens": {
-   "w": 40,
-   "n": 60
-  },
-  "auras|bfh": {
-   "w": 35,
-   "n": 60
-  },
-  "auras|bw": {
-   "w": 24,
-   "n": 60
-  },
-  "auras|bwmassacrats": {
-   "w": 30,
-   "n": 60
-  },
-  "auras|chancel": {
    "w": 29,
    "n": 60
   },
+  "auras|abzantokens": {
+   "w": 38,
+   "n": 60
+  },
+  "auras|bfh": {
+   "w": 34,
+   "n": 60
+  },
+  "auras|bw": {
+   "w": 31,
+   "n": 60
+  },
+  "auras|bwmassacrats": {
+   "w": 29,
+   "n": 60
+  },
+  "auras|chancel": {
+   "w": 28,
+   "n": 60
+  },
   "auras|levy": {
-   "w": 30,
+   "w": 32,
    "n": 60
   },
   "auras|roll": {
-   "w": 35,
+   "w": 33,
    "n": 60
   },
   "auras|thicket": {
-   "w": 37,
+   "w": 41,
    "n": 60
   },
   "auras|warden": {
-   "w": 24,
+   "w": 27,
    "n": 60
   },
   "auras|wskies": {
-   "w": 11,
+   "w": 14,
    "n": 60
   },
   "bfh|abzantokens": {
@@ -156,11 +156,11 @@
    "n": 60
   },
   "bfh|auras": {
-   "w": 25,
+   "w": 26,
    "n": 60
   },
   "bfh|bw": {
-   "w": 17,
+   "w": 21,
    "n": 60
   },
   "bfh|bwmassacrats": {
@@ -168,7 +168,7 @@
    "n": 60
   },
   "bfh|chancel": {
-   "w": 23,
+   "w": 26,
    "n": 60
   },
   "bfh|levy": {
@@ -184,11 +184,11 @@
    "n": 60
   },
   "bfh|warden": {
-   "w": 26,
+   "w": 24,
    "n": 60
   },
   "bfh|wskies": {
-   "w": 18,
+   "w": 19,
    "n": 60
   },
   "bwmassacrats|abzantokens": {
@@ -196,7 +196,7 @@
    "n": 60
   },
   "bwmassacrats|auras": {
-   "w": 30,
+   "w": 31,
    "n": 60
   },
   "bwmassacrats|bfh": {
@@ -236,11 +236,11 @@
    "n": 60
   },
   "bw|auras": {
-   "w": 36,
+   "w": 29,
    "n": 60
   },
   "bw|bfh": {
-   "w": 43,
+   "w": 39,
    "n": 60
   },
   "bw|bwmassacrats": {
@@ -276,11 +276,11 @@
    "n": 60
   },
   "chancel|auras": {
-   "w": 31,
+   "w": 32,
    "n": 60
   },
   "chancel|bfh": {
-   "w": 37,
+   "w": 34,
    "n": 60
   },
   "chancel|bw": {
@@ -316,7 +316,7 @@
    "n": 60
   },
   "levy|auras": {
-   "w": 30,
+   "w": 28,
    "n": 60
   },
   "levy|bfh": {
@@ -356,7 +356,7 @@
    "n": 60
   },
   "roll|auras": {
-   "w": 25,
+   "w": 27,
    "n": 60
   },
   "roll|bfh": {
@@ -396,7 +396,7 @@
    "n": 60
   },
   "thicket|auras": {
-   "w": 23,
+   "w": 19,
    "n": 60
   },
   "thicket|bfh": {
@@ -432,15 +432,15 @@
    "n": 60
   },
   "warden|abzantokens": {
-   "w": 25,
+   "w": 28,
    "n": 60
   },
   "warden|auras": {
-   "w": 36,
+   "w": 33,
    "n": 60
   },
   "warden|bfh": {
-   "w": 34,
+   "w": 36,
    "n": 60
   },
   "warden|bw": {
@@ -472,15 +472,15 @@
    "n": 60
   },
   "wskies|abzantokens": {
-   "w": 30,
+   "w": 31,
    "n": 60
   },
   "wskies|auras": {
-   "w": 49,
+   "w": 46,
    "n": 60
   },
   "wskies|bfh": {
-   "w": 42,
+   "w": 41,
    "n": 60
   },
   "wskies|bw": {

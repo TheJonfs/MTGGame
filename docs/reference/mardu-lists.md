@@ -9,17 +9,17 @@
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
 | Mardu Control | Usher Control (W B R) | midrange | 69.5 | 57 | +7.1 | registered |
-| the Watch (Mardu) | Boros Tokens (W R) | aggro | 62.1 | 54 | +7.7 | built |
+| the Watch (Mardu) | Boros Tokens (W R) | aggro | 62.0 | 54 | +7.6 | built |
 | the Rabble (Mardu) | Mono-Red Goblins (R) | aggro | 60.6 | 55 | +5.5 | registered |
-| the Chancel (Mardu) | Orzhov Control (W B) | midrange | 55.6 | 53 | −3.0 | built |
+| the Chancel (Mardu) | Orzhov Control (W B) | midrange | 55.5 | 53 | −3.1 | built |
 | the Pall | Usher Combo (B w r) | combo | 52.6 | 64 | −14.1 | registered |
 | the Witch | Witch Presence (B w r) | midrange | 49.8 | 49 | −9.9 | registered, guided |
-| the Warband (Mardu) | Boros Goblins (R w) | aggro | 47.2 | 47 | −0.8 | built |
-| the Muster (Mardu) | Boros Weenie (W R) | aggro | 45.2 | 48 | +2.9 | built |
+| the Warband (Mardu) | Boros Goblins (R w) | aggro | 48.0 | 47 | +0.1 | built |
+| the Muster (Mardu) | Boros Weenie (W R) | aggro | 45.2 | 48 | +2.8 | built |
 | the Kindling | Mono-Red Spells (R) | aggro | 40.9 | 41 | +6.1 | built |
 | the Levy | Orzhov Landfall (W B) | midrange | 40.2 | 41 | +0.1 | registered |
 | the Roll (Mardu) | Orzhov Tokens (W B) | aggro | 40.0 | 46 | +0.7 | built |
-| the Ashen | Rakdos Removal (B R) | midrange | 36.2 | 43 | −1.7 | built |
+| the Ashen | Rakdos Removal (B R) | midrange | 35.7 | 43 | −2.3 | built |
 
 Archived (kept in the data, out of the field): none.
 
@@ -30,20 +30,20 @@ The 5 lists above 50 in matches, counted against one another only. A list that g
 | | list | among them | the whole field | change |
 |---|---|---|---|---|
 | 1 | Mardu Control | 61.3 ± 6.2 | 69.5 | −8.3 |
-| 2 | the Watch (Mardu) | 57.9 ± 6.2 | 62.1 | −4.2 |
+| 2 | the Watch (Mardu) | 57.5 ± 6.3 | 62.0 | −4.5 |
 | 3 | the Pall | 48.8 ± 6.3 | 52.6 | −3.9 |
 | 4 | the Rabble (Mardu) | 44.6 ± 6.3 | 60.6 | −16.0 |
-| 5 | the Chancel (Mardu) | 37.5 ± 6.1 | 55.6 | −18.1 |
+| 5 | the Chancel (Mardu) | 37.9 ± 6.1 | 55.5 | −17.6 |
 
 Head to head (the row list's matches won, %):
 
 | | marducontrol | watch | pall | rabble | chancel |
 |---|---|---|---|---|---|
 | **marducontrol** | — | 60 | 57 | 57 | 72 |
-| **watch** | 40 | — | 70 | 73 | 48 |
+| **watch** | 40 | — | 70 | 73 | 47 |
 | **pall** | 43 | 30 | — | 50 | 72 |
 | **rabble** | 43 | 27 | 50 | — | 58 |
-| **chancel** | 28 | 52 | 28 | 42 | — |
+| **chancel** | 28 | 53 | 28 | 42 | — |
 
 ## Staples (ADR-170)
 
@@ -65,7 +65,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 6 · Vin
 
 ## the Watch (Mardu) — Boros Tokens (W R)
 
-`watch` · aggro · game one 54 · matches 62.1
+`watch` · aggro · game one 54 · matches 62.0
 
 - **Lands (19):** 4 Sacred Foundry · 4 Plateau · 1 Hearthspire · 4 Plains · 6 Mountain
 - **Creatures (18):** 4 Soul Warden · 4 Young Pyromancer · 1 Flametongue Kavu · 1 Dawnwing Marshal · 3 Vigil Keeper · 4 Captain of the Watch · 1 Lumen, the Hearth Fire
@@ -88,7 +88,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 6 · Vin
 
 ## the Chancel (Mardu) — Orzhov Control (W B)
 
-`chancel` · midrange · game one 53 · matches 55.6
+`chancel` · midrange · game one 53 · matches 55.5
 
 - **Lands (19):** 4 Scrubland · 4 Godless Shrine · 1 Obsidian Observatory · 1 Hearthspire · 2 Plains · 1 Cairnbrand · 2 Swamp · 2 Plateau · 2 Badlands
 - **Creatures (27):** 4 Karmic Mentor · 3 Restoration Angel · 3 The Jet Witch · 2 Isaura, the Levy · 1 Emeria Angel · 4 Blood Artist · 4 Soul Warden · 4 Vampire Nighthawk · 2 The Usher
@@ -129,7 +129,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 6 · Vin
 
 ## the Warband (Mardu) — Boros Goblins (R w)
 
-`warband` · aggro · game one 47 · matches 47.2
+`warband` · aggro · game one 47 · matches 48.0
 
 - **Lands (22):** 4 Plateau · 4 Sacred Foundry · 1 Hearthspire · 11 Mountain · 2 Plains
 - **Creatures (22):** 4 Skirk Prospector · 4 Goblin Piker · 4 Goblin Chieftain · 2 Boggart Brute · 3 Siege-Gang Commander · 3 Lumen, the Hearth Fire · 2 Flametongue Kavu
@@ -185,7 +185,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 6 · Vin
 
 ## the Ashen — Rakdos Removal (B R)
 
-`brremoval` · midrange · game one 43 · matches 36.2
+`brremoval` · midrange · game one 43 · matches 35.7
 
 - **Lands (17):** 4 Blood Crypt · 4 Badlands · 1 Cairnbrand · 6 Swamp · 2 Mountain
 - **Creatures (27):** 4 Typhoid Rats · 4 Blood Artist · 4 Hypnotic Specter · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 2 Dread Presence · 1 Drana, Kalastria Bloodchief

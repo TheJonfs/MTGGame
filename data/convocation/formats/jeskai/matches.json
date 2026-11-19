@@ -6,13 +6,13 @@
   "kiln": {
    "matches": 46.4,
    "gameOne": 46.7,
-   "later": 47.2,
+   "later": 47.5,
    "n": 660
   },
   "locks": {
-   "matches": 44.8,
+   "matches": 43.5,
    "gameOne": 48.9,
-   "later": 45.1,
+   "later": 43.1,
    "n": 660
   },
   "minefield": {
@@ -22,21 +22,21 @@
    "n": 660
   },
   "muster": {
-   "matches": 58.3,
+   "matches": 58.4,
    "gameOne": 56.3,
-   "later": 55.3,
+   "later": 55.6,
    "n": 660
   },
   "rabble": {
-   "matches": 63.7,
+   "matches": 64.5,
    "gameOne": 62.4,
-   "later": 59.5,
+   "later": 60.2,
    "n": 660
   },
   "skies": {
    "matches": 52.5,
    "gameOne": 51.1,
-   "later": 53.1,
+   "later": 53.2,
    "n": 660
   },
   "sweepers": {
@@ -58,27 +58,27 @@
    "n": 660
   },
   "urcontrol": {
-   "matches": 13.4,
+   "matches": 13,
    "gameOne": 22.8,
-   "later": 22.2,
+   "later": 21.9,
    "n": 660
   },
   "warband": {
-   "matches": 56.6,
+   "matches": 57,
    "gameOne": 58.2,
-   "later": 52.6,
+   "later": 52.9,
    "n": 660
   },
   "watch": {
-   "matches": 64.8,
+   "matches": 65.3,
    "gameOne": 58.3,
-   "later": 60.6,
+   "later": 61.1,
    "n": 660
   }
  },
  "byPair": {
   "kiln|locks": {
-   "w": 35,
+   "w": 34,
    "n": 60
   },
   "kiln|minefield": {
@@ -110,7 +110,7 @@
    "n": 60
   },
   "kiln|urcontrol": {
-   "w": 55,
+   "w": 56,
    "n": 60
   },
   "kiln|warband": {
@@ -122,7 +122,7 @@
    "n": 60
   },
   "locks|kiln": {
-   "w": 25,
+   "w": 26,
    "n": 60
   },
   "locks|minefield": {
@@ -134,11 +134,11 @@
    "n": 60
   },
   "locks|rabble": {
-   "w": 16,
+   "w": 11,
    "n": 60
   },
   "locks|skies": {
-   "w": 32,
+   "w": 34,
    "n": 60
   },
   "locks|sweepers": {
@@ -154,15 +154,15 @@
    "n": 60
   },
   "locks|urcontrol": {
-   "w": 54,
+   "w": 53,
    "n": 60
   },
   "locks|warband": {
-   "w": 23,
+   "w": 20,
    "n": 60
   },
   "locks|watch": {
-   "w": 26,
+   "w": 23,
    "n": 60
   },
   "minefield|kiln": {
@@ -242,7 +242,7 @@
    "n": 60
   },
   "muster|urcontrol": {
-   "w": 52,
+   "w": 53,
    "n": 60
   },
   "muster|warband": {
@@ -258,7 +258,7 @@
    "n": 60
   },
   "rabble|locks": {
-   "w": 44,
+   "w": 49,
    "n": 60
   },
   "rabble|minefield": {
@@ -302,7 +302,7 @@
    "n": 60
   },
   "skies|locks": {
-   "w": 28,
+   "w": 26,
    "n": 60
   },
   "skies|minefield": {
@@ -330,15 +330,15 @@
    "n": 60
   },
   "skies|urcontrol": {
-   "w": 54,
+   "w": 56,
    "n": 60
   },
   "skies|warband": {
-   "w": 31,
+   "w": 32,
    "n": 60
   },
   "skies|watch": {
-   "w": 36,
+   "w": 35,
    "n": 60
   },
   "sweepers|kiln": {
@@ -474,11 +474,11 @@
    "n": 60
   },
   "urcontrol|kiln": {
-   "w": 5,
+   "w": 4,
    "n": 60
   },
   "urcontrol|locks": {
-   "w": 6,
+   "w": 7,
    "n": 60
   },
   "urcontrol|minefield": {
@@ -486,7 +486,7 @@
    "n": 60
   },
   "urcontrol|muster": {
-   "w": 8,
+   "w": 7,
    "n": 60
   },
   "urcontrol|rabble": {
@@ -494,7 +494,7 @@
    "n": 60
   },
   "urcontrol|skies": {
-   "w": 6,
+   "w": 4,
    "n": 60
   },
   "urcontrol|sweepers": {
@@ -510,11 +510,11 @@
    "n": 60
   },
   "urcontrol|warband": {
-   "w": 10.5,
+   "w": 10,
    "n": 60
   },
   "urcontrol|watch": {
-   "w": 9,
+   "w": 10,
    "n": 60
   },
   "warband|kiln": {
@@ -522,7 +522,7 @@
    "n": 60
   },
   "warband|locks": {
-   "w": 37,
+   "w": 40,
    "n": 60
   },
   "warband|minefield": {
@@ -538,7 +538,7 @@
    "n": 60
   },
   "warband|skies": {
-   "w": 29,
+   "w": 28,
    "n": 60
   },
   "warband|sweepers": {
@@ -554,7 +554,7 @@
    "n": 60
   },
   "warband|urcontrol": {
-   "w": 49.5,
+   "w": 50,
    "n": 60
   },
   "warband|watch": {
@@ -566,7 +566,7 @@
    "n": 60
   },
   "watch|locks": {
-   "w": 34,
+   "w": 37,
    "n": 60
   },
   "watch|minefield": {
@@ -582,7 +582,7 @@
    "n": 60
   },
   "watch|skies": {
-   "w": 24,
+   "w": 25,
    "n": 60
   },
   "watch|sweepers": {
@@ -598,7 +598,7 @@
    "n": 60
   },
   "watch|urcontrol": {
-   "w": 51,
+   "w": 50,
    "n": 60
   },
   "watch|warband": {

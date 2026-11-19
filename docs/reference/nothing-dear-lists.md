@@ -9,18 +9,18 @@
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
 | the Minefield | Naya Valakut (R W G) | control | 66.5 | 61 | +1.4 | registered |
-| Emerald Snakes | Snake Keeper (G R) | midrange | 65.8 | 61 | −1.2 | registered |
-| Bant Auras (working name) | Bant Hexproof Auras (G w u) | aggro | 56.8 | 53 | +7.1 | registered |
-| the Muster | Boros Weenie (W R) | aggro | 55.2 | 53 | +1.3 | built |
-| Mardu Control | Usher Midrange (W B R) | midrange | 54.7 | 50 | +4.4 | registered, guided |
-| the Rabble | Mono-Red Goblins (R) | aggro | 52.9 | 52 | −0.4 | registered |
-| Mono-Black Clio | Mono-Black Clio (B u r) | midrange | 51.4 | 52 | −0.2 | registered, guided |
-| BR Removal | Rakdos Removal (B R) | midrange | 50.0 | 50 | +0.0 | built |
-| the Thicket | Selesnya Auras (G W) | aggro | 46.1 | 46 | +7.2 | built |
+| Emerald Snakes | Snake Keeper (G R) | midrange | 65.8 | 61 | −0.8 | registered |
+| Bant Auras (working name) | Bant Hexproof Auras (G w u) | aggro | 56.4 | 53 | +7.1 | registered |
+| Mardu Control | Usher Midrange (W B R) | midrange | 55.2 | 50 | +4.7 | registered, guided |
+| the Muster | Boros Weenie (W R) | aggro | 54.8 | 53 | +1.1 | built |
+| the Rabble | Mono-Red Goblins (R) | aggro | 52.2 | 52 | −1.1 | registered |
+| Mono-Black Clio | Mono-Black Clio (B u r) | midrange | 51.5 | 52 | +0.0 | registered, guided |
+| the Thicket | Selesnya Auras (G W) | aggro | 47.1 | 46 | +7.3 | built |
+| BR Removal | Rakdos Removal (B R) | midrange | 46.9 | 50 | −2.7 | built |
 | Massocrafts | Sultai Massacre Snakes (G B u) | midrange | 45.6 | 47 | −3.9 | registered, guided |
 | the Tally | Izzet Sparks (U R) | aggro | 36.7 | 41 | −6.4 | built |
-| the Levy | Orzhov Landfall (W B) | midrange | 35.6 | 43 | −4.0 | registered, guided |
-| the Undertow | Dimir Mill (U B) | control | 32.8 | 40 | −5.9 | built |
+| the Levy | Orzhov Landfall (W B) | midrange | 35.7 | 43 | −3.6 | registered, guided |
+| the Undertow | Dimir Mill (U B) | control | 35.6 | 40 | −3.0 | built |
 
 Archived (kept in the data, out of the field): none.
 
@@ -31,23 +31,23 @@ The 7 lists above 50 in matches, counted against one another only. A list that g
 | | list | among them | the whole field | change |
 |---|---|---|---|---|
 | 1 | the Minefield | 65.8 ± 4.9 | 66.5 | −0.7 |
-| 2 | Emerald Snakes | 63.1 ± 5.0 | 65.8 | −2.7 |
-| 3 | Mono-Black Clio | 47.8 ± 5.2 | 51.4 | −3.6 |
-| 4 | Mardu Control | 45.8 ± 5.1 | 54.7 | −8.9 |
-| 5 | the Muster | 45.6 ± 5.1 | 55.2 | −9.6 |
-| 6 | Bant Auras (working name) | 44.7 ± 5.1 | 56.8 | −12.1 |
-| 7 | the Rabble | 37.2 ± 5.0 | 52.9 | −15.7 |
+| 2 | Emerald Snakes | 63.6 ± 5.0 | 65.8 | −2.2 |
+| 3 | Mono-Black Clio | 47.8 ± 5.2 | 51.5 | −3.7 |
+| 4 | Mardu Control | 45.8 ± 5.1 | 55.2 | −9.4 |
+| 5 | the Muster | 45.6 ± 5.1 | 54.8 | −9.2 |
+| 6 | Bant Auras (working name) | 44.2 ± 5.1 | 56.4 | −12.2 |
+| 7 | the Rabble | 37.2 ± 5.0 | 52.2 | −15.0 |
 
 Head to head (the row list's matches won, %):
 
 | | minefield | emeraldsnakes | mbclio | marducontrol | muster | hexaura | rabble |
 |---|---|---|---|---|---|---|---|
 | **minefield** | — | 30 | 83 | 58 | 87 | 65 | 72 |
-| **emeraldsnakes** | 70 | — | 63 | 62 | 65 | 53 | 65 |
+| **emeraldsnakes** | 70 | — | 63 | 62 | 65 | 57 | 65 |
 | **mbclio** | 17 | 37 | — | 42 | 60 | 62 | 70 |
 | **marducontrol** | 42 | 38 | 58 | — | 35 | 40 | 62 |
 | **muster** | 13 | 35 | 40 | 65 | — | 53 | 67 |
-| **hexaura** | 35 | 47 | 38 | 60 | 47 | — | 42 |
+| **hexaura** | 35 | 43 | 38 | 60 | 47 | — | 42 |
 | **rabble** | 28 | 35 | 30 | 38 | 33 | 58 | — |
 
 ## Staples (ADR-170)
@@ -82,7 +82,7 @@ The most played: Flametongue Kavu 6 · Vampire Nighthawk 6 · Lightning Bolt 5 �
 
 ## Bant Auras (working name) — Bant Hexproof Auras (G w u)
 
-`hexaura` · aggro · game one 53 · matches 56.8
+`hexaura` · aggro · game one 53 · matches 56.4
 
 - **Lands (23):** 11 Forest · 4 Savannah · 2 Temple Garden · 2 Tropical Island · 2 Plains · 1 Island · 1 Shevelport
 - **Creatures (16):** 4 Dungrove Elder · 4 Gladecover Scout · 2 Ovna, the Enchantress · 4 Llanowar Elves · 2 Birds of Paradise
@@ -92,20 +92,9 @@ The most played: Flametongue Kavu 6 · Vampire Nighthawk 6 · Lightning Bolt 5 �
 - **History:**
   - contributed — S72 (the Nothing Dear seeds): Bant Auras from Bant, without the Power — the Power for a Forest, a third Harmonize and a third Pacifism; its fifteen's three Penumbra Wurms (seven) for a fourth Wall of Blossoms, Disenchant and Tormod's Crypt.
 
-## the Muster — Boros Weenie (W R)
-
-`muster` · aggro · game one 53 · matches 55.2
-
-- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 1 Hearthspire · 7 Plains · 4 Mountain · 2 Secluded Steppe
-- **Creatures (24):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 1 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu · 3 Vigil Keeper · 3 Dawnwing Marshal
-- **Other (14):** 4 Raise the Alarm · 4 Glorious Anthem · 4 Lightning Bolt · 2 Swords to Plowshares
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S72 (the Nothing Dear seeds): the Muster from the Open, without the Power — the Power for three Dawnwing Marshals (Bodies' swap). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.
-
 ## Mardu Control — Usher Midrange (W B R)
 
-`marducontrol` · midrange · game one 50 · matches 54.7
+`marducontrol` · midrange · game one 50 · matches 55.2
 
 - **Lands (21):** 4 Badlands · 4 Scrubland · 4 Plateau · 4 Godless Shrine · 1 Cairnbrand · 1 Obsidian Observatory · 2 Blood Crypt · 1 Sacred Foundry
 - **Creatures (26):** 3 Lumen, the Hearth Fire · 3 Restoration Angel · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Blood Artist · 4 Soul Warden · 2 Flametongue Kavu · 3 Revivalist
@@ -128,9 +117,20 @@ The most played: Flametongue Kavu 6 · Vampire Nighthawk 6 · Lightning Bolt 5 �
 - **History:**
   - contributed — S72 (the Nothing Dear seeds): Mardu Control as Bodies plays it (the Open's without the Power: a Blood Crypt, two Kavus, a third Purge, a second Helix) — the three Ushers (five) for three Revivalists (Chris: the Usher is a side win; the Revivalist recovers the aristocrats).
 
+## the Muster — Boros Weenie (W R)
+
+`muster` · aggro · game one 53 · matches 54.8
+
+- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 1 Hearthspire · 7 Plains · 4 Mountain · 2 Secluded Steppe
+- **Creatures (24):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 1 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu · 3 Vigil Keeper · 3 Dawnwing Marshal
+- **Other (14):** 4 Raise the Alarm · 4 Glorious Anthem · 4 Lightning Bolt · 2 Swords to Plowshares
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S72 (the Nothing Dear seeds): the Muster from the Open, without the Power — the Power for three Dawnwing Marshals (Bodies' swap). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.
+
 ## the Rabble — Mono-Red Goblins (R)
 
-`rabble` · aggro · game one 52 · matches 52.9
+`rabble` · aggro · game one 52 · matches 52.2
 
 - **Lands (20):** 1 Cairnbrand · 4 Badlands · 1 Tallyflame Court · 4 Volcanic Island · 10 Mountain
 - **Creatures (20):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 4 Boggart Brute
@@ -142,7 +142,7 @@ The most played: Flametongue Kavu 6 · Vampire Nighthawk 6 · Lightning Bolt 5 �
 
 ## Mono-Black Clio — Mono-Black Clio (B u r)
 
-`mbclio` · midrange · game one 52 · matches 51.4
+`mbclio` · midrange · game one 52 · matches 51.5
 
 - **Lands (24):** 1 Cairnbrand · 1 Tallyflame Court · 4 Badlands · 4 Blood Crypt · 4 Underground Sea · 4 Watery Grave · 6 Swamp
 - **Creatures (25):** 4 Vampire Nighthawk · 4 The Jet Witch · 4 Hypnotic Specter · 4 Clio, Lady of the Depths · 4 Dread Presence · 2 Child of Night · 3 Typhoid Rats
@@ -157,20 +157,9 @@ The most played: Flametongue Kavu 6 · Vampire Nighthawk 6 · Lightning Bolt 5 �
 - **History:**
   - contributed — S72 (the Nothing Dear seeds): Mono-Black Clio from Grixis, without the Power or the top — Library and the Lotus for two Swamps, the rest and the three Dranas (five) for two Children of Night, three Doom Blades (Bodies' picks) and three Typhoid Rats (its fifteen kept whole for its guide).
 
-## BR Removal — Rakdos Removal (B R)
-
-`br` · midrange · game one 50 · matches 50.0
-
-- **Lands (23):** 4 Blood Crypt · 12 Swamp · 7 Mountain
-- **Creatures (28):** 4 Typhoid Rats · 4 Blood Artist · 4 Daunting Terror · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 2 Reassembling Skeleton · 2 Gravedigger
-- **Other (9):** 4 Doom Blade · 1 Terror · 4 Lightning Bolt
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S72 (the Nothing Dear seeds): BR Removal from Grixis — legal as it stands (no Power, nothing above four). S73a (the vintage audit): 4 daunting_terror for child_of_night.
-
 ## the Thicket — Selesnya Auras (G W)
 
-`thicket` · aggro · game one 46 · matches 46.1
+`thicket` · aggro · game one 46 · matches 47.1
 
 - **Lands (23):** 4 Savannah · 4 Temple Garden · 9 Forest · 5 Plains · 1 Shevelport
 - **Creatures (18):** 4 Gladecover Scout · 4 Blurred Mongoose · 4 Ovna, the Enchantress · 4 Dungrove Elder · 2 The Emerald Keeper
@@ -178,6 +167,17 @@ The most played: Flametongue Kavu 6 · Vampire Nighthawk 6 · Lightning Bolt 5 �
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
   - contributed — S72 (the Nothing Dear seeds): the Thicket from Abzan, without the Power — the Power for a Forest and two Spirit Links.
+
+## BR Removal — Rakdos Removal (B R)
+
+`br` · midrange · game one 50 · matches 46.9
+
+- **Lands (23):** 4 Blood Crypt · 12 Swamp · 7 Mountain
+- **Creatures (28):** 4 Typhoid Rats · 4 Blood Artist · 4 Daunting Terror · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 2 Reassembling Skeleton · 2 Gravedigger
+- **Other (9):** 4 Doom Blade · 1 Terror · 4 Lightning Bolt
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S72 (the Nothing Dear seeds): BR Removal from Grixis — legal as it stands (no Power, nothing above four). S73a (the vintage audit): 4 daunting_terror for child_of_night.
 
 ## Massocrafts — Sultai Massacre Snakes (G B u)
 
@@ -206,7 +206,7 @@ The most played: Flametongue Kavu 6 · Vampire Nighthawk 6 · Lightning Bolt 5 �
 
 ## the Levy — Orzhov Landfall (W B)
 
-`levy` · midrange · game one 43 · matches 35.6
+`levy` · midrange · game one 43 · matches 35.7
 
 - **Lands (25):** 4 Scrubland · 4 Godless Shrine · 6 Plains · 5 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers · 1 Obsidian Observatory
 - **Creatures (16):** 4 Emeria Angel · 4 Dread Presence · 4 Soul Warden · 2 Vampire Nighthawk · 2 Isaura, the Levy
@@ -221,7 +221,7 @@ The most played: Flametongue Kavu 6 · Vampire Nighthawk 6 · Lightning Bolt 5 �
 
 ## the Undertow — Dimir Mill (U B)
 
-`undertow` · control · game one 40 · matches 32.8
+`undertow` · control · game one 40 · matches 35.6
 
 - **Lands (23):** 3 Underground Sea · 1 Volmaw · 4 Watery Grave · 7 Island · 3 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers
 - **Creatures (19):** 4 Hedron Crab · 4 Traumatizer · 4 Tidewall · 4 Clio, Lady of the Depths · 3 Vampire Nighthawk

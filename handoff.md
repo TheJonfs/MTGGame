@@ -21,10 +21,13 @@ The ten-card hybrid two-drop cycle is complete in the pool: 315 cards, R-125 to 
 
 `docs/decision-updates/s72.md` is the full record. Run the app with `pnpm viewer` and the tests with `pnpm test`.
 
-## Session 73a — the adoptions, the grounds by rule, the run of record (2026-11-19; uncommitted)
-Brief `docs/briefs/session-73a-brief.md`, all seven parts. The record is `docs/decision-updates/s73.md` § S73a. **Nothing of 73a is committed.**
+## Session 73a — the adoptions, the grounds by rule, the run of record, and card-rating v1.7 (2026-11-19; commit d01edc7, then the rebuild)
+Brief `docs/briefs/session-73a-brief.md`, all seven parts. The record is `docs/decision-updates/s73.md` § S73a. The brief's parts are in commit d01edc7; the v1.7 rebuild and the re-recorded tables came after it.
 
-**Read this first: the tables of record were re-run and one thing in them is known wrong.** The live rating table (v1.6) carries rows measured in v1.5's rebuild under the three book bugs Part 1 fixed. The field's sideboard builder cuts by rating, so Peasant's Elder list now sides out Dungrove Elder first and reads about 11 points low (concern 74). The repair is the rating rebuild the brief holds for Chris's word; the tables should be re-run after it.
+**The tables of record are the v1.7 ones.** The first run of record (on v1.6) showed the rating table carrying rows measured under the three book bugs Part 1 fixed; the field's sideboard builder cuts by rating and was siding Dungrove Elder out of its own list. Chris ordered the rebuild (2026-11-19): **card-rating v1.7, the whole table on pilot 177**, and all fourteen tables re-recorded after it.
+
+- **v1.7**: the pilot is stamped **177** (the three repair tests are titled book 177, so old pilot-176 runs cannot be pooled). The Limited builder and drafter read a hybrid card by `castableWith` (concern 69, closed for those two files). Peasant, authored, Sealed, noise and draft runs; forced inclusion for 36 cards (28 written). Dungrove Elder: cast when drawn 25% → 91%, rating 1.11 → 2.12. `card-rating-report.md` is v1.7's. `analysis/s73/card-rating-v1.6.json` is the old table.
+- **The re-record**: 172 lists moved 1.1 points on average from the v1.6 tables; the Elder 55.1 → 66.4, Sultai Auras 42.3 → 53.3, the Stampede 44.5 → 50.2. Leaders: the Open — Mardu Control 72.7, Emerald Snakes 70.7; Peasant — the Elder 66.4; Bodies — Emerald Snakes 68.0; Nothing Dear — the Minefield 66.5.
 
 - **Part 0**: rulings recorded; `landdeck` at six (`LANDDECK_AT`); the audit table reads the bar strictly (32 clears, 2 holds).
 - **Part 1 — attribution** (nine lists eight points or more from record; books off singly, moxkeep, v1.4 ratings): the planner's expected regression (book 176, `tapmill`) is not there. **Three bugs, all fixed, ladder PASS** (`analysis/s73/ladder-73a-books.log`):
@@ -54,7 +57,7 @@ Brief `docs/briefs/session-73a-brief.md`, all seven parts. The record is `docs/d
 6. **The reading list was refreshed by arithmetic** (each S72 gap moved by the change in game-one mean), not from his game logs.
 
 **Concerns (73a; numbering continues)**
-74. **The rating table carries rows measured under Part 1's bugs.** Dungrove Elder: cast 25% when drawn in v1.5's runs, Peasant worth 3.38 → −0.08. Evolving Wilds 1.12 → 0.35, Rampant Growth 1.19 → 0.74. The builder's fifteen cuts by rating: the Elder list reads +8.1 ± 1.7 when it does not sideboard at all. **v1.7 should rebuild the constructed and Peasant rows on the fixed pilot, not only the Limited ones, and the tables of record should follow it.** The planner's and Chris's to order.
+74. ~~The rating table carries rows measured under Part 1's bugs~~ — **closed by v1.7 and the re-record** (above). As found: Dungrove Elder: cast 25% when drawn in v1.5's runs, Peasant worth 3.38 → −0.08. Evolving Wilds 1.12 → 0.35, Rampant Growth 1.19 → 0.74. The builder's fifteen cuts by rating: the Elder list reads +8.1 ± 1.7 when it does not sideboard at all. **v1.7 should rebuild the constructed and Peasant rows on the fixed pilot, not only the Limited ones, and the tables of record should follow it.** The planner's and Chris's to order.
 75. **A list with a built fifteen can side out its own best card.** Sultai Auras cuts Blanchwood Armor for Airship Crash in every matchup on v1.6 (−10.2 from its own sideboarding) with no bug behind it, only a table that moved (concern 55's kind). A floor on what the out-rule may take, or registered fifteens for the lists that matter, is a design question.
 76. **Books 174 and 175 shipped with a ladder PASS and moved eight lists by six to fourteen points.** The ladder does not hold a ramp list or a counted-size creature.
 77. **ADR-201 has no threshold for a splash**: `castingColours` counts any pip, so the Chancel (two Ushers) took Hearthspire, the Tempo lists (three Clio) Volmaw and Sultai Mill (three Zinnia) two grounds.
@@ -65,7 +68,12 @@ Brief `docs/briefs/session-73a-brief.md`, all seven parts. The record is `docs/d
 82. **Jund Reaper rose 14.4 with no edit**; books and ratings explain half. Jund's Black Forest Ham loses 4.5 to the books, not split by book.
 83. **The Minefield probe leaves 197 turns unexplained** (a ramp card in hand, never castable, 70 with three or more lands).
 
-**The audit's owed remainder**: 69 lists still have no row. On the new tables the lowest of them are Grixis's Undertow (23.7), Peasant's UR Control (24.6), Temur's Tally (26.9), Jeskai's Tally (35.2), Jund's Kindling (36.5), Bant's Thicket (38.0), Mardu's Roll (40.0) and Abzan Tokens (44.5).
+84. **Lightning Bolt's Limited number is back at 2.27** (1.44 on v1.6, 2.29 on v1.4). S73's Bolt probe closed the fall as a result; it did not survive the rebuild, and which change brought it back is not traced.
+85. **Eight three-colour legends still read their tier's mean in Limited** (the Bailiff, the Reaper, the Stoker, the Dredger, the Fordkeeper, the Unwinder, the Usher, the Reeve): under 500 forced sightings. The brief's three-colour forced build was not made; it is new builder work.
+86. **Forced inclusion found 36 cards, not twenty**, and most read far under their tier's mean once played (The Pearl Cleric −1.16, Entomb −0.86, Altar of Dementia −0.76). The Limited table's low end is now measured, where before it was assumed.
+87. **An AI repair with no book number leaves the pilot version unchanged**, and the rating tools would then pool runs across two pilots. Stamped by hand this time; a repair should always carry a book title.
+
+**The audit's owed remainder**: 69 lists still have no row. The lowest of them on the tables of record are listed in `analysis/s73/record2-diff.md` (Grixis's Undertow, Peasant's UR Control, the Tally in Temur and Jeskai, Jund's Kindling, Bant's Thicket, Mardu's Roll, Abzan Tokens).
 
 **Pool gaps, as card asks for Chris** (from the audit; the Cube is at 320 of 360):
 - a **control finisher** outside the legends — Jeskai Sweepers (it decks itself on three Serra Angels), the Locks;
@@ -75,9 +83,9 @@ Brief `docs/briefs/session-73a-brief.md`, all seven parts. The record is `docs/d
 - an **answer to a nonbasic land or a legend** — field-wide; a one-land swap is worth +5 to +30;
 - **artifact and enchantment removal on a body** better than Banishing Cleric.
 
-**Tests**: 1,370 passed, 2 skipped, on the final state with the new tables (`analysis/s73/test-73a-record.log`; `pnpm test` still exits non-zero on the five known "Timeout calling onTaskUpdate" errors). Ladder: PASS on the final pilot (`analysis/s73/ladder-73a-books.log`); no AI code changed after it.
+**Tests**: 1,370 passed, 2 skipped, on v1.7 before the re-record (`analysis/s73/test-v17.log`) and 1,370 passed, 2 skipped, on the final state with the re-recorded tables (`analysis/s73/test-v17-record.log`; `pnpm test` still exits non-zero on the five known "Timeout calling onTaskUpdate" errors). Ladder: PASS on the final pilot (`analysis/s73/ladder-73a-books.log`); no AI code changed after it.
 
-**How to run (73a)**: `zsh analysis/s73/record-run.sh` (the tables; a tag is used once, so clear `analysis/s73/record/rr` first); `python3 analysis/s73/grounds-pool.py`; `python3 analysis/s73/before-after.py`; `npx tsx analysis/s73/minefield/ramp-probe.mts --vs marducontrol --games 120 --out f.json` then `--report f.json`; `pnpm sideboard:show --format <id> --list <key> [--rating file]`.
+**How to run (73a)**: `zsh analysis/s73/record2-run.sh` (the tables; a tag is used once, so point it at a new scratch folder first); `zsh analysis/s73/rating/rebuild-177.sh` then `forced-run-177.sh` (the rating rebuild; rename the runs for a new pilot); `python3 analysis/s73/grounds-pool.py`; `python3 analysis/s73/before-after.py`; `npx tsx analysis/s73/minefield/ramp-probe.mts --vs marducontrol --games 120 --out f.json` then `--report f.json`; `pnpm sideboard:show --format <id> --list <key> [--rating file]`.
 
 ## Session 73, Part 1 — the vintage audit (2026-11-18; the fresh session, commit 2f172a8)
 The brief's Part 1, then Part 0's code items (the section after this one). Parts 2, 3, 4 and 5 are owed. `docs/decision-updates/s73.md` is the record; `docs/reference/vintage-audit-s73.md` is the table. **No list was edited**: every row is a trial.

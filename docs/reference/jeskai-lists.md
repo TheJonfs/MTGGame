@@ -9,17 +9,17 @@
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
 | Jeskai Theft (working name) | Jeskai Theft (W R u) | midrange | 69.7 | 61 | +1.6 | registered |
-| the Watch (Mardu) | Boros Tokens (W R) | aggro | 64.8 | 62 | +2.3 | built |
-| the Rabble (Naya) | Mono-Red Goblins (R) | aggro | 63.7 | 62 | −2.9 | built |
-| the Muster | Boros Weenie (W R) | aggro | 58.3 | 57 | −1.0 | built |
-| the Warband (Chris's list to test against the Muster) | Boros Goblins (R w) | aggro | 56.6 | 54 | −5.6 | built |
-| the Aerie | Azorius Skies (W U) | midrange | 52.5 | 53 | +2.0 | registered, guided |
+| the Watch (Mardu) | Boros Tokens (W R) | aggro | 65.3 | 62 | +2.8 | built |
+| the Rabble (Naya) | Mono-Red Goblins (R) | aggro | 64.5 | 62 | −2.2 | built |
+| the Muster | Boros Weenie (W R) | aggro | 58.4 | 57 | −0.7 | built |
+| the Warband (Chris's list to test against the Muster) | Boros Goblins (R w) | aggro | 57.0 | 54 | −5.3 | built |
+| the Aerie | Azorius Skies (W U) | midrange | 52.5 | 53 | +2.1 | registered, guided |
 | Jeskai Sweepers (working name) | Jeskai Control (U W r) | control | 51.8 | 48 | +1.5 | registered |
-| the Kiln | Izzet Spells (U R) | midrange | 46.4 | 45 | +0.5 | registered |
-| Jeskai Locks (working name) | Azorius Control (W U) | control | 44.8 | 46 | −3.8 | registered |
+| the Kiln | Izzet Spells (U R) | midrange | 46.4 | 45 | +0.8 | registered |
+| Jeskai Locks (working name) | Azorius Control (W U) | control | 43.5 | 46 | −5.8 | registered |
 | Sacred Minefield | Jeskai Minefield Control (U R W) | control | 42.7 | 44 | +6.9 | registered, guided |
 | the Tally | Izzet Sparks (U R) | aggro | 35.2 | 39 | −2.8 | built |
-| UR Pyroclasm Control | Izzet Control (U R) | control | 13.4 | 28 | −0.6 | built |
+| UR Pyroclasm Control | Izzet Control (U R) | control | 13.0 | 28 | −0.9 | built |
 
 Archived (kept in the data, out of the field): none.
 
@@ -29,25 +29,25 @@ The 7 lists above 50 in matches, counted against one another only. A list that g
 
 | | list | among them | the whole field | change |
 |---|---|---|---|---|
-| 1 | the Watch (Mardu) | 59.2 ± 5.1 | 64.8 | −5.6 |
+| 1 | the Watch (Mardu) | 59.4 ± 5.1 | 65.3 | −5.9 |
 | 2 | Jeskai Theft (working name) | 57.2 ± 5.1 | 69.7 | −12.5 |
-| 3 | the Rabble (Naya) | 52.4 ± 5.2 | 63.7 | −11.3 |
-| 4 | the Muster | 50.4 ± 5.2 | 58.3 | −7.9 |
+| 3 | the Rabble (Naya) | 52.4 ± 5.2 | 64.5 | −12.1 |
+| 4 | the Muster | 50.4 ± 5.2 | 58.4 | −8.0 |
 | 5 | Jeskai Sweepers (working name) | 46.4 ± 5.2 | 51.8 | −5.4 |
-| 6 | the Warband (Chris's list to test against the Muster) | 43.3 ± 5.1 | 56.6 | −13.3 |
+| 6 | the Warband (Chris's list to test against the Muster) | 43.1 ± 5.1 | 57.0 | −13.9 |
 | 7 | the Aerie | 41.1 ± 5.1 | 52.5 | −11.4 |
 
 Head to head (the row list's matches won, %):
 
 | | watch | theft | rabble | muster | sweepers | warband | skies |
 |---|---|---|---|---|---|---|---|
-| **watch** | — | 60 | 75 | 53 | 55 | 72 | 40 |
+| **watch** | — | 60 | 75 | 53 | 55 | 72 | 42 |
 | **theft** | 40 | — | 40 | 70 | 68 | 50 | 75 |
 | **rabble** | 25 | 60 | — | 49 | 52 | 67 | 62 |
 | **muster** | 47 | 30 | 51 | — | 50 | 58 | 67 |
 | **sweepers** | 45 | 32 | 48 | 50 | — | 42 | 62 |
-| **warband** | 28 | 50 | 33 | 42 | 58 | — | 48 |
-| **skies** | 60 | 25 | 38 | 33 | 38 | 52 | — |
+| **warband** | 28 | 50 | 33 | 42 | 58 | — | 47 |
+| **skies** | 58 | 25 | 38 | 33 | 38 | 53 | — |
 
 ## Staples (ADR-170)
 
@@ -69,7 +69,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 8 · Con
 
 ## the Watch (Mardu) — Boros Tokens (W R)
 
-`watch` · aggro · game one 62 · matches 64.8
+`watch` · aggro · game one 62 · matches 65.3
 
 - **Lands (19):** 4 Sacred Foundry · 4 Plateau · 1 Hearthspire · 4 Plains · 6 Mountain
 - **Creatures (18):** 4 Soul Warden · 4 Young Pyromancer · 1 Flametongue Kavu · 1 Dawnwing Marshal · 3 Vigil Keeper · 4 Captain of the Watch · 1 Lumen, the Hearth Fire
@@ -80,7 +80,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 8 · Con
 
 ## the Rabble (Naya) — Mono-Red Goblins (R)
 
-`rabble` · aggro · game one 62 · matches 63.7
+`rabble` · aggro · game one 62 · matches 64.5
 
 - **Lands (20):** 20 Mountain
 - **Creatures (18):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 2 Siege-Gang Commander
@@ -91,7 +91,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 8 · Con
 
 ## the Muster — Boros Weenie (W R)
 
-`muster` · aggro · game one 57 · matches 58.3
+`muster` · aggro · game one 57 · matches 58.4
 
 - **Lands (22):** 4 Plateau · 4 Sacred Foundry · 1 Hearthspire · 7 Plains · 4 Mountain · 2 Secluded Steppe
 - **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 1 Fencing Ace · 3 Vigil Keeper · 3 Emeria Angel · 4 Flametongue Kavu
@@ -102,7 +102,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 8 · Con
 
 ## the Warband (Chris's list to test against the Muster) — Boros Goblins (R w)
 
-`warband` · aggro · game one 54 · matches 56.6
+`warband` · aggro · game one 54 · matches 57.0
 
 - **Lands (22):** 4 Plateau · 4 Sacred Foundry · 1 Hearthspire · 11 Mountain · 2 Plains
 - **Creatures (22):** 4 Skirk Prospector · 4 Goblin Piker · 4 Goblin Chieftain · 2 Boggart Brute · 3 Siege-Gang Commander · 3 Lumen, the Hearth Fire · 2 Flametongue Kavu
@@ -150,7 +150,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 8 · Con
 
 ## Jeskai Locks (working name) — Azorius Control (W U)
 
-`locks` · control · game one 46 · matches 44.8
+`locks` · control · game one 46 · matches 43.5
 
 - **Lands (22):** 4 Tundra · 4 Hallowed Fountain · 7 Island · 6 Plains · 1 Library of Alexandria
 - **Creatures (9):** 4 Serra Angel · 1 Arcanis the Omnipotent · 2 Karmic Mentor · 2 Faerie Formation
@@ -189,7 +189,7 @@ The most played: Lightning Bolt 9 · Flametongue Kavu 9 · Counterspell 8 · Con
 
 ## UR Pyroclasm Control — Izzet Control (U R)
 
-`urcontrol` · control · game one 28 · matches 13.4
+`urcontrol` · control · game one 28 · matches 13.0
 
 - **Lands (24):** 4 Steam Vents · 11 Island · 9 Mountain
 - **Creatures (15):** 4 Flametongue Kavu · 4 Wall of Air · 4 Traumatizer · 3 Air Elemental

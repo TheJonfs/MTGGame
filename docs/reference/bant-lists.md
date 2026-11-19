@@ -8,41 +8,39 @@
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| Bant Sower (working name) | Bant Midrange (G W u) | midrange | 70.9 | 62 | +4.8 | registered |
-| the Aerie | Azorius Skies (W U) | midrange | 63.2 | 57 | +5.9 | registered |
-| Countersnake | Four-Colour Countersnake (G U w b) | midrange | 55.6 | 57 | −3.0 | registered |
-| Sour Worms | Bant Wurm Ramp (G w u) | midrange | 55.2 | 55 | +6.2 | registered, guided |
-| Jeskai Locks (working name) | Azorius Control (W U) | control | 50.7 | 48 | −4.5 | registered |
-| Bant Auras (working name) | Bant Hexproof Auras (G w u) | aggro | 47.8 | 46 | −1.6 | registered |
-| Dungrove Auras | Mono-Green Auras (G) | midrange | 43.3 | 49 | −4.5 | built |
-| the Wurmspeaker | Mono-Green Ramp | midrange | 43.0 | 43 | −3.4 | built |
-| UW Skies | Azorius Skies (W U) | midrange | 41.5 | 46 | +2.6 | registered |
-| White Skies | Mono-White Lifegain Skies (W) | midrange | 40.8 | 45 | +0.4 | registered |
-| the Thicket | Selesnya Auras (G W) | aggro | 38.0 | 42 | −2.7 | built |
+| Bant Sower (working name) | Bant Midrange (G W u) | midrange | 71.8 | 62 | +5.8 | registered |
+| the Aerie | Azorius Skies (W U) | midrange | 62.3 | 57 | +4.5 | registered |
+| Jeskai Locks (working name) | Azorius Control (W U) | control | 54.8 | 48 | −0.6 | registered |
+| Sour Worms | Bant Wurm Ramp (G w u) | midrange | 52.5 | 55 | +4.2 | registered, guided |
+| Countersnake | Four-Colour Countersnake (G U w b) | midrange | 49.9 | 57 | −8.4 | registered |
+| Dungrove Auras | Mono-Green Auras (G) | midrange | 48.0 | 49 | −0.8 | built |
+| Bant Auras (working name) | Bant Hexproof Auras (G w u) | aggro | 46.7 | 46 | −2.4 | registered |
+| UW Skies | Azorius Skies (W U) | midrange | 44.2 | 46 | +5.1 | registered |
+| White Skies | Mono-White Lifegain Skies (W) | midrange | 40.2 | 45 | −0.4 | registered |
+| the Wurmspeaker | Mono-Green Ramp | midrange | 39.8 | 43 | −6.9 | built |
+| the Thicket | Selesnya Auras (G W) | aggro | 39.8 | 42 | −0.2 | built |
 
 Archived (kept in the data, out of the field): none.
 
 ## Among the lists above 50 (S71a — a reading lens, not the draw)
 
-The 5 lists above 50 in matches, counted against one another only. A list that gains most of its record from the bottom of the field falls here; the field's seat draw still reads the whole table.
+The 4 lists above 50 in matches, counted against one another only. A list that gains most of its record from the bottom of the field falls here; the field's seat draw still reads the whole table.
 
 | | list | among them | the whole field | change |
 |---|---|---|---|---|
-| 1 | Bant Sower (working name) | 65.2 ± 6.0 | 70.9 | −5.7 |
-| 2 | the Aerie | 57.1 ± 6.3 | 63.2 | −6.1 |
-| 3 | Sour Worms | 46.7 ± 6.3 | 55.2 | −8.5 |
-| 4 | Countersnake | 43.1 ± 6.3 | 55.6 | −12.5 |
-| 5 | Jeskai Locks (working name) | 37.9 ± 6.1 | 50.7 | −12.8 |
+| 1 | Bant Sower (working name) | 61.1 ± 7.1 | 71.8 | −10.7 |
+| 2 | the Aerie | 58.3 ± 7.2 | 62.3 | −4.0 |
+| 3 | Jeskai Locks (working name) | 42.2 ± 7.2 | 54.8 | −12.6 |
+| 4 | Sour Worms | 38.3 ± 7.1 | 52.5 | −14.2 |
 
 Head to head (the row list's matches won, %):
 
-| | sower | skies | sourworms | countersnake | locks |
-|---|---|---|---|---|---|
-| **sower** | — | 45 | 72 | 78 | 67 |
-| **skies** | 55 | — | 77 | 52 | 45 |
-| **sourworms** | 28 | 23 | — | 65 | 70 |
-| **countersnake** | 23 | 48 | 35 | — | 67 |
-| **locks** | 33 | 55 | 30 | 33 | — |
+| | sower | skies | locks | sourworms |
+|---|---|---|---|---|
+| **sower** | — | 45 | 67 | 72 |
+| **skies** | 55 | — | 43 | 77 |
+| **locks** | 33 | 57 | — | 37 |
+| **sourworms** | 28 | 23 | 63 | — |
 
 ## Staples (ADR-170)
 
@@ -52,7 +50,7 @@ The most played: Swords to Plowshares 7 · Restoration Angel 5 · Counterspell 5
 
 ## Bant Sower (working name) — Bant Midrange (G W u)
 
-`sower` · midrange · game one 62 · matches 70.9
+`sower` · midrange · game one 62 · matches 71.8
 
 - **Lands (23):** 4 Savannah · 4 Tropical Island · 4 Tundra · 2 Temple Garden · 2 Hallowed Fountain · 1 Shevelport · 1 Wrackroot · 2 Forest · 2 Plains · 1 Island
 - **Creatures (20):** 4 The Sower · 4 Reaper's Forerunner · 4 Restoration Angel · 4 Wall of Blossoms · 4 Birds of Paradise
@@ -64,7 +62,7 @@ The most played: Swords to Plowshares 7 · Restoration Angel 5 · Counterspell 5
 
 ## the Aerie — Azorius Skies (W U)
 
-`skies` · midrange · game one 57 · matches 63.2
+`skies` · midrange · game one 57 · matches 62.3
 
 - **Lands (21):** 4 Hallowed Fountain · 4 Tundra · 5 Plains · 8 Island
 - **Creatures (25):** 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Plumecreed Escort · 4 Restoration Angel · 2 Traumatizer · 2 Karmic Mentor · 2 Serra Angel · 2 Emeria Angel · 1 Faerie Formation
@@ -74,21 +72,21 @@ The most played: Swords to Plowshares 7 · Restoration Angel 5 · Counterspell 5
 - **History:**
   - contributed — S69 seed (the planner's): the Aerie (Jeskai's: the Observatory for a Plains, the Macabre for a third Crypt).
 
-## Countersnake — Four-Colour Countersnake (G U w b)
+## Jeskai Locks (working name) — Azorius Control (W U)
 
-`countersnake` · midrange · game one 57 · matches 55.6
+`locks` · control · game one 48 · matches 54.8
 
-- **Lands (19):** 2 Forest · 2 Temple Garden · 1 Plains · 4 Savannah · 4 Tropical Island · 4 Tundra · 1 Wrackroot · 1 Shevelport
-- **Creatures (26):** 4 Birds of Paradise · 2 Deadly Recluse · 2 Wall of Blossoms · 3 Serra Angel · 4 Reaper's Forerunner · 2 Tidewall · 2 Mystic Snake · 4 Restoration Angel · 3 The Sower
-- **Other (15):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Pearl · 1 Mox Sapphire · 4 Swords to Plowshares · 4 Counterspell · 1 Time Walk · 2 Absorb
-- **Its fifteen (registered):** 4 Tormod's Crypt · 1 Tidewall · 1 Wall of Blossoms · 1 Deadly Recluse · 1 Treetop Snarespinner · 1 Wall of Reverence · 2 Temporal Spring · 2 Protocol · 2 Essence Scatter
+- **Lands (22):** 4 Tundra · 4 Hallowed Fountain · 7 Island · 6 Plains · 1 Library of Alexandria
+- **Creatures (9):** 4 Serra Angel · 1 Arcanis the Omnipotent · 2 Karmic Mentor · 2 Faerie Formation
+- **Other (29):** 1 Black Lotus · 1 Mox Sapphire · 1 Mox Pearl · 4 Counterspell · 2 Essence Scatter · 4 Absorb · 3 Swords to Plowshares · 3 Wrath of God · 1 Divination · 1 Time Walk · 4 Control Magic · 2 Protocol · 1 Wave of Reckoning · 1 Brainstorm
+- **Its fifteen (registered):** 2 Essence Scatter · 2 Protocol · 3 Tormod's Crypt · 3 Vigil Keeper · 2 Disenchant · 1 Wrath of God · 1 Wave of Reckoning · 1 Retribution of the Meek
 - **Its sideboard guide:** none — the general rules sideboard it.
 - **History:**
-  - contributed — S69 seed (the planner's) (Chris's ruling): the Open's Countersnake — its three Clios (black) for three Serra Angels, Demonic Tutor for an Absorb; four Underground Seas for four Tundras, four Bayous for two Temple Gardens and two Forests, the Observatory for a Plains; its fifteen's two Macabres for two Tormod's Crypts and its Drana for a Wall of Reverence.
+  - contributed — S69 seed (the planner's): Jeskai Locks (UW) whole.
 
 ## Sour Worms — Bant Wurm Ramp (G w u)
 
-`sourworms` · midrange · game one 55 · matches 55.2
+`sourworms` · midrange · game one 55 · matches 52.5
 
 - **Lands (24):** 1 Library of Alexandria · 1 Shevelport · 1 Wrackroot · 4 Tropical Island · 4 Savannah · 4 Breeding Pool · 4 Temple Garden · 5 Forest
 - **Creatures (31):** 4 Birds of Paradise · 4 Manaba · 4 Elvish Visionary · 4 The Emerald Keeper · 4 Reaper's Forerunner · 4 Gaean Wurm · 3 Baru, Wurmspeaker · 3 The Sower · 1 Pelakka Wurm
@@ -101,21 +99,32 @@ The most played: Swords to Plowshares 7 · Restoration Angel 5 · Counterspell 5
 - **History:**
   - contributed — Post-S69 (Chris's, 2026-10-28): 8–0 in a Bant Convocation (event 221140; 16–2 in games — Jeskai Locks, Countersnake, White Skies and Bant Sower twice in the Swiss; Dungrove Auras, Bant Auras and Bant Sower in the bracket). Birds, Manaba and Elvish Visionary into Gaean Wurms, Baru, Pelakka, the Emerald Keeper and the Sower (the name's pun); Reaper's Forerunner. The fifteen as Chris registered it; the guide read from his swaps (Chris: the boarding was haphazard — the coherent plan was the deathtouchers in against the Aura decks).
 
-## Jeskai Locks (working name) — Azorius Control (W U)
+## Countersnake — Four-Colour Countersnake (G U w b)
 
-`locks` · control · game one 48 · matches 50.7
+`countersnake` · midrange · game one 57 · matches 49.9
 
-- **Lands (22):** 4 Tundra · 4 Hallowed Fountain · 7 Island · 6 Plains · 1 Library of Alexandria
-- **Creatures (9):** 4 Serra Angel · 1 Arcanis the Omnipotent · 2 Karmic Mentor · 2 Faerie Formation
-- **Other (29):** 1 Black Lotus · 1 Mox Sapphire · 1 Mox Pearl · 4 Counterspell · 2 Essence Scatter · 4 Absorb · 3 Swords to Plowshares · 3 Wrath of God · 1 Divination · 1 Time Walk · 4 Control Magic · 2 Protocol · 1 Wave of Reckoning · 1 Brainstorm
-- **Its fifteen (registered):** 2 Essence Scatter · 2 Protocol · 3 Tormod's Crypt · 3 Vigil Keeper · 2 Disenchant · 1 Wrath of God · 1 Wave of Reckoning · 1 Retribution of the Meek
+- **Lands (19):** 2 Forest · 2 Temple Garden · 1 Plains · 4 Savannah · 4 Tropical Island · 4 Tundra · 1 Wrackroot · 1 Shevelport
+- **Creatures (26):** 4 Birds of Paradise · 2 Deadly Recluse · 2 Wall of Blossoms · 3 Serra Angel · 4 Reaper's Forerunner · 2 Tidewall · 2 Mystic Snake · 4 Restoration Angel · 3 The Sower
+- **Other (15):** 1 Black Lotus · 1 Mox Emerald · 1 Mox Pearl · 1 Mox Sapphire · 4 Swords to Plowshares · 4 Counterspell · 1 Time Walk · 2 Absorb
+- **Its fifteen (registered):** 4 Tormod's Crypt · 1 Tidewall · 1 Wall of Blossoms · 1 Deadly Recluse · 1 Treetop Snarespinner · 1 Wall of Reverence · 2 Temporal Spring · 2 Protocol · 2 Essence Scatter
 - **Its sideboard guide:** none — the general rules sideboard it.
 - **History:**
-  - contributed — S69 seed (the planner's): Jeskai Locks (UW) whole.
+  - contributed — S69 seed (the planner's) (Chris's ruling): the Open's Countersnake — its three Clios (black) for three Serra Angels, Demonic Tutor for an Absorb; four Underground Seas for four Tundras, four Bayous for two Temple Gardens and two Forests, the Observatory for a Plains; its fifteen's two Macabres for two Tormod's Crypts and its Drana for a Wall of Reverence.
+
+## Dungrove Auras — Mono-Green Auras (G)
+
+`auras` · midrange · game one 49 · matches 48.0
+
+- **Lands (22):** 22 Forest
+- **Creatures (27):** 4 Dungrove Elder · 2 Penumbra Wurm · 4 Llanowar Elves · 4 Gladecover Scout · 4 Wall of Blossoms · 4 Gaean Wurm · 2 Centaur Courser · 3 Reaper's Forerunner
+- **Other (11):** 3 Harmonize · 4 Rancor · 4 Blanchwood Armor
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S69 seed (the planner's): Peasant's Dungrove Auras whole.
 
 ## Bant Auras (working name) — Bant Hexproof Auras (G w u)
 
-`hexaura` · aggro · game one 46 · matches 47.8
+`hexaura` · aggro · game one 46 · matches 46.7
 
 - **Lands (22):** 10 Forest · 4 Savannah · 2 Temple Garden · 2 Tropical Island · 2 Plains · 1 Island · 1 Shevelport
 - **Creatures (16):** 4 Dungrove Elder · 4 Gladecover Scout · 2 Ovna, the Enchantress · 4 Llanowar Elves · 2 Birds of Paradise
@@ -125,31 +134,9 @@ The most played: Swords to Plowshares 7 · Restoration Angel 5 · Counterspell 5
 - **History:**
   - contributed — S69 seed (the planner's): built by the implementer — Dungrove Elder and Gladecover Scout under Rancor, Blanchwood Armor and Angelic Destiny, Ovna drawing off them (the brief; Protocol needs more blue than this mana has — Pacifism in its slot).
 
-## Dungrove Auras — Mono-Green Auras (G)
-
-`auras` · midrange · game one 49 · matches 43.3
-
-- **Lands (22):** 22 Forest
-- **Creatures (27):** 4 Dungrove Elder · 2 Penumbra Wurm · 4 Llanowar Elves · 4 Gladecover Scout · 4 Wall of Blossoms · 4 Gaean Wurm · 2 Centaur Courser · 3 Reaper's Forerunner
-- **Other (11):** 3 Harmonize · 4 Rancor · 4 Blanchwood Armor
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S69 seed (the planner's): Peasant's Dungrove Auras whole.
-
-## the Wurmspeaker — Mono-Green Ramp
-
-`wurmspeaker` · midrange · game one 43 · matches 43.0
-
-- **Lands (22):** 20 Forest · 2 Tranquil Thicket
-- **Creatures (34):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 2 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 4 Order Druid · 2 Rampaging Baloths
-- **Other (4):** 1 Black Lotus · 1 Mox Emerald · 2 Prey Upon
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S69 seed (the planner's): the Open's Wurmspeaker whole. S73a (the vintage audit): 4 order_druid for rampant_growth.
-
 ## UW Skies — Azorius Skies (W U)
 
-`uwskies` · midrange · game one 46 · matches 41.5
+`uwskies` · midrange · game one 46 · matches 44.2
 
 - **Lands (24):** 4 Hallowed Fountain · 10 Plains · 10 Island
 - **Creatures (26):** 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Plumecreed Escort · 4 Restoration Angel · 4 Traumatizer · 4 Dawnwing Marshal · 2 Karmic Mentor
@@ -161,7 +148,7 @@ The most played: Swords to Plowshares 7 · Restoration Angel 5 · Counterspell 5
 
 ## White Skies — Mono-White Lifegain Skies (W)
 
-`wskies` · midrange · game one 45 · matches 40.8
+`wskies` · midrange · game one 45 · matches 40.2
 
 - **Lands (23):** 23 Plains
 - **Creatures (30):** 4 Dazzling Angel · 4 Youthful Valkyrie · 4 Inspiring Overseer · 4 Wall of Reverence · 4 Soul Warden · 4 Restoration Angel · 4 Vitalist · 2 Karmic Mentor
@@ -171,9 +158,20 @@ The most played: Swords to Plowshares 7 · Restoration Angel 5 · Counterspell 5
 - **History:**
   - contributed — S69 seed (the planner's): Peasant's White Skies, promoted whole.
 
+## the Wurmspeaker — Mono-Green Ramp
+
+`wurmspeaker` · midrange · game one 43 · matches 39.8
+
+- **Lands (22):** 20 Forest · 2 Tranquil Thicket
+- **Creatures (34):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 2 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 4 Order Druid · 2 Rampaging Baloths
+- **Other (4):** 1 Black Lotus · 1 Mox Emerald · 2 Prey Upon
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S69 seed (the planner's): the Open's Wurmspeaker whole. S73a (the vintage audit): 4 order_druid for rampant_growth.
+
 ## the Thicket — Selesnya Auras (G W)
 
-`thicket` · aggro · game one 42 · matches 38.0
+`thicket` · aggro · game one 42 · matches 39.8
 
 - **Lands (22):** 4 Savannah · 4 Temple Garden · 8 Forest · 5 Plains · 1 Shevelport
 - **Creatures (18):** 4 Gladecover Scout · 4 Blurred Mongoose · 4 Ovna, the Enchantress · 4 Dungrove Elder · 2 The Emerald Keeper

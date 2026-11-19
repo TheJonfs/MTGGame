@@ -4,9 +4,9 @@
  "matchesAPairing": 60,
  "byList": {
   "brremoval": {
-   "matches": 36.2,
+   "matches": 35.7,
    "gameOne": 42.1,
-   "later": 40.4,
+   "later": 39.8,
    "n": 660
   },
   "burn": {
@@ -16,9 +16,9 @@
    "n": 660
   },
   "chancel": {
-   "matches": 55.6,
+   "matches": 55.5,
    "gameOne": 55.1,
-   "later": 52.1,
+   "later": 52,
    "n": 660
   },
   "levy": {
@@ -36,7 +36,7 @@
   "muster": {
    "matches": 45.2,
    "gameOne": 45,
-   "later": 47.9,
+   "later": 47.8,
    "n": 660
   },
   "pall": {
@@ -58,15 +58,15 @@
    "n": 660
   },
   "warband": {
-   "matches": 47.2,
+   "matches": 48,
    "gameOne": 49,
-   "later": 48.2,
+   "later": 49.1,
    "n": 660
   },
   "watch": {
-   "matches": 62.1,
+   "matches": 62,
    "gameOne": 53.5,
-   "later": 61.2,
+   "later": 61.1,
    "n": 660
   },
   "witch": {
@@ -82,7 +82,7 @@
    "n": 60
   },
   "brremoval|chancel": {
-   "w": 10,
+   "w": 11.5,
    "n": 60
   },
   "brremoval|levy": {
@@ -110,7 +110,7 @@
    "n": 60
   },
   "brremoval|warband": {
-   "w": 34,
+   "w": 29,
    "n": 60
   },
   "brremoval|watch": {
@@ -166,7 +166,7 @@
    "n": 60
   },
   "chancel|brremoval": {
-   "w": 50,
+   "w": 48.5,
    "n": 60
   },
   "chancel|burn": {
@@ -198,15 +198,15 @@
    "n": 60
   },
   "chancel|warband": {
-   "w": 38,
+   "w": 39,
    "n": 60
   },
   "chancel|watch": {
-   "w": 31,
+   "w": 32,
    "n": 60
   },
   "chancel|witch": {
-   "w": 37,
+   "w": 36,
    "n": 60
   },
   "levy|brremoval": {
@@ -330,7 +330,7 @@
    "n": 60
   },
   "muster|warband": {
-   "w": 34,
+   "w": 33,
    "n": 60
   },
   "muster|watch": {
@@ -338,7 +338,7 @@
    "n": 60
   },
   "muster|witch": {
-   "w": 27,
+   "w": 28,
    "n": 60
   },
   "pall|brremoval": {
@@ -474,7 +474,7 @@
    "n": 60
   },
   "warband|brremoval": {
-   "w": 26,
+   "w": 31,
    "n": 60
   },
   "warband|burn": {
@@ -482,7 +482,7 @@
    "n": 60
   },
   "warband|chancel": {
-   "w": 22,
+   "w": 21,
    "n": 60
   },
   "warband|levy": {
@@ -494,7 +494,7 @@
    "n": 60
   },
   "warband|muster": {
-   "w": 26,
+   "w": 27,
    "n": 60
   },
   "warband|pall": {
@@ -526,7 +526,7 @@
    "n": 60
   },
   "watch|chancel": {
-   "w": 29,
+   "w": 28,
    "n": 60
   },
   "watch|levy": {
@@ -570,7 +570,7 @@
    "n": 60
   },
   "witch|chancel": {
-   "w": 23,
+   "w": 24,
    "n": 60
   },
   "witch|levy": {
@@ -582,7 +582,7 @@
    "n": 60
   },
   "witch|muster": {
-   "w": 33,
+   "w": 32,
    "n": 60
   },
   "witch|pall": {

@@ -22,9 +22,9 @@
    "n": 480
   },
   "mbc": {
-   "matches": 33.1,
+   "matches": 33.3,
    "gameOne": 36.5,
-   "later": 39.5,
+   "later": 39.6,
    "n": 480
   },
   "skies": {
@@ -34,27 +34,27 @@
    "n": 480
   },
   "tempo": {
-   "matches": 62.1,
+   "matches": 60.4,
    "gameOne": 57.5,
-   "later": 58.3,
+   "later": 56.7,
    "n": 480
   },
   "undertow": {
-   "matches": 46.5,
+   "matches": 46.7,
    "gameOne": 49.6,
-   "later": 46.3,
+   "later": 46.4,
    "n": 480
   },
   "wbcontrol": {
-   "matches": 49.4,
+   "matches": 49.8,
    "gameOne": 51.9,
-   "later": 48.3,
+   "later": 48.7,
    "n": 480
   },
   "writ": {
-   "matches": 52.3,
+   "matches": 53.1,
    "gameOne": 51.3,
-   "later": 51.8,
+   "later": 52.7,
    "n": 480
   }
  },
@@ -136,7 +136,7 @@
    "n": 60
   },
   "locks|skies": {
-   "w": 25,
+   "w": 26,
    "n": 60
   },
   "locks|tempo": {
@@ -148,7 +148,7 @@
    "n": 60
   },
   "locks|wbcontrol": {
-   "w": 42,
+   "w": 41,
    "n": 60
   },
   "locks|writ": {
@@ -172,7 +172,7 @@
    "n": 60
   },
   "mbc|tempo": {
-   "w": 21,
+   "w": 22,
    "n": 60
   },
   "mbc|undertow": {
@@ -196,7 +196,7 @@
    "n": 60
   },
   "skies|locks": {
-   "w": 35,
+   "w": 34,
    "n": 60
   },
   "skies|mbc": {
@@ -204,7 +204,7 @@
    "n": 60
   },
   "skies|tempo": {
-   "w": 28,
+   "w": 29,
    "n": 60
   },
   "skies|undertow": {
@@ -232,23 +232,23 @@
    "n": 60
   },
   "tempo|mbc": {
-   "w": 39,
+   "w": 38,
    "n": 60
   },
   "tempo|skies": {
-   "w": 32,
+   "w": 31,
    "n": 60
   },
   "tempo|undertow": {
-   "w": 43,
+   "w": 42,
    "n": 60
   },
   "tempo|wbcontrol": {
-   "w": 33,
+   "w": 32,
    "n": 60
   },
   "tempo|writ": {
-   "w": 44,
+   "w": 40,
    "n": 60
   },
   "undertow|bwtokens": {
@@ -272,7 +272,7 @@
    "n": 60
   },
   "undertow|tempo": {
-   "w": 17,
+   "w": 18,
    "n": 60
   },
   "undertow|wbcontrol": {
@@ -292,7 +292,7 @@
    "n": 60
   },
   "wbcontrol|locks": {
-   "w": 18,
+   "w": 19,
    "n": 60
   },
   "wbcontrol|mbc": {
@@ -304,7 +304,7 @@
    "n": 60
   },
   "wbcontrol|tempo": {
-   "w": 27,
+   "w": 28,
    "n": 60
   },
   "wbcontrol|undertow": {
@@ -336,7 +336,7 @@
    "n": 60
   },
   "writ|tempo": {
-   "w": 16,
+   "w": 20,
    "n": 60
   },
   "writ|undertow": {

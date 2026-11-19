@@ -4,69 +4,69 @@
  "matchesAPairing": 60,
  "byList": {
   "aerie": {
-   "matches": 41.3,
+   "matches": 40.3,
    "gameOne": 44.7,
-   "later": 43.8,
+   "later": 43,
    "n": 600
   },
   "bantsnake": {
-   "matches": 51.4,
+   "matches": 51.9,
    "gameOne": 48.2,
-   "later": 52.1,
+   "later": 52.2,
    "n": 600
   },
   "dragons": {
-   "matches": 36.3,
+   "matches": 35.6,
    "gameOne": 39.9,
-   "later": 40.7,
+   "later": 40,
    "n": 600
   },
   "emeraldsnakes": {
-   "matches": 67.5,
+   "matches": 68,
    "gameOne": 61.2,
-   "later": 61.5,
+   "later": 61.8,
    "n": 600
   },
   "marducontrol": {
-   "matches": 67.5,
+   "matches": 67.3,
    "gameOne": 59.8,
-   "later": 62.4,
+   "later": 62.2,
    "n": 600
   },
   "mbclio": {
-   "matches": 59.3,
+   "matches": 58.8,
    "gameOne": 58.2,
-   "later": 55.2,
+   "later": 55.1,
    "n": 600
   },
   "muster": {
-   "matches": 48,
+   "matches": 46.2,
    "gameOne": 46.5,
-   "later": 49.8,
+   "later": 47.9,
    "n": 600
   },
   "rabble": {
-   "matches": 42,
+   "matches": 41.4,
    "gameOne": 46.9,
-   "later": 43.9,
+   "later": 43.4,
    "n": 600
   },
   "reaperclio": {
-   "matches": 60.7,
+   "matches": 60,
    "gameOne": 59.2,
-   "later": 56.4,
+   "later": 55.8,
    "n": 600
   },
   "stampede": {
-   "matches": 44.5,
+   "matches": 50.2,
    "gameOne": 47.7,
-   "later": 46.4,
+   "later": 51.9,
    "n": 600
   },
   "wurmspeaker": {
-   "matches": 31.5,
+   "matches": 30.3,
    "gameOne": 37.8,
-   "later": 36.9,
+   "later": 35.9,
    "n": 600
   }
  },
@@ -104,7 +104,7 @@
    "n": 60
   },
   "aerie|stampede": {
-   "w": 28,
+   "w": 21.5,
    "n": 60
   },
   "aerie|wurmspeaker": {
@@ -144,7 +144,7 @@
    "n": 60
   },
   "bantsnake|stampede": {
-   "w": 33,
+   "w": 36,
    "n": 60
   },
   "bantsnake|wurmspeaker": {
@@ -184,7 +184,7 @@
    "n": 60
   },
   "dragons|stampede": {
-   "w": 24,
+   "w": 20,
    "n": 60
   },
   "dragons|wurmspeaker": {
@@ -220,11 +220,11 @@
    "n": 60
   },
   "emeraldsnakes|reaperclio": {
-   "w": 38,
+   "w": 40,
    "n": 60
   },
   "emeraldsnakes|stampede": {
-   "w": 40,
+   "w": 41,
    "n": 60
   },
   "emeraldsnakes|wurmspeaker": {
@@ -264,7 +264,7 @@
    "n": 60
   },
   "marducontrol|stampede": {
-   "w": 42,
+   "w": 41,
    "n": 60
   },
   "marducontrol|wurmspeaker": {
@@ -304,7 +304,7 @@
    "n": 60
   },
   "mbclio|stampede": {
-   "w": 31,
+   "w": 28,
    "n": 60
   },
   "mbclio|wurmspeaker": {
@@ -344,11 +344,11 @@
    "n": 60
   },
   "muster|stampede": {
-   "w": 38,
+   "w": 26,
    "n": 60
   },
   "muster|wurmspeaker": {
-   "w": 35,
+   "w": 36,
    "n": 60
   },
   "rabble|aerie": {
@@ -384,7 +384,7 @@
    "n": 60
   },
   "rabble|stampede": {
-   "w": 25,
+   "w": 21.5,
    "n": 60
   },
   "rabble|wurmspeaker": {
@@ -404,7 +404,7 @@
    "n": 60
   },
   "reaperclio|emeraldsnakes": {
-   "w": 22,
+   "w": 20,
    "n": 60
   },
   "reaperclio|marducontrol": {
@@ -424,7 +424,7 @@
    "n": 60
   },
   "reaperclio|stampede": {
-   "w": 45,
+   "w": 43,
    "n": 60
   },
   "reaperclio|wurmspeaker": {
@@ -432,43 +432,43 @@
    "n": 60
   },
   "stampede|aerie": {
-   "w": 32,
+   "w": 38.5,
    "n": 60
   },
   "stampede|bantsnake": {
-   "w": 27,
+   "w": 24,
    "n": 60
   },
   "stampede|dragons": {
-   "w": 36,
+   "w": 40,
    "n": 60
   },
   "stampede|emeraldsnakes": {
-   "w": 20,
+   "w": 19,
    "n": 60
   },
   "stampede|marducontrol": {
-   "w": 18,
+   "w": 19,
    "n": 60
   },
   "stampede|mbclio": {
-   "w": 29,
+   "w": 32,
    "n": 60
   },
   "stampede|muster": {
-   "w": 22,
+   "w": 34,
    "n": 60
   },
   "stampede|rabble": {
-   "w": 35,
+   "w": 38.5,
    "n": 60
   },
   "stampede|reaperclio": {
-   "w": 15,
+   "w": 17,
    "n": 60
   },
   "stampede|wurmspeaker": {
-   "w": 33,
+   "w": 39,
    "n": 60
   },
   "wurmspeaker|aerie": {
@@ -496,7 +496,7 @@
    "n": 60
   },
   "wurmspeaker|muster": {
-   "w": 25,
+   "w": 24,
    "n": 60
   },
   "wurmspeaker|rabble": {
@@ -508,7 +508,7 @@
    "n": 60
   },
   "wurmspeaker|stampede": {
-   "w": 27,
+   "w": 21,
    "n": 60
   }
  }

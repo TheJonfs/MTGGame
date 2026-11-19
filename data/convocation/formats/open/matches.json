@@ -4,99 +4,99 @@
  "matchesAPairing": 60,
  "byList": {
   "countersnake": {
-   "matches": 42.8,
+   "matches": 42.7,
    "gameOne": 46.1,
-   "later": 44.6,
+   "later": 44.4,
    "n": 1140
   },
   "depths": {
-   "matches": 36.9,
+   "matches": 37.7,
    "gameOne": 41.1,
-   "later": 41.2,
+   "later": 41.7,
    "n": 1140
   },
   "earthrise": {
-   "matches": 55.4,
+   "matches": 54.7,
    "gameOne": 51.1,
-   "later": 55.8,
+   "later": 55.4,
    "n": 1140
   },
   "emeraldsnakes": {
-   "matches": 70.5,
+   "matches": 70.7,
    "gameOne": 63.1,
-   "later": 64.4,
+   "later": 65.1,
    "n": 1140
   },
   "funpolice": {
-   "matches": 54.2,
+   "matches": 54.1,
    "gameOne": 53.2,
-   "later": 53.2,
+   "later": 53.1,
    "n": 1140
   },
   "kiln": {
-   "matches": 31.7,
+   "matches": 31.8,
    "gameOne": 34.6,
-   "later": 38.4,
-   "n": 1140
-  },
-  "levy": {
-   "matches": 33.1,
-   "gameOne": 39.6,
    "later": 38.3,
    "n": 1140
   },
+  "levy": {
+   "matches": 32.6,
+   "gameOne": 39.6,
+   "later": 37.9,
+   "n": 1140
+  },
   "lumenclio": {
-   "matches": 57.3,
+   "matches": 57,
    "gameOne": 51.3,
-   "later": 56.6,
+   "later": 55.4,
    "n": 1140
   },
   "marducontrol": {
-   "matches": 72.4,
+   "matches": 72.7,
    "gameOne": 63.8,
-   "later": 67.4,
+   "later": 67.9,
    "n": 1140
   },
   "minefield": {
-   "matches": 49.7,
+   "matches": 49.6,
    "gameOne": 46.7,
-   "later": 51,
+   "later": 50.8,
    "n": 1140
   },
   "muster": {
-   "matches": 45.9,
+   "matches": 46.1,
    "gameOne": 47.4,
-   "later": 47.3,
+   "later": 47.5,
    "n": 1140
   },
   "pall": {
-   "matches": 56.1,
+   "matches": 55,
    "gameOne": 67,
-   "later": 48,
+   "later": 47.1,
    "n": 1140
   },
   "pinnacle": {
-   "matches": 63.6,
+   "matches": 63.9,
    "gameOne": 57.9,
    "later": 60.2,
    "n": 1140
   },
   "rabble": {
-   "matches": 57.9,
+   "matches": 58.5,
    "gameOne": 57.1,
-   "later": 54.2,
+   "later": 54.8,
    "n": 1140
   },
   "reaperclio": {
-   "matches": 64,
+   "matches": 63.1,
    "gameOne": 66,
-   "later": 56.7,
+   "later": 55.7,
    "n": 1140
   },
   "sweep": {
-   "matches": 39.7,
+   "matches": 40.3,
    "gameOne": 42.5,
-   "later": 43.8,
+   "later": 44.7,
    "n": 1140
   },
   "tollgate": {
@@ -106,31 +106,31 @@
    "n": 1140
   },
   "warband": {
-   "matches": 49,
+   "matches": 47.8,
    "gameOne": 47.1,
-   "later": 49.7,
+   "later": 48.8,
    "n": 1140
   },
   "writ": {
-   "matches": 44.2,
+   "matches": 44.9,
    "gameOne": 42.4,
-   "later": 47.8,
+   "later": 48.3,
    "n": 1140
   },
   "wurmspeaker": {
-   "matches": 36.6,
+   "matches": 37.9,
    "gameOne": 42.8,
-   "later": 39.3,
+   "later": 40.5,
    "n": 1140
   }
  },
  "byPair": {
   "countersnake|depths": {
-   "w": 31,
+   "w": 30,
    "n": 60
   },
   "countersnake|earthrise": {
-   "w": 6,
+   "w": 8,
    "n": 60
   },
   "countersnake|emeraldsnakes": {
@@ -198,23 +198,23 @@
    "n": 60
   },
   "countersnake|wurmspeaker": {
-   "w": 52,
+   "w": 50,
    "n": 60
   },
   "depths|countersnake": {
-   "w": 29,
+   "w": 30,
    "n": 60
   },
   "depths|earthrise": {
-   "w": 10,
+   "w": 12,
    "n": 60
   },
   "depths|emeraldsnakes": {
-   "w": 22,
+   "w": 23,
    "n": 60
   },
   "depths|funpolice": {
-   "w": 18,
+   "w": 19,
    "n": 60
   },
   "depths|kiln": {
@@ -226,11 +226,11 @@
    "n": 60
   },
   "depths|lumenclio": {
-   "w": 18,
+   "w": 19,
    "n": 60
   },
   "depths|marducontrol": {
-   "w": 10,
+   "w": 14,
    "n": 60
   },
   "depths|minefield": {
@@ -238,7 +238,7 @@
    "n": 60
   },
   "depths|muster": {
-   "w": 33,
+   "w": 34,
    "n": 60
   },
   "depths|pall": {
@@ -246,7 +246,7 @@
    "n": 60
   },
   "depths|pinnacle": {
-   "w": 11,
+   "w": 9,
    "n": 60
   },
   "depths|rabble": {
@@ -254,11 +254,11 @@
    "n": 60
   },
   "depths|reaperclio": {
-   "w": 22,
+   "w": 23,
    "n": 60
   },
   "depths|sweep": {
-   "w": 28,
+   "w": 27,
    "n": 60
   },
   "depths|tollgate": {
@@ -266,11 +266,11 @@
    "n": 60
   },
   "depths|warband": {
-   "w": 18,
+   "w": 19,
    "n": 60
   },
   "depths|writ": {
-   "w": 28,
+   "w": 27,
    "n": 60
   },
   "depths|wurmspeaker": {
@@ -278,15 +278,15 @@
    "n": 60
   },
   "earthrise|countersnake": {
-   "w": 54,
+   "w": 52,
    "n": 60
   },
   "earthrise|depths": {
-   "w": 50,
+   "w": 48,
    "n": 60
   },
   "earthrise|emeraldsnakes": {
-   "w": 19,
+   "w": 20,
    "n": 60
   },
   "earthrise|funpolice": {
@@ -294,7 +294,7 @@
    "n": 60
   },
   "earthrise|kiln": {
-   "w": 56,
+   "w": 55,
    "n": 60
   },
   "earthrise|levy": {
@@ -302,11 +302,11 @@
    "n": 60
   },
   "earthrise|lumenclio": {
-   "w": 22,
+   "w": 21,
    "n": 60
   },
   "earthrise|marducontrol": {
-   "w": 3,
+   "w": 8,
    "n": 60
   },
   "earthrise|minefield": {
@@ -314,27 +314,27 @@
    "n": 60
   },
   "earthrise|muster": {
-   "w": 44,
+   "w": 43,
    "n": 60
   },
   "earthrise|pall": {
-   "w": 12,
+   "w": 21,
    "n": 60
   },
   "earthrise|pinnacle": {
-   "w": 22,
+   "w": 16,
    "n": 60
   },
   "earthrise|rabble": {
-   "w": 36,
+   "w": 35,
    "n": 60
   },
   "earthrise|reaperclio": {
-   "w": 38,
+   "w": 41,
    "n": 60
   },
   "earthrise|sweep": {
-   "w": 37,
+   "w": 33,
    "n": 60
   },
   "earthrise|tollgate": {
@@ -342,15 +342,15 @@
    "n": 60
   },
   "earthrise|warband": {
-   "w": 31,
+   "w": 40,
    "n": 60
   },
   "earthrise|writ": {
-   "w": 49,
+   "w": 42,
    "n": 60
   },
   "earthrise|wurmspeaker": {
-   "w": 28,
+   "w": 18,
    "n": 60
   },
   "emeraldsnakes|countersnake": {
@@ -358,11 +358,11 @@
    "n": 60
   },
   "emeraldsnakes|depths": {
-   "w": 38,
+   "w": 37,
    "n": 60
   },
   "emeraldsnakes|earthrise": {
-   "w": 41,
+   "w": 40,
    "n": 60
   },
   "emeraldsnakes|funpolice": {
@@ -378,11 +378,11 @@
    "n": 60
   },
   "emeraldsnakes|lumenclio": {
-   "w": 40,
+   "w": 38,
    "n": 60
   },
   "emeraldsnakes|marducontrol": {
-   "w": 36,
+   "w": 33,
    "n": 60
   },
   "emeraldsnakes|minefield": {
@@ -398,19 +398,19 @@
    "n": 60
   },
   "emeraldsnakes|pinnacle": {
-   "w": 35,
+   "w": 38.5,
    "n": 60
   },
   "emeraldsnakes|rabble": {
-   "w": 31,
+   "w": 25,
    "n": 60
   },
   "emeraldsnakes|reaperclio": {
-   "w": 32,
+   "w": 38,
    "n": 60
   },
   "emeraldsnakes|sweep": {
-   "w": 40,
+   "w": 43,
    "n": 60
   },
   "emeraldsnakes|tollgate": {
@@ -418,15 +418,15 @@
    "n": 60
   },
   "emeraldsnakes|warband": {
-   "w": 42,
+   "w": 44,
    "n": 60
   },
   "emeraldsnakes|writ": {
-   "w": 38,
+   "w": 39,
    "n": 60
   },
   "emeraldsnakes|wurmspeaker": {
-   "w": 52,
+   "w": 51,
    "n": 60
   },
   "funpolice|countersnake": {
@@ -434,7 +434,7 @@
    "n": 60
   },
   "funpolice|depths": {
-   "w": 42,
+   "w": 41,
    "n": 60
   },
   "funpolice|earthrise": {
@@ -514,7 +514,7 @@
    "n": 60
   },
   "kiln|earthrise": {
-   "w": 4,
+   "w": 5,
    "n": 60
   },
   "kiln|emeraldsnakes": {
@@ -530,7 +530,7 @@
    "n": 60
   },
   "kiln|lumenclio": {
-   "w": 25,
+   "w": 27,
    "n": 60
   },
   "kiln|marducontrol": {
@@ -578,7 +578,7 @@
    "n": 60
   },
   "kiln|wurmspeaker": {
-   "w": 27,
+   "w": 25,
    "n": 60
   },
   "levy|countersnake": {
@@ -606,7 +606,7 @@
    "n": 60
   },
   "levy|lumenclio": {
-   "w": 13,
+   "w": 12,
    "n": 60
   },
   "levy|marducontrol": {
@@ -654,7 +654,7 @@
    "n": 60
   },
   "levy|wurmspeaker": {
-   "w": 31,
+   "w": 26,
    "n": 60
   },
   "lumenclio|countersnake": {
@@ -662,15 +662,15 @@
    "n": 60
   },
   "lumenclio|depths": {
-   "w": 42,
+   "w": 41,
    "n": 60
   },
   "lumenclio|earthrise": {
-   "w": 38,
+   "w": 39,
    "n": 60
   },
   "lumenclio|emeraldsnakes": {
-   "w": 20,
+   "w": 22,
    "n": 60
   },
   "lumenclio|funpolice": {
@@ -678,15 +678,15 @@
    "n": 60
   },
   "lumenclio|kiln": {
-   "w": 35,
+   "w": 33,
    "n": 60
   },
   "lumenclio|levy": {
-   "w": 47,
+   "w": 48,
    "n": 60
   },
   "lumenclio|marducontrol": {
-   "w": 26,
+   "w": 19,
    "n": 60
   },
   "lumenclio|minefield": {
@@ -694,15 +694,15 @@
    "n": 60
   },
   "lumenclio|muster": {
-   "w": 37,
+   "w": 38,
    "n": 60
   },
   "lumenclio|pall": {
-   "w": 23,
+   "w": 25,
    "n": 60
   },
   "lumenclio|pinnacle": {
-   "w": 18,
+   "w": 22,
    "n": 60
   },
   "lumenclio|rabble": {
@@ -710,23 +710,23 @@
    "n": 60
   },
   "lumenclio|reaperclio": {
-   "w": 29,
+   "w": 30,
    "n": 60
   },
   "lumenclio|sweep": {
-   "w": 44,
+   "w": 39,
    "n": 60
   },
   "lumenclio|tollgate": {
-   "w": 50,
+   "w": 51,
    "n": 60
   },
   "lumenclio|warband": {
-   "w": 34,
+   "w": 37,
    "n": 60
   },
   "lumenclio|writ": {
-   "w": 42,
+   "w": 38,
    "n": 60
   },
   "lumenclio|wurmspeaker": {
@@ -738,15 +738,15 @@
    "n": 60
   },
   "marducontrol|depths": {
-   "w": 50,
+   "w": 46,
    "n": 60
   },
   "marducontrol|earthrise": {
-   "w": 57,
+   "w": 52,
    "n": 60
   },
   "marducontrol|emeraldsnakes": {
-   "w": 24,
+   "w": 27,
    "n": 60
   },
   "marducontrol|funpolice": {
@@ -762,7 +762,7 @@
    "n": 60
   },
   "marducontrol|lumenclio": {
-   "w": 34,
+   "w": 41,
    "n": 60
   },
   "marducontrol|minefield": {
@@ -806,7 +806,7 @@
    "n": 60
   },
   "marducontrol|wurmspeaker": {
-   "w": 57,
+   "w": 59,
    "n": 60
   },
   "minefield|countersnake": {
@@ -882,7 +882,7 @@
    "n": 60
   },
   "minefield|wurmspeaker": {
-   "w": 10,
+   "w": 8,
    "n": 60
   },
   "muster|countersnake": {
@@ -890,11 +890,11 @@
    "n": 60
   },
   "muster|depths": {
-   "w": 27,
+   "w": 26,
    "n": 60
   },
   "muster|earthrise": {
-   "w": 16,
+   "w": 17,
    "n": 60
   },
   "muster|emeraldsnakes": {
@@ -914,7 +914,7 @@
    "n": 60
   },
   "muster|lumenclio": {
-   "w": 23,
+   "w": 22,
    "n": 60
   },
   "muster|marducontrol": {
@@ -958,7 +958,7 @@
    "n": 60
   },
   "muster|wurmspeaker": {
-   "w": 29,
+   "w": 33,
    "n": 60
   },
   "pall|countersnake": {
@@ -970,7 +970,7 @@
    "n": 60
   },
   "pall|earthrise": {
-   "w": 48,
+   "w": 39,
    "n": 60
   },
   "pall|emeraldsnakes": {
@@ -990,7 +990,7 @@
    "n": 60
   },
   "pall|lumenclio": {
-   "w": 37,
+   "w": 35,
    "n": 60
   },
   "pall|marducontrol": {
@@ -1034,7 +1034,7 @@
    "n": 60
   },
   "pall|wurmspeaker": {
-   "w": 45,
+   "w": 44,
    "n": 60
   },
   "pinnacle|countersnake": {
@@ -1042,15 +1042,15 @@
    "n": 60
   },
   "pinnacle|depths": {
-   "w": 49,
+   "w": 51,
    "n": 60
   },
   "pinnacle|earthrise": {
-   "w": 38,
+   "w": 44,
    "n": 60
   },
   "pinnacle|emeraldsnakes": {
-   "w": 25,
+   "w": 21.5,
    "n": 60
   },
   "pinnacle|funpolice": {
@@ -1066,7 +1066,7 @@
    "n": 60
   },
   "pinnacle|lumenclio": {
-   "w": 42,
+   "w": 38,
    "n": 60
   },
   "pinnacle|marducontrol": {
@@ -1110,7 +1110,7 @@
    "n": 60
   },
   "pinnacle|wurmspeaker": {
-   "w": 37,
+   "w": 40,
    "n": 60
   },
   "rabble|countersnake": {
@@ -1122,11 +1122,11 @@
    "n": 60
   },
   "rabble|earthrise": {
-   "w": 24,
+   "w": 25,
    "n": 60
   },
   "rabble|emeraldsnakes": {
-   "w": 29,
+   "w": 35,
    "n": 60
   },
   "rabble|funpolice": {
@@ -1194,15 +1194,15 @@
    "n": 60
   },
   "reaperclio|depths": {
-   "w": 38,
+   "w": 37,
    "n": 60
   },
   "reaperclio|earthrise": {
-   "w": 22,
+   "w": 19,
    "n": 60
   },
   "reaperclio|emeraldsnakes": {
-   "w": 28,
+   "w": 22,
    "n": 60
   },
   "reaperclio|funpolice": {
@@ -1218,7 +1218,7 @@
    "n": 60
   },
   "reaperclio|lumenclio": {
-   "w": 31,
+   "w": 30,
    "n": 60
   },
   "reaperclio|marducontrol": {
@@ -1270,15 +1270,15 @@
    "n": 60
   },
   "sweep|depths": {
-   "w": 32,
+   "w": 33,
    "n": 60
   },
   "sweep|earthrise": {
-   "w": 23,
+   "w": 27,
    "n": 60
   },
   "sweep|emeraldsnakes": {
-   "w": 20,
+   "w": 17,
    "n": 60
   },
   "sweep|funpolice": {
@@ -1294,7 +1294,7 @@
    "n": 60
   },
   "sweep|lumenclio": {
-   "w": 16,
+   "w": 21,
    "n": 60
   },
   "sweep|marducontrol": {
@@ -1370,7 +1370,7 @@
    "n": 60
   },
   "tollgate|lumenclio": {
-   "w": 10,
+   "w": 9,
    "n": 60
   },
   "tollgate|marducontrol": {
@@ -1414,7 +1414,7 @@
    "n": 60
   },
   "tollgate|wurmspeaker": {
-   "w": 18,
+   "w": 19,
    "n": 60
   },
   "warband|countersnake": {
@@ -1422,15 +1422,15 @@
    "n": 60
   },
   "warband|depths": {
-   "w": 42,
+   "w": 41,
    "n": 60
   },
   "warband|earthrise": {
-   "w": 29,
+   "w": 20,
    "n": 60
   },
   "warband|emeraldsnakes": {
-   "w": 18,
+   "w": 16,
    "n": 60
   },
   "warband|funpolice": {
@@ -1446,7 +1446,7 @@
    "n": 60
   },
   "warband|lumenclio": {
-   "w": 26,
+   "w": 23,
    "n": 60
   },
   "warband|marducontrol": {
@@ -1490,7 +1490,7 @@
    "n": 60
   },
   "warband|wurmspeaker": {
-   "w": 40,
+   "w": 41,
    "n": 60
   },
   "writ|countersnake": {
@@ -1498,15 +1498,15 @@
    "n": 60
   },
   "writ|depths": {
-   "w": 32,
+   "w": 33,
    "n": 60
   },
   "writ|earthrise": {
-   "w": 11,
+   "w": 18,
    "n": 60
   },
   "writ|emeraldsnakes": {
-   "w": 22,
+   "w": 21,
    "n": 60
   },
   "writ|funpolice": {
@@ -1522,7 +1522,7 @@
    "n": 60
   },
   "writ|lumenclio": {
-   "w": 18,
+   "w": 22,
    "n": 60
   },
   "writ|marducontrol": {
@@ -1566,11 +1566,11 @@
    "n": 60
   },
   "writ|wurmspeaker": {
-   "w": 52,
+   "w": 49,
    "n": 60
   },
   "wurmspeaker|countersnake": {
-   "w": 8,
+   "w": 10,
    "n": 60
   },
   "wurmspeaker|depths": {
@@ -1578,11 +1578,11 @@
    "n": 60
   },
   "wurmspeaker|earthrise": {
-   "w": 32,
+   "w": 42,
    "n": 60
   },
   "wurmspeaker|emeraldsnakes": {
-   "w": 8,
+   "w": 9,
    "n": 60
   },
   "wurmspeaker|funpolice": {
@@ -1590,11 +1590,11 @@
    "n": 60
   },
   "wurmspeaker|kiln": {
-   "w": 33,
+   "w": 35,
    "n": 60
   },
   "wurmspeaker|levy": {
-   "w": 29,
+   "w": 34,
    "n": 60
   },
   "wurmspeaker|lumenclio": {
@@ -1602,23 +1602,23 @@
    "n": 60
   },
   "wurmspeaker|marducontrol": {
-   "w": 3,
+   "w": 1,
    "n": 60
   },
   "wurmspeaker|minefield": {
-   "w": 50,
+   "w": 52,
    "n": 60
   },
   "wurmspeaker|muster": {
-   "w": 31,
+   "w": 27,
    "n": 60
   },
   "wurmspeaker|pall": {
-   "w": 15,
+   "w": 16,
    "n": 60
   },
   "wurmspeaker|pinnacle": {
-   "w": 23,
+   "w": 20,
    "n": 60
   },
   "wurmspeaker|rabble": {
@@ -1634,15 +1634,15 @@
    "n": 60
   },
   "wurmspeaker|tollgate": {
-   "w": 42,
+   "w": 41,
    "n": 60
   },
   "wurmspeaker|warband": {
-   "w": 20,
+   "w": 19,
    "n": 60
   },
   "wurmspeaker|writ": {
-   "w": 8,
+   "w": 11,
    "n": 60
   }
  }

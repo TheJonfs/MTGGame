@@ -8,17 +8,17 @@
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| Reaper Control | Jund Snake Control (G R b) | midrange | 66.1 | 60 | +1.4 | registered |
-| the Rabble (Mardu) | Mono-Red Goblins (R) | aggro | 64.0 | 58 | +6.9 | registered |
-| Emerald Snakes | Snake Keeper (G R) | midrange | 61.5 | 58 | −6.8 | registered |
-| Dungrove Auras | Mono-Green Auras (G) | midrange | 53.4 | 52 | −1.9 | built |
-| the Ashen | Rakdos Removal (B R) | midrange | 53.3 | 58 | −11.1 | built |
-| the Stampede | Gruul Stompy (R G) | aggro | 51.2 | 45 | +5.8 | built |
-| the Sweep | Jund Aristocrats (B R G) | midrange | 45.9 | 51 | +3.0 | built |
-| Jund Dragons | Jund Dragons (R g b) | midrange | 44.7 | 46 | +4.3 | registered, guided |
-| the Wurmspeaker | Mono-Green Ramp | midrange | 41.7 | 46 | −4.2 | built |
-| the Kindling | Mono-Red Spells (R) | aggro | 36.5 | 37 | +2.2 | built |
-| Black Forest Ham | Golgari Auras (B G) | midrange | 31.8 | 39 | +0.4 | registered |
+| Reaper Control | Jund Snake Control (G R b) | midrange | 65.7 | 60 | +2.0 | registered |
+| the Rabble (Mardu) | Mono-Red Goblins (R) | aggro | 63.8 | 58 | +6.8 | registered |
+| Emerald Snakes | Snake Keeper (G R) | midrange | 59.6 | 58 | −9.3 | registered |
+| the Ashen | Rakdos Removal (B R) | midrange | 56.1 | 58 | −8.8 | built |
+| Dungrove Auras | Mono-Green Auras (G) | midrange | 55.5 | 52 | +0.3 | built |
+| the Stampede | Gruul Stompy (R G) | aggro | 52.3 | 45 | +6.6 | built |
+| the Sweep | Jund Aristocrats (B R G) | midrange | 46.7 | 51 | +3.4 | built |
+| Jund Dragons | Jund Dragons (R g b) | midrange | 44.6 | 46 | +4.5 | registered, guided |
+| the Wurmspeaker | Mono-Green Ramp | midrange | 39.2 | 46 | −6.6 | built |
+| the Kindling | Mono-Red Spells (R) | aggro | 33.6 | 37 | −0.8 | built |
+| Black Forest Ham | Golgari Auras (B G) | midrange | 33.0 | 39 | +1.5 | registered |
 
 Archived (kept in the data, out of the field): Jund Coin (working name).
 
@@ -28,23 +28,23 @@ The 6 lists above 50 in matches, counted against one another only. A list that g
 
 | | list | among them | the whole field | change |
 |---|---|---|---|---|
-| 1 | Reaper Control | 55.7 ± 5.6 | 66.1 | −10.4 |
-| 2 | the Rabble (Mardu) | 54.8 ± 5.6 | 64.0 | −9.2 |
-| 3 | Emerald Snakes | 53.7 ± 5.6 | 61.5 | −7.8 |
-| 4 | Dungrove Auras | 50.2 ± 5.7 | 53.4 | −3.2 |
-| 5 | the Ashen | 42.8 ± 5.6 | 53.3 | −10.5 |
-| 6 | the Stampede | 42.8 ± 5.6 | 51.2 | −8.4 |
+| 1 | Reaper Control | 57.7 ± 5.6 | 65.7 | −8.0 |
+| 2 | the Rabble (Mardu) | 54.2 ± 5.6 | 63.8 | −9.6 |
+| 3 | Emerald Snakes | 51.7 ± 5.7 | 59.6 | −7.9 |
+| 4 | Dungrove Auras | 50.2 ± 5.7 | 55.5 | −5.3 |
+| 5 | the Ashen | 43.5 ± 5.6 | 56.1 | −12.6 |
+| 6 | the Stampede | 42.8 ± 5.6 | 52.3 | −9.5 |
 
 Head to head (the row list's matches won, %):
 
 | | reaper | rabble | emeraldsnakes | auras | ashen | stompy |
 |---|---|---|---|---|---|---|
-| **reaper** | — | 52 | 58 | 43 | 73 | 52 |
-| **rabble** | 48 | — | 42 | 55 | 62 | 68 |
-| **emeraldsnakes** | 42 | 58 | — | 62 | 45 | 62 |
-| **auras** | 57 | 45 | 38 | — | 56 | 55 |
-| **ashen** | 27 | 38 | 55 | 44 | — | 50 |
-| **stompy** | 48 | 33 | 38 | 45 | 50 | — |
+| **reaper** | — | 52 | 62 | 48 | 73 | 53 |
+| **rabble** | 48 | — | 42 | 52 | 62 | 68 |
+| **emeraldsnakes** | 38 | 58 | — | 58 | 45 | 58 |
+| **auras** | 52 | 48 | 42 | — | 53 | 57 |
+| **ashen** | 27 | 38 | 55 | 48 | — | 50 |
+| **stompy** | 47 | 33 | 42 | 43 | 50 | — |
 
 ## Staples (ADR-170)
 
@@ -54,7 +54,7 @@ The most played: Flametongue Kavu 6 · Reaper's Forerunner 6 · Lightning Bolt 6
 
 ## Reaper Control — Jund Snake Control (G R b)
 
-`reaper` · midrange · game one 60 · matches 66.1
+`reaper` · midrange · game one 60 · matches 65.7
 
 - **Lands (18):** 4 Taiga · 4 Stomping Ground · 1 Cairnbrand · 4 Bayou · 4 Badlands · 1 Forest
 - **Creatures (31):** 4 Manaba · 3 Moss Viper · 4 Rage Cobra · 4 Wall of Blossoms · 3 Seasoned Pyromancer · 4 Reaper's Forerunner · 4 Flametongue Kavu · 2 Voracious Cobra · 3 The Reaper
@@ -66,7 +66,7 @@ The most played: Flametongue Kavu 6 · Reaper's Forerunner 6 · Lightning Bolt 6
 
 ## the Rabble (Mardu) — Mono-Red Goblins (R)
 
-`rabble` · aggro · game one 58 · matches 64.0
+`rabble` · aggro · game one 58 · matches 63.8
 
 - **Lands (19):** 1 Cairnbrand · 4 Badlands · 14 Mountain
 - **Creatures (18):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 2 Siege-Gang Commander
@@ -78,7 +78,7 @@ The most played: Flametongue Kavu 6 · Reaper's Forerunner 6 · Lightning Bolt 6
 
 ## Emerald Snakes — Snake Keeper (G R)
 
-`emeraldsnakes` · midrange · game one 58 · matches 61.5
+`emeraldsnakes` · midrange · game one 58 · matches 59.6
 
 - **Lands (21):** 4 Taiga · 4 Stomping Ground · 4 Bayou · 9 Forest
 - **Creatures (32):** 4 Birds of Paradise · 4 Manaba · 4 Rage Cobra · 4 The Emerald Keeper · 4 Reaper's Forerunner · 4 Flametongue Kavu · 4 Gaean Wurm · 4 Elvish Visionary
@@ -88,20 +88,9 @@ The most played: Flametongue Kavu 6 · Reaper's Forerunner 6 · Lightning Bolt 6
 - **History:**
   - contributed — S67 seed (the planner's): Naya's Emerald Snakes (Chris's), its white mana swapped: Mox Pearl for Mox Jet, Shevelport and four Temple Gardens for five Forests, four Savannahs for four Bayous.
 
-## Dungrove Auras — Mono-Green Auras (G)
-
-`auras` · midrange · game one 52 · matches 53.4
-
-- **Lands (22):** 22 Forest
-- **Creatures (27):** 4 Dungrove Elder · 2 Penumbra Wurm · 4 Llanowar Elves · 4 Gladecover Scout · 4 Wall of Blossoms · 4 Gaean Wurm · 2 Centaur Courser · 3 Reaper's Forerunner
-- **Other (11):** 3 Harmonize · 4 Rancor · 4 Blanchwood Armor
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S67 seed (the planner's): Peasant's Dungrove Auras for the Thicket (Chris's ruling: the Thicket is white).
-
 ## the Ashen — Rakdos Removal (B R)
 
-`ashen` · midrange · game one 58 · matches 53.3
+`ashen` · midrange · game one 58 · matches 56.1
 
 - **Lands (17):** 4 Blood Crypt · 4 Badlands · 1 Cairnbrand · 6 Swamp · 2 Mountain
 - **Creatures (27):** 4 Typhoid Rats · 4 Blood Artist · 4 Hypnotic Specter · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 2 Dread Presence · 1 Drana, Kalastria Bloodchief
@@ -110,9 +99,20 @@ The most played: Flametongue Kavu 6 · Reaper's Forerunner 6 · Lightning Bolt 6
 - **History:**
   - contributed — S67 seed (the planner's): Mardu's Ashen whole.
 
+## Dungrove Auras — Mono-Green Auras (G)
+
+`auras` · midrange · game one 52 · matches 55.5
+
+- **Lands (22):** 22 Forest
+- **Creatures (27):** 4 Dungrove Elder · 2 Penumbra Wurm · 4 Llanowar Elves · 4 Gladecover Scout · 4 Wall of Blossoms · 4 Gaean Wurm · 2 Centaur Courser · 3 Reaper's Forerunner
+- **Other (11):** 3 Harmonize · 4 Rancor · 4 Blanchwood Armor
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S67 seed (the planner's): Peasant's Dungrove Auras for the Thicket (Chris's ruling: the Thicket is white).
+
 ## the Stampede — Gruul Stompy (R G)
 
-`stompy` · aggro · game one 45 · matches 51.2
+`stompy` · aggro · game one 45 · matches 52.3
 
 - **Lands (19):** 4 Stomping Ground · 4 Taiga · 9 Forest · 2 Mountain
 - **Creatures (30):** 4 Llanowar Elves · 2 Birds of Paradise · 4 Dungrove Elder · 4 Centaur Courser · 4 Rumbling Baloth · 3 Gaean Wurm · 4 Flametongue Kavu · 3 Reaper's Forerunner · 2 Baru, Wurmspeaker
@@ -123,7 +123,7 @@ The most played: Flametongue Kavu 6 · Reaper's Forerunner 6 · Lightning Bolt 6
 
 ## the Sweep — Jund Aristocrats (B R G)
 
-`sweep` · midrange · game one 51 · matches 45.9
+`sweep` · midrange · game one 51 · matches 46.7
 
 - **Lands (20):** 1 Cairnbrand · 4 Badlands · 4 Bayou · 4 Taiga · 2 Blood Crypt · 2 Overgrown Tomb · 2 Forest · 1 Stomping Ground
 - **Creatures (25):** 4 The Reaper · 3 Meliyan, the Torment · 4 Blood Artist · 4 Birds of Paradise · 4 Shocking Sharpshooter · 2 Seasoned Pyromancer · 2 Vampire Nighthawk · 2 Voracious Cobra
@@ -134,7 +134,7 @@ The most played: Flametongue Kavu 6 · Reaper's Forerunner 6 · Lightning Bolt 6
 
 ## Jund Dragons — Jund Dragons (R g b)
 
-`dragons` · midrange · game one 46 · matches 44.7
+`dragons` · midrange · game one 46 · matches 44.6
 
 - **Lands (23):** 4 Badlands · 4 Bayou · 4 Taiga · 1 Cairnbrand · 1 Library of Alexandria · 4 Stomping Ground · 4 Overgrown Tomb · 1 Blood Crypt
 - **Creatures (32):** 3 Drakuseth, Maw of Flames · 2 The Ruby Tyrant · 4 Flametongue Kavu · 4 Reaper's Forerunner · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Shocking Sharpshooter · 4 Manaba · 4 Birds of Paradise
@@ -150,7 +150,7 @@ The most played: Flametongue Kavu 6 · Reaper's Forerunner 6 · Lightning Bolt 6
 
 ## the Wurmspeaker — Mono-Green Ramp
 
-`wurmspeaker` · midrange · game one 46 · matches 41.7
+`wurmspeaker` · midrange · game one 46 · matches 39.2
 
 - **Lands (22):** 20 Forest · 2 Tranquil Thicket
 - **Creatures (34):** 4 Llanowar Elves · 4 Birds of Paradise · 4 Wood Elves · 4 Seedborn Muse · 3 Gaean Wurm · 2 Pelakka Wurm · 3 Baru, Wurmspeaker · 2 Treetop Snarespinner · 2 The Emerald Keeper · 4 Order Druid · 2 Rampaging Baloths
@@ -161,7 +161,7 @@ The most played: Flametongue Kavu 6 · Reaper's Forerunner 6 · Lightning Bolt 6
 
 ## the Kindling — Mono-Red Spells (R)
 
-`kindling` · aggro · game one 37 · matches 36.5
+`kindling` · aggro · game one 37 · matches 33.6
 
 - **Lands (21):** 21 Mountain
 - **Creatures (16):** 4 Guttersnipe · 4 Young Pyromancer · 3 Seasoned Pyromancer · 2 Arc Mage · 1 The Ruby Tyrant · 2 Furnace Whelp
@@ -172,7 +172,7 @@ The most played: Flametongue Kavu 6 · Reaper's Forerunner 6 · Lightning Bolt 6
 
 ## Black Forest Ham — Golgari Auras (B G)
 
-`bfh` · midrange · game one 39 · matches 31.8
+`bfh` · midrange · game one 39 · matches 33.0
 
 - **Lands (22):** 4 Overgrown Tomb · 4 Evolving Wilds · 9 Forest · 5 Swamp
 - **Creatures (22):** 4 Dungrove Elder · 4 Vampire Nighthawk · 4 Reaper's Forerunner · 4 Gaean Wurm · 2 Deadly Recluse · 4 Elvish Visionary

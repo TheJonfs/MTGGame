@@ -4,127 +4,127 @@
  "matchesAPairing": 60,
  "byList": {
   "auras": {
-   "matches": 42.3,
+   "matches": 53.3,
    "gameOne": 50.2,
-   "later": 42.2,
+   "later": 53.5,
    "n": 600
   },
   "bfh": {
-   "matches": 30.8,
+   "matches": 28.5,
    "gameOne": 37,
-   "later": 36.2,
+   "later": 34.2,
    "n": 600
   },
   "depths": {
-   "matches": 54.5,
+   "matches": 53.7,
    "gameOne": 50.2,
-   "later": 55.8,
+   "later": 54.8,
    "n": 600
   },
   "massocrafts": {
-   "matches": 54.7,
+   "matches": 52.8,
    "gameOne": 54.7,
-   "later": 51.9,
+   "later": 50.2,
    "n": 600
   },
   "mbc": {
-   "matches": 42,
+   "matches": 43.5,
    "gameOne": 46.2,
-   "later": 42.7,
+   "later": 44.5,
    "n": 600
   },
   "mill": {
-   "matches": 56.2,
+   "matches": 53.3,
    "gameOne": 52.7,
-   "later": 55.3,
+   "later": 51.6,
    "n": 600
   },
   "reeve": {
-   "matches": 76.7,
+   "matches": 75.3,
    "gameOne": 69.5,
-   "later": 68.9,
+   "later": 67.8,
    "n": 600
   },
   "tempo": {
-   "matches": 53.5,
+   "matches": 54.3,
    "gameOne": 52,
-   "later": 52.7,
+   "later": 53.5,
    "n": 600
   },
   "undertow": {
-   "matches": 45,
+   "matches": 44.7,
    "gameOne": 44.2,
-   "later": 49,
+   "later": 48.2,
    "n": 600
   },
   "writ": {
-   "matches": 62.7,
+   "matches": 59.5,
    "gameOne": 54.8,
-   "later": 60.8,
+   "later": 57.7,
    "n": 600
   },
   "wurmspeaker": {
-   "matches": 31.7,
+   "matches": 31,
    "gameOne": 38.7,
-   "later": 35.2,
+   "later": 34.7,
    "n": 600
   }
  },
  "byPair": {
   "auras|bfh": {
-   "w": 31,
+   "w": 39,
    "n": 60
   },
   "auras|depths": {
-   "w": 26,
-   "n": 60
-  },
-  "auras|massocrafts": {
-   "w": 16,
-   "n": 60
-  },
-  "auras|mbc": {
-   "w": 35,
-   "n": 60
-  },
-  "auras|mill": {
    "w": 28,
    "n": 60
   },
-  "auras|reeve": {
-   "w": 21,
+  "auras|massocrafts": {
+   "w": 22,
    "n": 60
   },
-  "auras|tempo": {
+  "auras|mbc": {
    "w": 32,
    "n": 60
   },
-  "auras|undertow": {
-   "w": 31,
+  "auras|mill": {
+   "w": 39,
    "n": 60
   },
-  "auras|writ": {
-   "w": 20,
-   "n": 60
-  },
-  "auras|wurmspeaker": {
-   "w": 14,
-   "n": 60
-  },
-  "bfh|auras": {
+  "auras|reeve": {
    "w": 29,
    "n": 60
   },
+  "auras|tempo": {
+   "w": 38,
+   "n": 60
+  },
+  "auras|undertow": {
+   "w": 39,
+   "n": 60
+  },
+  "auras|writ": {
+   "w": 29,
+   "n": 60
+  },
+  "auras|wurmspeaker": {
+   "w": 25,
+   "n": 60
+  },
+  "bfh|auras": {
+   "w": 21,
+   "n": 60
+  },
   "bfh|depths": {
-   "w": 10,
+   "w": 11,
    "n": 60
   },
   "bfh|massocrafts": {
-   "w": 10,
+   "w": 12,
    "n": 60
   },
   "bfh|mbc": {
-   "w": 25,
+   "w": 19,
    "n": 60
   },
   "bfh|mill": {
@@ -136,27 +136,27 @@
    "n": 60
   },
   "bfh|tempo": {
-   "w": 24,
+   "w": 22,
    "n": 60
   },
   "bfh|undertow": {
-   "w": 29,
+   "w": 24,
    "n": 60
   },
   "bfh|writ": {
-   "w": 3,
+   "w": 5,
    "n": 60
   },
   "bfh|wurmspeaker": {
-   "w": 26,
+   "w": 28,
    "n": 60
   },
   "depths|auras": {
-   "w": 34,
+   "w": 32,
    "n": 60
   },
   "depths|bfh": {
-   "w": 50,
+   "w": 49,
    "n": 60
   },
   "depths|massocrafts": {
@@ -188,15 +188,15 @@
    "n": 60
   },
   "depths|wurmspeaker": {
-   "w": 49,
+   "w": 47,
    "n": 60
   },
   "massocrafts|auras": {
-   "w": 44,
+   "w": 38,
    "n": 60
   },
   "massocrafts|bfh": {
-   "w": 50,
+   "w": 48,
    "n": 60
   },
   "massocrafts|depths": {
@@ -216,7 +216,7 @@
    "n": 60
   },
   "massocrafts|tempo": {
-   "w": 27,
+   "w": 28,
    "n": 60
   },
   "massocrafts|undertow": {
@@ -228,15 +228,15 @@
    "n": 60
   },
   "massocrafts|wurmspeaker": {
-   "w": 45,
+   "w": 41,
    "n": 60
   },
   "mbc|auras": {
-   "w": 25,
+   "w": 28,
    "n": 60
   },
   "mbc|bfh": {
-   "w": 35,
+   "w": 41,
    "n": 60
   },
   "mbc|depths": {
@@ -256,7 +256,7 @@
    "n": 60
   },
   "mbc|tempo": {
-   "w": 26,
+   "w": 22,
    "n": 60
   },
   "mbc|undertow": {
@@ -268,11 +268,11 @@
    "n": 60
   },
   "mbc|wurmspeaker": {
-   "w": 34,
+   "w": 38,
    "n": 60
   },
   "mill|auras": {
-   "w": 32,
+   "w": 21,
    "n": 60
   },
   "mill|bfh": {
@@ -304,15 +304,15 @@
    "n": 60
   },
   "mill|writ": {
-   "w": 27,
+   "w": 28,
    "n": 60
   },
   "mill|wurmspeaker": {
-   "w": 42,
+   "w": 35,
    "n": 60
   },
   "reeve|auras": {
-   "w": 39,
+   "w": 31,
    "n": 60
   },
   "reeve|bfh": {
@@ -352,11 +352,11 @@
    "n": 60
   },
   "tempo|auras": {
-   "w": 28,
+   "w": 22,
    "n": 60
   },
   "tempo|bfh": {
-   "w": 36,
+   "w": 38,
    "n": 60
   },
   "tempo|depths": {
@@ -364,11 +364,11 @@
    "n": 60
   },
   "tempo|massocrafts": {
-   "w": 33,
+   "w": 32,
    "n": 60
   },
   "tempo|mbc": {
-   "w": 34,
+   "w": 38,
    "n": 60
   },
   "tempo|mill": {
@@ -384,19 +384,19 @@
    "n": 60
   },
   "tempo|writ": {
-   "w": 29,
+   "w": 33,
    "n": 60
   },
   "tempo|wurmspeaker": {
-   "w": 51,
+   "w": 53,
    "n": 60
   },
   "undertow|auras": {
-   "w": 29,
+   "w": 21,
    "n": 60
   },
   "undertow|bfh": {
-   "w": 31,
+   "w": 36,
    "n": 60
   },
   "undertow|depths": {
@@ -428,15 +428,15 @@
    "n": 60
   },
   "undertow|wurmspeaker": {
-   "w": 35,
+   "w": 36,
    "n": 60
   },
   "writ|auras": {
-   "w": 40,
+   "w": 31,
    "n": 60
   },
   "writ|bfh": {
-   "w": 57,
+   "w": 55,
    "n": 60
   },
   "writ|depths": {
@@ -452,7 +452,7 @@
    "n": 60
   },
   "writ|mill": {
-   "w": 33,
+   "w": 32,
    "n": 60
   },
   "writ|reeve": {
@@ -460,7 +460,7 @@
    "n": 60
   },
   "writ|tempo": {
-   "w": 31,
+   "w": 27,
    "n": 60
   },
   "writ|undertow": {
@@ -468,31 +468,31 @@
    "n": 60
   },
   "writ|wurmspeaker": {
-   "w": 56,
+   "w": 53,
    "n": 60
   },
   "wurmspeaker|auras": {
-   "w": 46,
+   "w": 35,
    "n": 60
   },
   "wurmspeaker|bfh": {
-   "w": 34,
+   "w": 32,
    "n": 60
   },
   "wurmspeaker|depths": {
-   "w": 11,
+   "w": 13,
    "n": 60
   },
   "wurmspeaker|massocrafts": {
-   "w": 15,
+   "w": 19,
    "n": 60
   },
   "wurmspeaker|mbc": {
-   "w": 26,
+   "w": 22,
    "n": 60
   },
   "wurmspeaker|mill": {
-   "w": 18,
+   "w": 25,
    "n": 60
   },
   "wurmspeaker|reeve": {
@@ -500,15 +500,15 @@
    "n": 60
   },
   "wurmspeaker|tempo": {
-   "w": 9,
+   "w": 7,
    "n": 60
   },
   "wurmspeaker|undertow": {
-   "w": 25,
+   "w": 24,
    "n": 60
   },
   "wurmspeaker|writ": {
-   "w": 4,
+   "w": 7,
    "n": 60
   }
  }

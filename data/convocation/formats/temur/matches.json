@@ -4,95 +4,95 @@
  "matchesAPairing": 60,
  "byList": {
   "emeraldsnakes": {
-   "matches": 66.3,
+   "matches": 65.7,
    "gameOne": 64.3,
-   "later": 59.3,
+   "later": 58.4,
    "n": 600
   },
   "kiln": {
-   "matches": 35.2,
+   "matches": 34.8,
    "gameOne": 39.7,
-   "later": 40.4,
+   "later": 39.7,
    "n": 600
   },
   "kindling": {
-   "matches": 39.5,
+   "matches": 41.2,
    "gameOne": 44,
-   "later": 42.6,
+   "later": 43.7,
    "n": 600
   },
   "rabble": {
-   "matches": 61.4,
+   "matches": 60.2,
    "gameOne": 56.6,
-   "later": 59.6,
+   "later": 58.5,
    "n": 600
   },
   "ramp": {
-   "matches": 62.6,
+   "matches": 66.5,
    "gameOne": 58.5,
-   "later": 58,
+   "later": 62.2,
    "n": 600
   },
   "reaper": {
-   "matches": 76.8,
+   "matches": 77.4,
    "gameOne": 67.9,
-   "later": 69.8,
+   "later": 70.9,
    "n": 600
   },
   "stompy": {
-   "matches": 50.9,
+   "matches": 50.5,
    "gameOne": 46.9,
-   "later": 51.8,
+   "later": 51.6,
    "n": 600
   },
   "tally": {
-   "matches": 26.9,
+   "matches": 25.7,
    "gameOne": 34.4,
-   "later": 33.6,
+   "later": 32,
    "n": 600
   },
   "temurcontrol": {
-   "matches": 44.8,
+   "matches": 44.1,
    "gameOne": 47.3,
-   "later": 46,
+   "later": 45.7,
    "n": 600
   },
   "unwinder": {
-   "matches": 50.7,
+   "matches": 49.3,
    "gameOne": 49.2,
-   "later": 50.4,
+   "later": 49.1,
    "n": 600
   },
   "wurmspeaker": {
    "matches": 34.8,
    "gameOne": 41.2,
-   "later": 39,
+   "later": 38.2,
    "n": 600
   }
  },
  "byPair": {
   "emeraldsnakes|kiln": {
-   "w": 49,
+   "w": 50,
    "n": 60
   },
   "emeraldsnakes|kindling": {
-   "w": 47.5,
+   "w": 43.5,
    "n": 60
   },
   "emeraldsnakes|rabble": {
-   "w": 34.5,
+   "w": 35,
    "n": 60
   },
   "emeraldsnakes|ramp": {
-   "w": 32,
+   "w": 21,
    "n": 60
   },
   "emeraldsnakes|reaper": {
-   "w": 25,
+   "w": 21.5,
    "n": 60
   },
   "emeraldsnakes|stompy": {
-   "w": 34,
+   "w": 38,
    "n": 60
   },
   "emeraldsnakes|tally": {
@@ -100,23 +100,23 @@
    "n": 60
   },
   "emeraldsnakes|temurcontrol": {
-   "w": 38,
+   "w": 40,
    "n": 60
   },
   "emeraldsnakes|unwinder": {
-   "w": 44,
+   "w": 49,
    "n": 60
   },
   "emeraldsnakes|wurmspeaker": {
-   "w": 48,
+   "w": 50,
    "n": 60
   },
   "kiln|emeraldsnakes": {
-   "w": 11,
+   "w": 10,
    "n": 60
   },
   "kiln|kindling": {
-   "w": 34,
+   "w": 35,
    "n": 60
   },
   "kiln|rabble": {
@@ -132,7 +132,7 @@
    "n": 60
   },
   "kiln|stompy": {
-   "w": 19,
+   "w": 12,
    "n": 60
   },
   "kiln|tally": {
@@ -148,23 +148,23 @@
    "n": 60
   },
   "kiln|wurmspeaker": {
-   "w": 27,
+   "w": 32,
    "n": 60
   },
   "kindling|emeraldsnakes": {
-   "w": 12.5,
+   "w": 16.5,
    "n": 60
   },
   "kindling|kiln": {
-   "w": 26,
+   "w": 25,
    "n": 60
   },
   "kindling|rabble": {
-   "w": 17.5,
+   "w": 16,
    "n": 60
   },
   "kindling|ramp": {
-   "w": 12,
+   "w": 10,
    "n": 60
   },
   "kindling|reaper": {
@@ -172,7 +172,7 @@
    "n": 60
   },
   "kindling|stompy": {
-   "w": 22,
+   "w": 27.5,
    "n": 60
   },
   "kindling|tally": {
@@ -180,19 +180,19 @@
    "n": 60
   },
   "kindling|temurcontrol": {
-   "w": 31,
+   "w": 34.5,
    "n": 60
   },
   "kindling|unwinder": {
-   "w": 26,
+   "w": 28.5,
    "n": 60
   },
   "kindling|wurmspeaker": {
-   "w": 31,
+   "w": 30,
    "n": 60
   },
   "rabble|emeraldsnakes": {
-   "w": 25.5,
+   "w": 25,
    "n": 60
   },
   "rabble|kiln": {
@@ -200,7 +200,7 @@
    "n": 60
   },
   "rabble|kindling": {
-   "w": 42.5,
+   "w": 44,
    "n": 60
   },
   "rabble|ramp": {
@@ -228,11 +228,11 @@
    "n": 60
   },
   "rabble|wurmspeaker": {
-   "w": 42,
+   "w": 33.5,
    "n": 60
   },
   "ramp|emeraldsnakes": {
-   "w": 28,
+   "w": 39,
    "n": 60
   },
   "ramp|kiln": {
@@ -240,7 +240,7 @@
    "n": 60
   },
   "ramp|kindling": {
-   "w": 48,
+   "w": 50,
    "n": 60
   },
   "ramp|rabble": {
@@ -252,11 +252,11 @@
    "n": 60
   },
   "ramp|stompy": {
-   "w": 41,
+   "w": 39,
    "n": 60
   },
   "ramp|tally": {
-   "w": 42,
+   "w": 51.5,
    "n": 60
   },
   "ramp|temurcontrol": {
@@ -268,11 +268,11 @@
    "n": 60
   },
   "ramp|wurmspeaker": {
-   "w": 32,
+   "w": 35,
    "n": 60
   },
   "reaper|emeraldsnakes": {
-   "w": 35,
+   "w": 38.5,
    "n": 60
   },
   "reaper|kiln": {
@@ -292,7 +292,7 @@
    "n": 60
   },
   "reaper|stompy": {
-   "w": 38,
+   "w": 41,
    "n": 60
   },
   "reaper|tally": {
@@ -308,19 +308,19 @@
    "n": 60
   },
   "reaper|wurmspeaker": {
-   "w": 50,
+   "w": 47,
    "n": 60
   },
   "stompy|emeraldsnakes": {
-   "w": 26,
+   "w": 22,
    "n": 60
   },
   "stompy|kiln": {
-   "w": 41,
+   "w": 48,
    "n": 60
   },
   "stompy|kindling": {
-   "w": 38,
+   "w": 32.5,
    "n": 60
   },
   "stompy|rabble": {
@@ -328,11 +328,11 @@
    "n": 60
   },
   "stompy|ramp": {
-   "w": 19,
+   "w": 21,
    "n": 60
   },
   "stompy|reaper": {
-   "w": 22,
+   "w": 19,
    "n": 60
   },
   "stompy|tally": {
@@ -340,7 +340,7 @@
    "n": 60
   },
   "stompy|temurcontrol": {
-   "w": 27,
+   "w": 28,
    "n": 60
   },
   "stompy|unwinder": {
@@ -368,7 +368,7 @@
    "n": 60
   },
   "tally|ramp": {
-   "w": 18,
+   "w": 8.5,
    "n": 60
   },
   "tally|reaper": {
@@ -388,11 +388,11 @@
    "n": 60
   },
   "tally|wurmspeaker": {
-   "w": 37,
+   "w": 39,
    "n": 60
   },
   "temurcontrol|emeraldsnakes": {
-   "w": 22,
+   "w": 20,
    "n": 60
   },
   "temurcontrol|kiln": {
@@ -400,7 +400,7 @@
    "n": 60
   },
   "temurcontrol|kindling": {
-   "w": 29,
+   "w": 25.5,
    "n": 60
   },
   "temurcontrol|rabble": {
@@ -416,7 +416,7 @@
    "n": 60
   },
   "temurcontrol|stompy": {
-   "w": 33,
+   "w": 32,
    "n": 60
   },
   "temurcontrol|tally": {
@@ -428,11 +428,11 @@
    "n": 60
   },
   "temurcontrol|wurmspeaker": {
-   "w": 45,
+   "w": 47,
    "n": 60
   },
   "unwinder|emeraldsnakes": {
-   "w": 16,
+   "w": 11,
    "n": 60
   },
   "unwinder|kiln": {
@@ -440,7 +440,7 @@
    "n": 60
   },
   "unwinder|kindling": {
-   "w": 34,
+   "w": 31.5,
    "n": 60
   },
   "unwinder|rabble": {
@@ -468,31 +468,31 @@
    "n": 60
   },
   "unwinder|wurmspeaker": {
-   "w": 49,
+   "w": 48,
    "n": 60
   },
   "wurmspeaker|emeraldsnakes": {
-   "w": 12,
+   "w": 10,
    "n": 60
   },
   "wurmspeaker|kiln": {
-   "w": 33,
-   "n": 60
-  },
-  "wurmspeaker|kindling": {
-   "w": 29,
-   "n": 60
-  },
-  "wurmspeaker|rabble": {
-   "w": 18,
-   "n": 60
-  },
-  "wurmspeaker|ramp": {
    "w": 28,
    "n": 60
   },
+  "wurmspeaker|kindling": {
+   "w": 30,
+   "n": 60
+  },
+  "wurmspeaker|rabble": {
+   "w": 26.5,
+   "n": 60
+  },
+  "wurmspeaker|ramp": {
+   "w": 25,
+   "n": 60
+  },
   "wurmspeaker|reaper": {
-   "w": 10,
+   "w": 13,
    "n": 60
   },
   "wurmspeaker|stompy": {
@@ -500,15 +500,15 @@
    "n": 60
   },
   "wurmspeaker|tally": {
-   "w": 23,
+   "w": 21,
    "n": 60
   },
   "wurmspeaker|temurcontrol": {
-   "w": 15,
+   "w": 13,
    "n": 60
   },
   "wurmspeaker|unwinder": {
-   "w": 11,
+   "w": 12,
    "n": 60
   }
  }
