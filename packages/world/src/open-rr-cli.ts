@@ -26,6 +26,7 @@
  *                the loser's choice of the play as the event plays a series (`MatchSeries`). Each game records its
  *                match and its number. `--matches-report file…` prints the three columns: the match, game one,
  *                games two and three, each with its 95% interval, and the game-one → later delta.
+ *   --rating file   S73a: the card rating the sideboards and guide thresholds read (default: the live table).
  *   --trial rule[,rule] [--trial-for k1,k2]   S58 (ADR-167): a candidate rule switched ON for every seat or those lists (profile.trial).
  *   --off rule[,rule] [--off-for k1,k2]   S56: the OLD pilot — those S56 rules ("counter") switched off, for every
  *                seat or only for those lists. Run beside a plain run on the same seed: each game has its twin.
@@ -134,7 +135,9 @@ async function run(): Promise<void> {
   const one = process.argv.includes("--sideboarded-one");
   const M = Number(arg("matches", "0"));
   const sideboarded = one || M > 0 || process.argv.includes("--sideboarded") || process.argv.includes("--sideboarded-only");
-  const rating = sideboarded ? formatView(JSON.parse(readFileSync(join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable, FORMAT_ID) : null;
+  // S73a (Part 1, attribution): `--rating <file>` — the sideboards and the guide thresholds read another table (the v1.4
+  // ratings the tables of record were played under), for a run beside one on the live table.
+  const rating = sideboarded ? formatView(JSON.parse(readFileSync(arg("rating", "") || join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable, FORMAT_ID) : null;
   const fifteen = new Map<string, Decklist>();
   const builtFor = new Set(arg("built-fifteen", "").split(",").filter(Boolean)); // S58: those lists use the field builder's fifteen, not their registered one
   const outArg = process.argv.includes("--out-rule") ? arg("out-rule", "none") : null; // S57: none | dead,four,rule9 (any of)

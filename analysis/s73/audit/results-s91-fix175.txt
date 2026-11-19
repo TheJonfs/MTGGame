@@ -1,0 +1,42 @@
+## bodies:wurmspeaker druid (rampant_growth:4:order_druid) seed 91
+matches 24.7 -> 30.1  +5.4 +/- 2.1   | game one 34.2 -> 39.2  +4.9 +/- 2.0   | later 31.4 -> 35.3  +3.9 +/- 2.7 (unpaired)   | n 1600
+by opponent: aerie 28->41 (+12), bantsnake 22->31 (+9), dragons 29->38 (+9), muster 38->45 (+8), mbclio 12->16 (+4), marducontrol 9->14 (+4), reaperclio 4->8 (+4), emeraldsnakes 19->22 (+4), stampede 38->40 (+2), rabble 49->46 (-2)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +5.4, lower bound +3.3)
+
+## open:wurmspeaker druid (rampant_growth:4:order_druid) seed 91
+matches 32.0 -> 39.2  +7.2 +/- 1.6   | game one 39.5 -> 44.7  +5.1 +/- 1.4   | later 35.7 -> 40.9  +5.1 +/- 2.0 (unpaired)   | n 3040
+by opponent: sweep 24->47 (+22), levy 36->52 (+17), funpolice 59->72 (+14), minefield 74->85 (+11), muster 44->54 (+9), earthrise 51->61 (+9), tollgate 69->78 (+9), rabble 30->38 (+8), emeraldsnakes 13->21 (+8), kiln 49->55 (+5), warband 30->35 (+5), countersnake 13->18 (+5), pinnacle 35->39 (+5), depths 12->15 (+3), writ 9->11 (+2), lumenclio 21->23 (+2), reaperclio 6->8 (+2), marducontrol 7->7 (+0), pall 26->25 (-1)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +7.2, lower bound +5.5)
+
+## sultai:wurmspeaker druid (rampant_growth:4:order_druid) seed 91
+matches 27.2 -> 32.8  +5.5 +/- 2.3   | game one 35.6 -> 41.6  +6.0 +/- 2.1   | later 32.2 -> 36.1  +4.0 +/- 2.7 (unpaired)   | n 1600
+by opponent: mbc 24->38 (+14), undertow 30->39 (+9), bfh 51->60 (+9), massocrafts 24->31 (+8), auras 58->65 (+8), depths 12->18 (+6), writ 11->13 (+2), mill 39->40 (+1), tempo 23->23 (+0), reeve 2->1 (-1)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +5.5, lower bound +3.2)
+
+## jund:wurmspeaker druid (rampant_growth:4:order_druid) seed 91
+matches 33.4 -> 40.4  +7.0 +/- 2.4   | game one 41.9 -> 46.9  +5.1 +/- 2.0   | later 36.7 -> 41.7  +5.0 +/- 2.8 (unpaired)   | n 1600
+by opponent: bfh 52->66 (+14), auras 52->66 (+13), stompy 32->44 (+11), emeraldsnakes 16->26 (+10), ashen 16->24 (+8), sweep 40->48 (+8), rabble 37->41 (+4), dragons 28->31 (+4), reaper 13->16 (+2), kindling 47->44 (-3)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +7.0, lower bound +4.7)
+
+## temur:wurmspeaker druid (rampant_growth:4:order_druid) seed 91
+matches 30.9 -> 36.8  +5.8 +/- 2.2   | game one 38.0 -> 42.1  +4.1 +/- 1.9   | later 36.0 -> 40.4  +4.4 +/- 2.8 (unpaired)   | n 1600
+by opponent: temurcontrol 11->22 (+11), stompy 34->43 (+9), emeraldsnakes 19->28 (+9), ramp 42->51 (+8), kiln 51->59 (+8), kindling 52->56 (+4), rabble 32->36 (+4), reaper 26->28 (+2), tally 26->28 (+2), unwinder 16->18 (+1)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +5.8, lower bound +3.6)
+
+## bant:wurmspeaker druid (rampant_growth:4:order_druid) seed 91
+matches 31.0 -> 41.2  +10.2 +/- 2.4   | game one 37.6 -> 44.9  +7.4 +/- 2.0   | later 35.8 -> 43.1  +7.3 +/- 2.8 (unpaired)   | n 1600
+by opponent: hexaura 39->56 (+17), sourworms 19->34 (+14), wskies 33->45 (+12), thicket 49->61 (+12), skies 19->31 (+12), sower 8->16 (+9), uwskies 40->48 (+8), auras 58->65 (+8), countersnake 29->36 (+7), locks 16->21 (+4)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +10.2, lower bound +7.8)
+
+## naya:wurms druid (rampant_growth:4:order_druid) seed 91
+matches 44.2 -> 49.9  +5.7 +/- 2.4   | game one 48.4 -> 51.4  +3.0 +/- 1.9   | later 45.4 -> 49.2  +3.8 +/- 2.7 (unpaired)   | n 1760
+by opponent: stompy 28->45 (+17), auras 53->66 (+13), lifegain 34->45 (+11), emeraldsnakes 20->29 (+9), tokens 49->56 (+8), minefield 79->86 (+6), warband 33->39 (+6), muster 46->50 (+4), tollgate 66->68 (+1), rabble 39->34 (-5), snakes 39->32 (-7)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +5.7, lower bound +3.3)
+

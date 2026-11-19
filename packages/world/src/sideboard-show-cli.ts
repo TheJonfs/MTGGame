@@ -1,5 +1,5 @@
 /**
- * pnpm sideboard:show [--format peasant] [--list kiln] [--vs k1,k2] [--shapes none] — S56: what a list's AI brings in and takes out
+ * pnpm sideboard:show [--format peasant] [--list kiln] [--vs k1,k2] [--shapes none] [--rating file] — S56: what a list's AI brings in and takes out
  * against each other list of the field (its registered fifteen, or the one the field's builder gives it).
  */
 import { readFileSync } from "node:fs";
@@ -15,7 +15,8 @@ import { formatView, type CardRatingTable } from "./rating.js";
 const arg = (k: string, d: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1]! : d; };
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const pool = loadCardPool(join(ROOT, "data/cards")).cards;
-const rating0 = JSON.parse(readFileSync(join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable;
+// S73a: `--rating <file>` — another rating table (as open:rr's), to see what a rebuild changed in a fifteen
+const rating0 = JSON.parse(readFileSync(arg("rating", "") || join(ROOT, "data/convocation/card-rating.json"), "utf8")) as CardRatingTable;
 // S62 (ADR-176): `--format <id>` — that format's lists, rule and shape scale (default: the Open)
 const FORMAT_ID = arg("format", "open"), rating = formatView(rating0, arg("format", "open")), OPEN_FORMAT = CONSTRUCTED_FORMATS.find((f) => f.id === FORMAT_ID)!, OPEN_DECKS = FORMAT_DECKS[FORMAT_ID]!, OPEN_FIELD = FORMAT_FIELD[FORMAT_ID]!;
 if (!OPEN_DECKS) throw new Error(`sideboard:show --format: no format ${FORMAT_ID}`);

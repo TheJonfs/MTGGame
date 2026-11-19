@@ -1,0 +1,79 @@
+{
+ "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
+ "when": "2026-10-22",
+ "matchesAPairing": 60,
+ "byList": {
+  "kiln": {
+   "matches": 53,
+   "gameOne": 56.8,
+   "later": 49.9,
+   "n": 660
+  },
+  "locks": {
+   "matches": 53,
+   "gameOne": 53,
+   "later": 51.9,
+   "n": 660
+  },
+  "minefield": {
+   "matches": 58.6,
+   "gameOne": 53.6,
+   "later": 57.1,
+   "n": 660
+  },
+  "muster": {
+   "matches": 42.9,
+   "gameOne": 49.7,
+   "later": 42.7,
+   "n": 660
+  },
+  "rabble": {
+   "matches": 77.8,
+   "gameOne": 70.8,
+   "later": 70.1,
+   "n": 660
+  },
+  "skies": {
+   "matches": 54,
+   "gameOne": 52.7,
+   "later": 52.7,
+   "n": 660
+  },
+  "sweepers": {
+   "matches": 28.1,
+   "gameOne": 31.9,
+   "later": 35.2,
+   "n": 660
+  },
+  "tally": {
+   "matches": 38.3,
+   "gameOne": 42,
+   "later": 42.6,
+   "n": 660
+  },
+  "theft": {
+   "matches": 50.9,
+   "gameOne": 48.2,
+   "later": 51.6,
+   "n": 660
+  },
+  "urcontrol": {
+   "matches": 30.8,
+   "gameOne": 32.9,
+   "later": 37.2,
+   "n": 660
+  },
+  "warband": {
+   "matches": 47.4,
+   "gameOne": 46.1,
+   "later": 49.4,
+   "n": 660
+  },
+  "watch": {
+   "matches": 65.2,
+   "gameOne": 62.3,
+   "later": 60.5,
+   "n": 660
+  }
+ }
+}

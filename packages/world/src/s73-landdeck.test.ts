@@ -23,6 +23,11 @@ describe("S73: the landdeck guide shape", () => {
     for (const id of ["valakut_the_molten_pinnacle", "hearthspire", "tallyflame_court", "library_of_alexandria", "thawing_glaciers"]) expect(landDoesMore(cards.get(id)!), id).toBe(true);
     for (const id of ["taiga", "sacred_foundry", "mountain", "evolving_wilds", "barren_moor", "tranquil_thicket", "lightning_bolt"]) expect(landDoesMore(cards.get(id)!), id).toBe(false);
   });
+  it("S73a: it fires at six — the land decks, the Fun Police and Lumen Clio, and no list that only plays four grounds", () => {
+    expect(LANDDECK_AT).toBe(6);
+    const has = Object.keys(open).filter((k) => doesMore(k) >= LANDDECK_AT).sort();
+    expect(has).toEqual(["earthrise", "funpolice", "lumenclio", "minefield", "pinnacle"]);
+  });
   it("the three land decks have the shape; the Levy (four Evolving Wilds) and the Depths (twelve duals) do not", () => {
     for (const k of ["pinnacle", "minefield", "earthrise"]) expect(doesMore(k), k).toBeGreaterThanOrEqual(LANDDECK_AT);
     for (const k of ["levy", "depths", "muster", "wurmspeaker"]) expect(doesMore(k), k).toBeLessThan(LANDDECK_AT);

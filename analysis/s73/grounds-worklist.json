@@ -1,0 +1,5222 @@
+[
+ {
+  "format": "open",
+  "key": "muster",
+  "name": "the Muster",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:muster",
+  "pips": {
+   "R": 8,
+   "W": 34
+  },
+  "basics": {
+   "R": 4,
+   "W": 8
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "open",
+  "key": "warband",
+  "name": "the Warband (Chris's list to test against the Muster)",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:warband",
+  "pips": {
+   "R": 47,
+   "W": 5
+  },
+  "basics": {
+   "R": 12,
+   "W": 2
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "open",
+  "key": "levy",
+  "name": "the Levy",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:levy",
+  "pips": {
+   "W": 31,
+   "B": 17
+  },
+  "basics": {
+   "W": 5,
+   "B": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "sweep",
+  "name": "the Sweep",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:sweep",
+  "pips": {
+   "B": 22,
+   "R": 18
+  },
+  "basics": {
+   "B": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "sweep",
+  "name": "the Sweep",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:sweep",
+  "pips": {
+   "B": 22,
+   "G": 20
+  },
+  "basics": {
+   "B": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "sweep",
+  "name": "the Sweep",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:sweep",
+  "pips": {
+   "R": 18,
+   "G": 20
+  },
+  "basics": {
+   "R": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "depths",
+  "name": "the Depths",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:depths",
+  "pips": {
+   "U": 44,
+   "G": 12
+  },
+  "basics": {
+   "U": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "depths",
+  "name": "the Depths",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:depths",
+  "pips": {
+   "U": 44,
+   "B": 14
+  },
+  "basics": {
+   "U": 0,
+   "B": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "depths",
+  "name": "the Depths",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:depths",
+  "pips": {
+   "B": 14,
+   "G": 12
+  },
+  "basics": {
+   "B": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "pall",
+  "name": "the Pall",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:pall",
+  "pips": {
+   "W": 4,
+   "B": 51
+  },
+  "basics": {
+   "W": 0,
+   "B": 4
+  },
+  "archetype": "combo"
+ },
+ {
+  "format": "open",
+  "key": "pall",
+  "name": "the Pall",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:pall",
+  "pips": {
+   "B": 51,
+   "R": 4
+  },
+  "basics": {
+   "B": 4,
+   "R": 0
+  },
+  "archetype": "combo"
+ },
+ {
+  "format": "open",
+  "key": "pall",
+  "name": "the Pall",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:pall",
+  "pips": {
+   "R": 4,
+   "W": 4
+  },
+  "basics": {
+   "R": 0,
+   "W": 0
+  },
+  "archetype": "combo"
+ },
+ {
+  "format": "open",
+  "key": "kiln",
+  "name": "the Kiln",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:kiln",
+  "pips": {
+   "U": 36,
+   "R": 31
+  },
+  "basics": {
+   "U": 4,
+   "R": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "writ",
+  "name": "the Writ",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:writ",
+  "pips": {
+   "U": 44,
+   "B": 28
+  },
+  "basics": {
+   "U": 0,
+   "B": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "countersnake",
+  "name": "Countersnake",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:countersnake",
+  "pips": {
+   "U": 25,
+   "G": 24
+  },
+  "basics": {
+   "U": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "countersnake",
+  "name": "Countersnake",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:countersnake",
+  "pips": {
+   "W": 12,
+   "G": 24
+  },
+  "basics": {
+   "W": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "countersnake",
+  "name": "Countersnake",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:countersnake",
+  "pips": {
+   "W": 12,
+   "B": 4
+  },
+  "basics": {
+   "W": 0,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "countersnake",
+  "name": "Countersnake",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:countersnake",
+  "pips": {
+   "U": 25,
+   "B": 4
+  },
+  "basics": {
+   "U": 0,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "countersnake",
+  "name": "Countersnake",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:countersnake",
+  "pips": {
+   "B": 4,
+   "G": 24
+  },
+  "basics": {
+   "B": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "countersnake",
+  "name": "Countersnake",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:countersnake",
+  "pips": {
+   "W": 12,
+   "U": 25
+  },
+  "basics": {
+   "W": 0,
+   "U": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "tollgate",
+  "name": "the Tollgate",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:tollgate",
+  "pips": {
+   "W": 18,
+   "G": 14
+  },
+  "basics": {
+   "W": 2,
+   "G": 1
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "tollgate",
+  "name": "the Tollgate",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:tollgate",
+  "pips": {
+   "R": 28,
+   "W": 18
+  },
+  "basics": {
+   "R": 2,
+   "W": 2
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "tollgate",
+  "name": "the Tollgate",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:tollgate",
+  "pips": {
+   "R": 28,
+   "G": 14
+  },
+  "basics": {
+   "R": 2,
+   "G": 1
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "reaperclio",
+  "name": "Reaper Clio",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaperclio",
+  "pips": {
+   "U": 12,
+   "R": 11
+  },
+  "basics": {
+   "U": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "reaperclio",
+  "name": "Reaper Clio",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaperclio",
+  "pips": {
+   "U": 12,
+   "G": 30
+  },
+  "basics": {
+   "U": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "reaperclio",
+  "name": "Reaper Clio",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaperclio",
+  "pips": {
+   "B": 9,
+   "R": 11
+  },
+  "basics": {
+   "B": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "reaperclio",
+  "name": "Reaper Clio",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaperclio",
+  "pips": {
+   "U": 12,
+   "B": 9
+  },
+  "basics": {
+   "U": 0,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "reaperclio",
+  "name": "Reaper Clio",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaperclio",
+  "pips": {
+   "B": 9,
+   "G": 30
+  },
+  "basics": {
+   "B": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "reaperclio",
+  "name": "Reaper Clio",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaperclio",
+  "pips": {
+   "R": 11,
+   "G": 30
+  },
+  "basics": {
+   "R": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "marducontrol",
+  "name": "Mardu Control",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:marducontrol",
+  "pips": {
+   "W": 25,
+   "B": 34
+  },
+  "basics": {
+   "W": 0,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "marducontrol",
+  "name": "Mardu Control",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:marducontrol",
+  "pips": {
+   "B": 34,
+   "R": 10
+  },
+  "basics": {
+   "B": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "marducontrol",
+  "name": "Mardu Control",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:marducontrol",
+  "pips": {
+   "R": 10,
+   "W": 25
+  },
+  "basics": {
+   "R": 0,
+   "W": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "emeraldsnakes",
+  "name": "Emerald Snakes",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:emeraldsnakes",
+  "pips": {
+   "U": 1,
+   "R": 8
+  },
+  "basics": {
+   "U": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "emeraldsnakes",
+  "name": "Emerald Snakes",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:emeraldsnakes",
+  "pips": {
+   "U": 1,
+   "G": 36
+  },
+  "basics": {
+   "U": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "emeraldsnakes",
+  "name": "Emerald Snakes",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:emeraldsnakes",
+  "pips": {
+   "R": 8,
+   "G": 36
+  },
+  "basics": {
+   "R": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "pinnacle",
+  "name": "the Pinnacle",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:pinnacle",
+  "pips": {
+   "R": 45,
+   "G": 2
+  },
+  "basics": {
+   "R": 5,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "open",
+  "key": "minefield",
+  "name": "the Minefield",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:minefield",
+  "pips": {
+   "W": 19,
+   "G": 12
+  },
+  "basics": {
+   "W": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "minefield",
+  "name": "the Minefield",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:minefield",
+  "pips": {
+   "R": 28,
+   "W": 19
+  },
+  "basics": {
+   "R": 4,
+   "W": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "minefield",
+  "name": "the Minefield",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:minefield",
+  "pips": {
+   "R": 28,
+   "G": 12
+  },
+  "basics": {
+   "R": 4,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "lumenclio",
+  "name": "Lumen Clio",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:lumenclio",
+  "pips": {
+   "U": 15,
+   "R": 4
+  },
+  "basics": {
+   "U": 0,
+   "R": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "lumenclio",
+  "name": "Lumen Clio",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:lumenclio",
+  "pips": {
+   "W": 10,
+   "B": 26
+  },
+  "basics": {
+   "W": 0,
+   "B": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "lumenclio",
+  "name": "Lumen Clio",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:lumenclio",
+  "pips": {
+   "B": 26,
+   "R": 4
+  },
+  "basics": {
+   "B": 0,
+   "R": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "lumenclio",
+  "name": "Lumen Clio",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:lumenclio",
+  "pips": {
+   "R": 4,
+   "W": 10
+  },
+  "basics": {
+   "R": 0,
+   "W": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "lumenclio",
+  "name": "Lumen Clio",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:lumenclio",
+  "pips": {
+   "U": 15,
+   "B": 26
+  },
+  "basics": {
+   "U": 0,
+   "B": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "lumenclio",
+  "name": "Lumen Clio",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:lumenclio",
+  "pips": {
+   "W": 10,
+   "U": 15
+  },
+  "basics": {
+   "W": 0,
+   "U": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "earthrise",
+  "name": "5C Earthrise",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:earthrise",
+  "pips": {
+   "U": 5,
+   "R": 19
+  },
+  "basics": {
+   "U": 0,
+   "R": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "earthrise",
+  "name": "5C Earthrise",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:earthrise",
+  "pips": {
+   "U": 5,
+   "G": 12
+  },
+  "basics": {
+   "U": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "earthrise",
+  "name": "5C Earthrise",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:earthrise",
+  "pips": {
+   "W": 15,
+   "G": 12
+  },
+  "basics": {
+   "W": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "earthrise",
+  "name": "5C Earthrise",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:earthrise",
+  "pips": {
+   "W": 15,
+   "B": 10
+  },
+  "basics": {
+   "W": 0,
+   "B": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "earthrise",
+  "name": "5C Earthrise",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:earthrise",
+  "pips": {
+   "B": 10,
+   "R": 19
+  },
+  "basics": {
+   "B": 0,
+   "R": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "earthrise",
+  "name": "5C Earthrise",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:earthrise",
+  "pips": {
+   "R": 19,
+   "W": 15
+  },
+  "basics": {
+   "R": 0,
+   "W": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "earthrise",
+  "name": "5C Earthrise",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:earthrise",
+  "pips": {
+   "U": 5,
+   "B": 10
+  },
+  "basics": {
+   "U": 0,
+   "B": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "earthrise",
+  "name": "5C Earthrise",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:earthrise",
+  "pips": {
+   "B": 10,
+   "G": 12
+  },
+  "basics": {
+   "B": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "earthrise",
+  "name": "5C Earthrise",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:earthrise",
+  "pips": {
+   "W": 15,
+   "U": 5
+  },
+  "basics": {
+   "W": 0,
+   "U": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "earthrise",
+  "name": "5C Earthrise",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:earthrise",
+  "pips": {
+   "R": 19,
+   "G": 12
+  },
+  "basics": {
+   "R": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "funpolice",
+  "name": "the Fun Police",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:funpolice",
+  "pips": {
+   "U": 9,
+   "R": 19
+  },
+  "basics": {
+   "U": 0,
+   "R": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "funpolice",
+  "name": "the Fun Police",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:funpolice",
+  "pips": {
+   "U": 9,
+   "G": 1
+  },
+  "basics": {
+   "U": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "funpolice",
+  "name": "the Fun Police",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:funpolice",
+  "pips": {
+   "W": 11,
+   "G": 1
+  },
+  "basics": {
+   "W": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "funpolice",
+  "name": "the Fun Police",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:funpolice",
+  "pips": {
+   "W": 11,
+   "B": 9
+  },
+  "basics": {
+   "W": 0,
+   "B": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "funpolice",
+  "name": "the Fun Police",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:funpolice",
+  "pips": {
+   "B": 9,
+   "R": 19
+  },
+  "basics": {
+   "B": 0,
+   "R": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "funpolice",
+  "name": "the Fun Police",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:funpolice",
+  "pips": {
+   "R": 19,
+   "W": 11
+  },
+  "basics": {
+   "R": 0,
+   "W": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "funpolice",
+  "name": "the Fun Police",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:funpolice",
+  "pips": {
+   "U": 9,
+   "B": 9
+  },
+  "basics": {
+   "U": 0,
+   "B": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "funpolice",
+  "name": "the Fun Police",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:funpolice",
+  "pips": {
+   "B": 9,
+   "G": 1
+  },
+  "basics": {
+   "B": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "funpolice",
+  "name": "the Fun Police",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:funpolice",
+  "pips": {
+   "W": 11,
+   "U": 9
+  },
+  "basics": {
+   "W": 0,
+   "U": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "open",
+  "key": "funpolice",
+  "name": "the Fun Police",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:funpolice",
+  "pips": {
+   "R": 19,
+   "G": 1
+  },
+  "basics": {
+   "R": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "peasant",
+  "key": "br",
+  "name": "BR Removal",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": false,
+  "legal": false,
+  "chris": false,
+  "root": "peasant:br",
+  "pips": {
+   "B": 37,
+   "R": 8
+  },
+  "basics": {
+   "B": 12,
+   "R": 7
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "peasant",
+  "key": "brdjinn",
+  "name": "BR Djinn",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": false,
+  "legal": false,
+  "chris": false,
+  "root": "peasant:brdjinn",
+  "pips": {
+   "B": 38,
+   "R": 10
+  },
+  "basics": {
+   "B": 12,
+   "R": 7
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "peasant",
+  "key": "stompy",
+  "name": "RG Stompy",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": false,
+  "chris": false,
+  "root": "peasant:stompy",
+  "pips": {
+   "R": 8,
+   "G": 41
+  },
+  "basics": {
+   "R": 4,
+   "G": 13
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "peasant",
+  "key": "muster",
+  "name": "the Muster (Peasant)",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": false,
+  "chris": false,
+  "root": "peasant:muster",
+  "pips": {
+   "R": 8,
+   "W": 37
+  },
+  "basics": {
+   "R": 6,
+   "W": 11
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "peasant",
+  "key": "tokens",
+  "name": "RW Tokens",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": false,
+  "chris": false,
+  "root": "peasant:tokens",
+  "pips": {
+   "R": 23,
+   "W": 24
+  },
+  "basics": {
+   "R": 9,
+   "W": 10
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "peasant",
+  "key": "skies",
+  "name": "UW Skies",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": false,
+  "chris": false,
+  "root": "peasant:skies",
+  "pips": {
+   "W": 26,
+   "U": 20
+  },
+  "basics": {
+   "W": 10,
+   "U": 10
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "peasant",
+  "key": "skieswall",
+  "name": "UW Skies, walls",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": false,
+  "chris": false,
+  "root": "peasant:skieswall",
+  "pips": {
+   "W": 24,
+   "U": 20
+  },
+  "basics": {
+   "W": 10,
+   "U": 10
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "peasant",
+  "key": "bw",
+  "name": "BW Aristocrats",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": false,
+  "legal": false,
+  "chris": false,
+  "root": "peasant:bw",
+  "pips": {
+   "W": 19,
+   "B": 28
+  },
+  "basics": {
+   "W": 9,
+   "B": 10
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "peasant",
+  "key": "urcontrol",
+  "name": "UR Pyroclasm Control",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": false,
+  "legal": false,
+  "chris": false,
+  "root": "peasant:urcontrol",
+  "pips": {
+   "U": 36,
+   "R": 15
+  },
+  "basics": {
+   "U": 11,
+   "R": 9
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "peasant",
+  "key": "naya",
+  "name": "Naya Flash Snakes",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": false,
+  "legal": false,
+  "chris": false,
+  "root": "peasant:naya",
+  "pips": {
+   "W": 7,
+   "G": 25
+  },
+  "basics": {
+   "W": 1,
+   "G": 6
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "peasant",
+  "key": "naya",
+  "name": "Naya Flash Snakes",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": false,
+  "chris": false,
+  "root": "peasant:naya",
+  "pips": {
+   "R": 12,
+   "W": 7
+  },
+  "basics": {
+   "R": 1,
+   "W": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "peasant",
+  "key": "naya",
+  "name": "Naya Flash Snakes",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": false,
+  "chris": false,
+  "root": "peasant:naya",
+  "pips": {
+   "R": 12,
+   "G": 25
+  },
+  "basics": {
+   "R": 1,
+   "G": 6
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "peasant",
+  "key": "wbbasilisk",
+  "name": "WB Basilisk",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": false,
+  "legal": false,
+  "chris": true,
+  "root": "peasant:wbbasilisk",
+  "pips": {
+   "W": 32,
+   "B": 16
+  },
+  "basics": {
+   "W": 7,
+   "B": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "naya",
+  "key": "tollgate",
+  "name": "the Tollgate",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:tollgate",
+  "pips": {
+   "W": 18,
+   "G": 14
+  },
+  "basics": {
+   "W": 2,
+   "G": 1
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "naya",
+  "key": "tollgate",
+  "name": "the Tollgate",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:tollgate",
+  "pips": {
+   "R": 28,
+   "W": 18
+  },
+  "basics": {
+   "R": 2,
+   "W": 2
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "naya",
+  "key": "tollgate",
+  "name": "the Tollgate",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:tollgate",
+  "pips": {
+   "R": 28,
+   "G": 14
+  },
+  "basics": {
+   "R": 2,
+   "G": 1
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "naya",
+  "key": "snakes",
+  "name": "the Brood",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "naya:snakes",
+  "pips": {
+   "W": 16,
+   "G": 24
+  },
+  "basics": {
+   "W": 1,
+   "G": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "naya",
+  "key": "snakes",
+  "name": "the Brood",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "naya:snakes",
+  "pips": {
+   "R": 15,
+   "W": 16
+  },
+  "basics": {
+   "R": 1,
+   "W": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "naya",
+  "key": "snakes",
+  "name": "the Brood",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "naya:snakes",
+  "pips": {
+   "R": 15,
+   "G": 24
+  },
+  "basics": {
+   "R": 1,
+   "G": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "naya",
+  "key": "muster",
+  "name": "the Muster",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:muster",
+  "pips": {
+   "R": 8,
+   "W": 34
+  },
+  "basics": {
+   "R": 4,
+   "W": 8
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "naya",
+  "key": "warband",
+  "name": "the Warband",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:warband",
+  "pips": {
+   "R": 47,
+   "W": 5
+  },
+  "basics": {
+   "R": 12,
+   "W": 2
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "naya",
+  "key": "tokens",
+  "name": "the Watch",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "naya:tokens",
+  "pips": {
+   "R": 22,
+   "W": 31
+  },
+  "basics": {
+   "R": 6,
+   "W": 5
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "naya",
+  "key": "auras",
+  "name": "the Thicket",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "naya:auras",
+  "pips": {
+   "W": 17,
+   "G": 28
+  },
+  "basics": {
+   "W": 5,
+   "G": 8
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "naya",
+  "key": "lifegain",
+  "name": "the Chantry",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "naya:lifegain",
+  "pips": {
+   "W": 26,
+   "G": 8
+  },
+  "basics": {
+   "W": 2,
+   "G": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "naya",
+  "key": "lifegain",
+  "name": "the Chantry",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "naya:lifegain",
+  "pips": {
+   "R": 22,
+   "W": 26
+  },
+  "basics": {
+   "R": 1,
+   "W": 2
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "naya",
+  "key": "lifegain",
+  "name": "the Chantry",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "naya:lifegain",
+  "pips": {
+   "R": 22,
+   "G": 8
+  },
+  "basics": {
+   "R": 1,
+   "G": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "naya",
+  "key": "stompy",
+  "name": "the Stampede",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "naya:stompy",
+  "pips": {
+   "R": 8,
+   "G": 42
+  },
+  "basics": {
+   "R": 2,
+   "G": 9
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "naya",
+  "key": "emeraldsnakes",
+  "name": "Emerald Snakes",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:emeraldsnakes",
+  "pips": {
+   "R": 8,
+   "G": 42
+  },
+  "basics": {
+   "R": 0,
+   "G": 4
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "naya",
+  "key": "minefield",
+  "name": "the Minefield",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:minefield",
+  "pips": {
+   "W": 19,
+   "G": 12
+  },
+  "basics": {
+   "W": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "naya",
+  "key": "minefield",
+  "name": "the Minefield",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:minefield",
+  "pips": {
+   "R": 28,
+   "W": 19
+  },
+  "basics": {
+   "R": 4,
+   "W": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "naya",
+  "key": "minefield",
+  "name": "the Minefield",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:minefield",
+  "pips": {
+   "R": 28,
+   "G": 12
+  },
+  "basics": {
+   "R": 4,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "esper",
+  "key": "writ",
+  "name": "the Writ",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:writ",
+  "pips": {
+   "U": 44,
+   "B": 28
+  },
+  "basics": {
+   "U": 6,
+   "B": 5
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "esper",
+  "key": "levy",
+  "name": "the Levy",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:levy",
+  "pips": {
+   "W": 31,
+   "B": 17
+  },
+  "basics": {
+   "W": 5,
+   "B": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "esper",
+  "key": "locks",
+  "name": "the Locks",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "esper:locks",
+  "pips": {
+   "W": 25,
+   "B": 8
+  },
+  "basics": {
+   "W": 2,
+   "B": 2
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "esper",
+  "key": "locks",
+  "name": "the Locks",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "esper:locks",
+  "pips": {
+   "U": 41,
+   "B": 8
+  },
+  "basics": {
+   "U": 2,
+   "B": 2
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "esper",
+  "key": "locks",
+  "name": "the Locks",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "esper:locks",
+  "pips": {
+   "W": 25,
+   "U": 41
+  },
+  "basics": {
+   "W": 2,
+   "U": 2
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "esper",
+  "key": "undertow",
+  "name": "the Undertow",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:undertow",
+  "pips": {
+   "U": 46,
+   "B": 14
+  },
+  "basics": {
+   "U": 6,
+   "B": 3
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "esper",
+  "key": "wbcontrol",
+  "name": "the Chancel",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "esper:wbcontrol",
+  "pips": {
+   "W": 36,
+   "B": 28
+  },
+  "basics": {
+   "W": 5,
+   "B": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "esper",
+  "key": "skies",
+  "name": "the Aerie",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "esper:skies",
+  "pips": {
+   "W": 29,
+   "U": 21
+  },
+  "basics": {
+   "W": 4,
+   "U": 8
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "esper",
+  "key": "bwtokens",
+  "name": "the Roll",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "esper:bwtokens",
+  "pips": {
+   "W": 44,
+   "B": 13
+  },
+  "basics": {
+   "W": 6,
+   "B": 6
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "esper",
+  "key": "tempo",
+  "name": "the Eddy",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "esper:tempo",
+  "pips": {
+   "U": 51,
+   "B": 3
+  },
+  "basics": {
+   "U": 16,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "mardu",
+  "key": "pall",
+  "name": "the Pall",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:pall",
+  "pips": {
+   "W": 4,
+   "B": 51
+  },
+  "basics": {
+   "W": 0,
+   "B": 4
+  },
+  "archetype": "combo"
+ },
+ {
+  "format": "mardu",
+  "key": "pall",
+  "name": "the Pall",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:pall",
+  "pips": {
+   "B": 51,
+   "R": 4
+  },
+  "basics": {
+   "B": 4,
+   "R": 0
+  },
+  "archetype": "combo"
+ },
+ {
+  "format": "mardu",
+  "key": "pall",
+  "name": "the Pall",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:pall",
+  "pips": {
+   "R": 4,
+   "W": 4
+  },
+  "basics": {
+   "R": 0,
+   "W": 0
+  },
+  "archetype": "combo"
+ },
+ {
+  "format": "mardu",
+  "key": "marducontrol",
+  "name": "Mardu Control",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:marducontrol",
+  "pips": {
+   "W": 25,
+   "B": 34
+  },
+  "basics": {
+   "W": 0,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "mardu",
+  "key": "marducontrol",
+  "name": "Mardu Control",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:marducontrol",
+  "pips": {
+   "B": 34,
+   "R": 10
+  },
+  "basics": {
+   "B": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "mardu",
+  "key": "marducontrol",
+  "name": "Mardu Control",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:marducontrol",
+  "pips": {
+   "R": 10,
+   "W": 25
+  },
+  "basics": {
+   "R": 0,
+   "W": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "mardu",
+  "key": "muster",
+  "name": "the Muster (Mardu)",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:muster",
+  "pips": {
+   "R": 8,
+   "W": 34
+  },
+  "basics": {
+   "R": 4,
+   "W": 8
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "mardu",
+  "key": "warband",
+  "name": "the Warband (Mardu)",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:warband",
+  "pips": {
+   "R": 47,
+   "W": 5
+  },
+  "basics": {
+   "R": 12,
+   "W": 2
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "mardu",
+  "key": "roll",
+  "name": "the Roll (Mardu)",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "esper:bwtokens",
+  "pips": {
+   "W": 44,
+   "B": 13
+  },
+  "basics": {
+   "W": 6,
+   "B": 6
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "mardu",
+  "key": "levy",
+  "name": "the Levy",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:levy",
+  "pips": {
+   "W": 31,
+   "B": 17
+  },
+  "basics": {
+   "W": 5,
+   "B": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "mardu",
+  "key": "chancel",
+  "name": "the Chancel (Mardu)",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "esper:wbcontrol",
+  "pips": {
+   "W": 34,
+   "B": 32
+  },
+  "basics": {
+   "W": 3,
+   "B": 3
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "mardu",
+  "key": "chancel",
+  "name": "the Chancel (Mardu)",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "esper:wbcontrol",
+  "pips": {
+   "B": 32,
+   "R": 2
+  },
+  "basics": {
+   "B": 3,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "mardu",
+  "key": "chancel",
+  "name": "the Chancel (Mardu)",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "esper:wbcontrol",
+  "pips": {
+   "R": 2,
+   "W": 34
+  },
+  "basics": {
+   "R": 0,
+   "W": 3
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "mardu",
+  "key": "watch",
+  "name": "the Watch (Mardu)",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "naya:tokens",
+  "pips": {
+   "R": 22,
+   "W": 29
+  },
+  "basics": {
+   "R": 6,
+   "W": 5
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "mardu",
+  "key": "brremoval",
+  "name": "the Ashen",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "mardu:brremoval",
+  "pips": {
+   "B": 45,
+   "R": 10
+  },
+  "basics": {
+   "B": 6,
+   "R": 2
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "mardu",
+  "key": "witch",
+  "name": "the Witch",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "mardu:witch",
+  "pips": {
+   "W": 2,
+   "B": 56
+  },
+  "basics": {
+   "W": 0,
+   "B": 3
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "grixis",
+  "key": "kiln",
+  "name": "the Kiln",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:kiln",
+  "pips": {
+   "U": 36,
+   "R": 31
+  },
+  "basics": {
+   "U": 4,
+   "R": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "grixis",
+  "key": "writ",
+  "name": "the Writ",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:writ",
+  "pips": {
+   "U": 44,
+   "B": 28
+  },
+  "basics": {
+   "U": 6,
+   "B": 5
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "grixis",
+  "key": "tempo",
+  "name": "the Eddy",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "esper:tempo",
+  "pips": {
+   "U": 51,
+   "B": 3
+  },
+  "basics": {
+   "U": 16,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "grixis",
+  "key": "undertow",
+  "name": "the Undertow",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:undertow",
+  "pips": {
+   "U": 46,
+   "B": 14
+  },
+  "basics": {
+   "U": 6,
+   "B": 3
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "grixis",
+  "key": "tally",
+  "name": "the Tally",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:tally",
+  "pips": {
+   "U": 15,
+   "R": 24
+  },
+  "basics": {
+   "U": 4,
+   "R": 8
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "grixis",
+  "key": "ashen",
+  "name": "the Ashen",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "mardu:brremoval",
+  "pips": {
+   "B": 45,
+   "R": 10
+  },
+  "basics": {
+   "B": 6,
+   "R": 2
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "grixis",
+  "key": "br",
+  "name": "BR Removal",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "peasant:br",
+  "pips": {
+   "B": 33,
+   "R": 8
+  },
+  "basics": {
+   "B": 12,
+   "R": 7
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "grixis",
+  "key": "clio",
+  "name": "Grixis Clio (working name)",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "grixis:clio",
+  "pips": {
+   "U": 36,
+   "R": 6
+  },
+  "basics": {
+   "U": 4,
+   "R": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "grixis",
+  "key": "clio",
+  "name": "Grixis Clio (working name)",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "grixis:clio",
+  "pips": {
+   "B": 28,
+   "R": 6
+  },
+  "basics": {
+   "B": 4,
+   "R": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "grixis",
+  "key": "clio",
+  "name": "Grixis Clio (working name)",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "grixis:clio",
+  "pips": {
+   "U": 36,
+   "B": 28
+  },
+  "basics": {
+   "U": 4,
+   "B": 4
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "grixis",
+  "key": "mbclio",
+  "name": "Mono-Black Clio",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "grixis:mbclio",
+  "pips": {
+   "U": 5,
+   "B": 55
+  },
+  "basics": {
+   "U": 0,
+   "B": 4
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "grixis",
+  "key": "massacrats",
+  "name": "Massacrats",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "grixis:massacrats",
+  "pips": {
+   "U": 5,
+   "R": 4
+  },
+  "basics": {
+   "U": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "grixis",
+  "key": "massacrats",
+  "name": "Massacrats",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "grixis:massacrats",
+  "pips": {
+   "B": 49,
+   "R": 4
+  },
+  "basics": {
+   "B": 3,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "grixis",
+  "key": "massacrats",
+  "name": "Massacrats",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "grixis:massacrats",
+  "pips": {
+   "U": 5,
+   "B": 49
+  },
+  "basics": {
+   "U": 0,
+   "B": 3
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jund",
+  "key": "sweep",
+  "name": "the Sweep",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:sweep",
+  "pips": {
+   "B": 22,
+   "R": 18
+  },
+  "basics": {
+   "B": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jund",
+  "key": "sweep",
+  "name": "the Sweep",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:sweep",
+  "pips": {
+   "B": 22,
+   "G": 20
+  },
+  "basics": {
+   "B": 0,
+   "G": 2
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jund",
+  "key": "sweep",
+  "name": "the Sweep",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:sweep",
+  "pips": {
+   "R": 18,
+   "G": 20
+  },
+  "basics": {
+   "R": 0,
+   "G": 2
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jund",
+  "key": "ashen",
+  "name": "the Ashen",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "mardu:brremoval",
+  "pips": {
+   "B": 45,
+   "R": 10
+  },
+  "basics": {
+   "B": 6,
+   "R": 2
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jund",
+  "key": "stompy",
+  "name": "the Stampede",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "naya:stompy",
+  "pips": {
+   "R": 8,
+   "G": 42
+  },
+  "basics": {
+   "R": 2,
+   "G": 9
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "jund",
+  "key": "emeraldsnakes",
+  "name": "Emerald Snakes",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:emeraldsnakes",
+  "pips": {
+   "R": 8,
+   "G": 42
+  },
+  "basics": {
+   "R": 0,
+   "G": 9
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jund",
+  "key": "reaper",
+  "name": "Reaper Control",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaper",
+  "pips": {
+   "B": 3,
+   "R": 26
+  },
+  "basics": {
+   "B": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jund",
+  "key": "reaper",
+  "name": "Reaper Control",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaper",
+  "pips": {
+   "B": 3,
+   "G": 30
+  },
+  "basics": {
+   "B": 0,
+   "G": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jund",
+  "key": "reaper",
+  "name": "Reaper Control",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaper",
+  "pips": {
+   "R": 26,
+   "G": 30
+  },
+  "basics": {
+   "R": 0,
+   "G": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jund",
+  "key": "bfh",
+  "name": "Black Forest Ham",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "jund:bfh",
+  "pips": {
+   "B": 16,
+   "G": 34
+  },
+  "basics": {
+   "B": 5,
+   "G": 9
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jund",
+  "key": "dragons",
+  "name": "Jund Dragons",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "jund:dragons",
+  "pips": {
+   "B": 18,
+   "R": 23
+  },
+  "basics": {
+   "B": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jund",
+  "key": "dragons",
+  "name": "Jund Dragons",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "jund:dragons",
+  "pips": {
+   "B": 18,
+   "G": 16
+  },
+  "basics": {
+   "B": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jund",
+  "key": "dragons",
+  "name": "Jund Dragons",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "jund:dragons",
+  "pips": {
+   "R": 23,
+   "G": 16
+  },
+  "basics": {
+   "R": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jeskai",
+  "key": "kiln",
+  "name": "the Kiln",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:kiln",
+  "pips": {
+   "U": 36,
+   "R": 31
+  },
+  "basics": {
+   "U": 4,
+   "R": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jeskai",
+  "key": "tally",
+  "name": "the Tally",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:tally",
+  "pips": {
+   "U": 15,
+   "R": 24
+  },
+  "basics": {
+   "U": 4,
+   "R": 8
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "jeskai",
+  "key": "skies",
+  "name": "the Aerie",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "esper:skies",
+  "pips": {
+   "W": 29,
+   "U": 21
+  },
+  "basics": {
+   "W": 5,
+   "U": 8
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jeskai",
+  "key": "watch",
+  "name": "the Watch (Mardu)",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "naya:tokens",
+  "pips": {
+   "R": 22,
+   "W": 29
+  },
+  "basics": {
+   "R": 6,
+   "W": 5
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "jeskai",
+  "key": "muster",
+  "name": "the Muster",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:muster",
+  "pips": {
+   "R": 8,
+   "W": 34
+  },
+  "basics": {
+   "R": 4,
+   "W": 8
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "jeskai",
+  "key": "warband",
+  "name": "the Warband (Chris's list to test against the Muster)",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:warband",
+  "pips": {
+   "R": 47,
+   "W": 5
+  },
+  "basics": {
+   "R": 12,
+   "W": 2
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "jeskai",
+  "key": "urcontrol",
+  "name": "UR Pyroclasm Control",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "peasant:urcontrol",
+  "pips": {
+   "U": 36,
+   "R": 15
+  },
+  "basics": {
+   "U": 11,
+   "R": 9
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "jeskai",
+  "key": "sweepers",
+  "name": "Jeskai Sweepers (working name)",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "jeskai:sweepers",
+  "pips": {
+   "U": 21,
+   "R": 8
+  },
+  "basics": {
+   "U": 4,
+   "R": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "jeskai",
+  "key": "sweepers",
+  "name": "Jeskai Sweepers (working name)",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "jeskai:sweepers",
+  "pips": {
+   "R": 8,
+   "W": 21
+  },
+  "basics": {
+   "R": 0,
+   "W": 4
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "jeskai",
+  "key": "sweepers",
+  "name": "Jeskai Sweepers (working name)",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "jeskai:sweepers",
+  "pips": {
+   "W": 21,
+   "U": 21
+  },
+  "basics": {
+   "W": 4,
+   "U": 4
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "jeskai",
+  "key": "theft",
+  "name": "Jeskai Theft (working name)",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "jeskai:theft",
+  "pips": {
+   "U": 23,
+   "R": 11
+  },
+  "basics": {
+   "U": 2,
+   "R": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jeskai",
+  "key": "theft",
+  "name": "Jeskai Theft (working name)",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "jeskai:theft",
+  "pips": {
+   "R": 11,
+   "W": 19
+  },
+  "basics": {
+   "R": 1,
+   "W": 3
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jeskai",
+  "key": "theft",
+  "name": "Jeskai Theft (working name)",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "jeskai:theft",
+  "pips": {
+   "W": 19,
+   "U": 23
+  },
+  "basics": {
+   "W": 3,
+   "U": 2
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "jeskai",
+  "key": "locks",
+  "name": "Jeskai Locks (working name)",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "jeskai:locks",
+  "pips": {
+   "W": 26,
+   "U": 38
+  },
+  "basics": {
+   "W": 6,
+   "U": 7
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "jeskai",
+  "key": "minefield",
+  "name": "Sacred Minefield",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "jeskai:minefield",
+  "pips": {
+   "U": 21,
+   "R": 18
+  },
+  "basics": {
+   "U": 0,
+   "R": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "jeskai",
+  "key": "minefield",
+  "name": "Sacred Minefield",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "jeskai:minefield",
+  "pips": {
+   "R": 18,
+   "W": 17
+  },
+  "basics": {
+   "R": 0,
+   "W": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "jeskai",
+  "key": "minefield",
+  "name": "Sacred Minefield",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "jeskai:minefield",
+  "pips": {
+   "W": 17,
+   "U": 21
+  },
+  "basics": {
+   "W": 0,
+   "U": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "sultai",
+  "key": "writ",
+  "name": "the Writ",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:writ",
+  "pips": {
+   "U": 44,
+   "B": 28
+  },
+  "basics": {
+   "U": 6,
+   "B": 5
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "sultai",
+  "key": "tempo",
+  "name": "the Eddy",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "esper:tempo",
+  "pips": {
+   "U": 51,
+   "B": 3
+  },
+  "basics": {
+   "U": 16,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "sultai",
+  "key": "undertow",
+  "name": "the Undertow",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:undertow",
+  "pips": {
+   "U": 46,
+   "B": 14
+  },
+  "basics": {
+   "U": 6,
+   "B": 3
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "sultai",
+  "key": "depths",
+  "name": "the Depths",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:depths",
+  "pips": {
+   "U": 44,
+   "G": 12
+  },
+  "basics": {
+   "U": 1,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "sultai",
+  "key": "depths",
+  "name": "the Depths",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:depths",
+  "pips": {
+   "U": 44,
+   "B": 14
+  },
+  "basics": {
+   "U": 1,
+   "B": 1
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "sultai",
+  "key": "depths",
+  "name": "the Depths",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:depths",
+  "pips": {
+   "B": 14,
+   "G": 12
+  },
+  "basics": {
+   "B": 1,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "sultai",
+  "key": "bfh",
+  "name": "Black Forest Ham",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "jund:bfh",
+  "pips": {
+   "B": 16,
+   "G": 34
+  },
+  "basics": {
+   "B": 5,
+   "G": 9
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "sultai",
+  "key": "reeve",
+  "name": "Sultai Reeve (working name)",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "sultai:reeve",
+  "pips": {
+   "U": 29,
+   "G": 22
+  },
+  "basics": {
+   "U": 2,
+   "G": 1
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "sultai",
+  "key": "reeve",
+  "name": "Sultai Reeve (working name)",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "sultai:reeve",
+  "pips": {
+   "U": 29,
+   "B": 16
+  },
+  "basics": {
+   "U": 2,
+   "B": 1
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "sultai",
+  "key": "reeve",
+  "name": "Sultai Reeve (working name)",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "sultai:reeve",
+  "pips": {
+   "B": 16,
+   "G": 22
+  },
+  "basics": {
+   "B": 1,
+   "G": 1
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "sultai",
+  "key": "mill",
+  "name": "Sultai Mill (working name)",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "sultai:mill",
+  "pips": {
+   "U": 53,
+   "G": 3
+  },
+  "basics": {
+   "U": 6,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "sultai",
+  "key": "mill",
+  "name": "Sultai Mill (working name)",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "sultai:mill",
+  "pips": {
+   "U": 53,
+   "B": 8
+  },
+  "basics": {
+   "U": 6,
+   "B": 3
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "sultai",
+  "key": "mill",
+  "name": "Sultai Mill (working name)",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "sultai:mill",
+  "pips": {
+   "B": 8,
+   "G": 3
+  },
+  "basics": {
+   "B": 3,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "sultai",
+  "key": "massocrafts",
+  "name": "Massocrafts",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "sultai:massocrafts",
+  "pips": {
+   "U": 5,
+   "G": 24
+  },
+  "basics": {
+   "U": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "sultai",
+  "key": "massocrafts",
+  "name": "Massocrafts",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "sultai:massocrafts",
+  "pips": {
+   "U": 5,
+   "B": 24
+  },
+  "basics": {
+   "U": 0,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "sultai",
+  "key": "massocrafts",
+  "name": "Massocrafts",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "sultai:massocrafts",
+  "pips": {
+   "B": 24,
+   "G": 24
+  },
+  "basics": {
+   "B": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "abzan",
+  "key": "levy",
+  "name": "the Levy",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:levy",
+  "pips": {
+   "W": 31,
+   "B": 17
+  },
+  "basics": {
+   "W": 5,
+   "B": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "abzan",
+  "key": "roll",
+  "name": "the Roll",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "esper:bwtokens",
+  "pips": {
+   "W": 44,
+   "B": 13
+  },
+  "basics": {
+   "W": 6,
+   "B": 6
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "abzan",
+  "key": "chancel",
+  "name": "the Chancel",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "esper:wbcontrol",
+  "pips": {
+   "W": 36,
+   "B": 28
+  },
+  "basics": {
+   "W": 5,
+   "B": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "abzan",
+  "key": "thicket",
+  "name": "the Thicket",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "naya:auras",
+  "pips": {
+   "W": 17,
+   "G": 28
+  },
+  "basics": {
+   "W": 5,
+   "G": 8
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "abzan",
+  "key": "bfh",
+  "name": "Black Forest Ham",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "jund:bfh",
+  "pips": {
+   "B": 16,
+   "G": 34
+  },
+  "basics": {
+   "B": 5,
+   "G": 9
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "abzan",
+  "key": "bw",
+  "name": "BW Aristocrats",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "peasant:bw",
+  "pips": {
+   "W": 19,
+   "B": 28
+  },
+  "basics": {
+   "W": 9,
+   "B": 10
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "abzan",
+  "key": "warden",
+  "name": "Abzan Warden (working name)",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "abzan:warden",
+  "pips": {
+   "W": 30,
+   "G": 12
+  },
+  "basics": {
+   "W": 3,
+   "G": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "abzan",
+  "key": "warden",
+  "name": "Abzan Warden (working name)",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "abzan:warden",
+  "pips": {
+   "W": 30,
+   "B": 12
+  },
+  "basics": {
+   "W": 3,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "abzan",
+  "key": "warden",
+  "name": "Abzan Warden (working name)",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "abzan:warden",
+  "pips": {
+   "B": 12,
+   "G": 12
+  },
+  "basics": {
+   "B": 0,
+   "G": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "abzan",
+  "key": "abzantokens",
+  "name": "Abzan Tokens (working name)",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "abzan:abzantokens",
+  "pips": {
+   "W": 40,
+   "G": 8
+  },
+  "basics": {
+   "W": 4,
+   "G": 0
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "abzan",
+  "key": "abzantokens",
+  "name": "Abzan Tokens (working name)",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "abzan:abzantokens",
+  "pips": {
+   "W": 40,
+   "B": 9
+  },
+  "basics": {
+   "W": 4,
+   "B": 2
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "abzan",
+  "key": "abzantokens",
+  "name": "Abzan Tokens (working name)",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "abzan:abzantokens",
+  "pips": {
+   "B": 9,
+   "G": 8
+  },
+  "basics": {
+   "B": 2,
+   "G": 0
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "abzan",
+  "key": "bwmassacrats",
+  "name": "BW Massacrats",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "abzan:bwmassacrats",
+  "pips": {
+   "W": 13,
+   "B": 37
+  },
+  "basics": {
+   "W": 1,
+   "B": 3
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "temur",
+  "key": "kiln",
+  "name": "the Kiln",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:kiln",
+  "pips": {
+   "U": 36,
+   "R": 31
+  },
+  "basics": {
+   "U": 4,
+   "R": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "temur",
+  "key": "tally",
+  "name": "the Tally",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:tally",
+  "pips": {
+   "U": 15,
+   "R": 24
+  },
+  "basics": {
+   "U": 4,
+   "R": 8
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "temur",
+  "key": "stompy",
+  "name": "the Stampede",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "naya:stompy",
+  "pips": {
+   "R": 8,
+   "G": 42
+  },
+  "basics": {
+   "R": 2,
+   "G": 9
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "temur",
+  "key": "emeraldsnakes",
+  "name": "Emerald Snakes",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:emeraldsnakes",
+  "pips": {
+   "R": 8,
+   "G": 38
+  },
+  "basics": {
+   "R": 0,
+   "G": 9
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "temur",
+  "key": "reaper",
+  "name": "Temur Snakes",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaper",
+  "pips": {
+   "R": 23,
+   "G": 26
+  },
+  "basics": {
+   "R": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "temur",
+  "key": "unwinder",
+  "name": "Temur Unwinder (working name)",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "temur:unwinder",
+  "pips": {
+   "U": 34,
+   "R": 10
+  },
+  "basics": {
+   "U": 2,
+   "R": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "temur",
+  "key": "unwinder",
+  "name": "Temur Unwinder (working name)",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "temur:unwinder",
+  "pips": {
+   "U": 34,
+   "G": 10
+  },
+  "basics": {
+   "U": 2,
+   "G": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "temur",
+  "key": "unwinder",
+  "name": "Temur Unwinder (working name)",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "temur:unwinder",
+  "pips": {
+   "R": 10,
+   "G": 10
+  },
+  "basics": {
+   "R": 1,
+   "G": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "temur",
+  "key": "ramp",
+  "name": "Temur Ramp (working name)",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "temur:ramp",
+  "pips": {
+   "U": 6,
+   "R": 8
+  },
+  "basics": {
+   "U": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "temur",
+  "key": "ramp",
+  "name": "Temur Ramp (working name)",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "temur:ramp",
+  "pips": {
+   "U": 6,
+   "G": 38
+  },
+  "basics": {
+   "U": 0,
+   "G": 6
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "temur",
+  "key": "ramp",
+  "name": "Temur Ramp (working name)",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "temur:ramp",
+  "pips": {
+   "R": 8,
+   "G": 38
+  },
+  "basics": {
+   "R": 0,
+   "G": 6
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "temur",
+  "key": "temurcontrol",
+  "name": "Temur Control",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "temur:temurcontrol",
+  "pips": {
+   "U": 25,
+   "R": 20
+  },
+  "basics": {
+   "U": 0,
+   "R": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "temur",
+  "key": "temurcontrol",
+  "name": "Temur Control",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "temur:temurcontrol",
+  "pips": {
+   "U": 25,
+   "G": 16
+  },
+  "basics": {
+   "U": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "temur",
+  "key": "temurcontrol",
+  "name": "Temur Control",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "temur:temurcontrol",
+  "pips": {
+   "R": 20,
+   "G": 16
+  },
+  "basics": {
+   "R": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "bant",
+  "key": "skies",
+  "name": "the Aerie",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "esper:skies",
+  "pips": {
+   "W": 29,
+   "U": 21
+  },
+  "basics": {
+   "W": 5,
+   "U": 8
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bant",
+  "key": "thicket",
+  "name": "the Thicket",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "naya:auras",
+  "pips": {
+   "W": 17,
+   "G": 28
+  },
+  "basics": {
+   "W": 5,
+   "G": 8
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "bant",
+  "key": "uwskies",
+  "name": "UW Skies",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "peasant:skies",
+  "pips": {
+   "W": 26,
+   "U": 20
+  },
+  "basics": {
+   "W": 10,
+   "U": 10
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bant",
+  "key": "countersnake",
+  "name": "Countersnake",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:countersnake",
+  "pips": {
+   "U": 24,
+   "G": 24
+  },
+  "basics": {
+   "U": 0,
+   "G": 2
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bant",
+  "key": "countersnake",
+  "name": "Countersnake",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:countersnake",
+  "pips": {
+   "W": 19,
+   "G": 24
+  },
+  "basics": {
+   "W": 1,
+   "G": 2
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bant",
+  "key": "countersnake",
+  "name": "Countersnake",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:countersnake",
+  "pips": {
+   "W": 19,
+   "U": 24
+  },
+  "basics": {
+   "W": 1,
+   "U": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bant",
+  "key": "locks",
+  "name": "Jeskai Locks (working name)",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "jeskai:locks",
+  "pips": {
+   "W": 26,
+   "U": 38
+  },
+  "basics": {
+   "W": 6,
+   "U": 7
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "bant",
+  "key": "sower",
+  "name": "Bant Sower (working name)",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "bant:sower",
+  "pips": {
+   "U": 17,
+   "G": 24
+  },
+  "basics": {
+   "U": 1,
+   "G": 2
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bant",
+  "key": "sower",
+  "name": "Bant Sower (working name)",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "bant:sower",
+  "pips": {
+   "W": 14,
+   "G": 24
+  },
+  "basics": {
+   "W": 2,
+   "G": 2
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bant",
+  "key": "sower",
+  "name": "Bant Sower (working name)",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "bant:sower",
+  "pips": {
+   "W": 14,
+   "U": 17
+  },
+  "basics": {
+   "W": 2,
+   "U": 1
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bant",
+  "key": "hexaura",
+  "name": "Bant Auras (working name)",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "bant:hexaura",
+  "pips": {
+   "W": 14,
+   "G": 28
+  },
+  "basics": {
+   "W": 2,
+   "G": 10
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "bant",
+  "key": "sourworms",
+  "name": "Sour Worms",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "bant:sourworms",
+  "pips": {
+   "U": 4,
+   "G": 51
+  },
+  "basics": {
+   "U": 0,
+   "G": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bant",
+  "key": "sourworms",
+  "name": "Sour Worms",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "bant:sourworms",
+  "pips": {
+   "W": 3,
+   "G": 51
+  },
+  "basics": {
+   "W": 0,
+   "G": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bant",
+  "key": "sourworms",
+  "name": "Sour Worms",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "bant:sourworms",
+  "pips": {
+   "W": 3,
+   "U": 4
+  },
+  "basics": {
+   "W": 0,
+   "U": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "emeraldsnakes",
+  "name": "Emerald Snakes",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:emeraldsnakes",
+  "pips": {
+   "R": 10,
+   "G": 40
+  },
+  "basics": {
+   "R": 0,
+   "G": 2
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "reaperclio",
+  "name": "Reaper Clio",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaperclio",
+  "pips": {
+   "U": 11,
+   "R": 11
+  },
+  "basics": {
+   "U": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "reaperclio",
+  "name": "Reaper Clio",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaperclio",
+  "pips": {
+   "U": 11,
+   "G": 33
+  },
+  "basics": {
+   "U": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "reaperclio",
+  "name": "Reaper Clio",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaperclio",
+  "pips": {
+   "B": 14,
+   "R": 11
+  },
+  "basics": {
+   "B": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "reaperclio",
+  "name": "Reaper Clio",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaperclio",
+  "pips": {
+   "U": 11,
+   "B": 14
+  },
+  "basics": {
+   "U": 0,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "reaperclio",
+  "name": "Reaper Clio",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaperclio",
+  "pips": {
+   "B": 14,
+   "G": 33
+  },
+  "basics": {
+   "B": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "reaperclio",
+  "name": "Reaper Clio",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:reaperclio",
+  "pips": {
+   "R": 11,
+   "G": 33
+  },
+  "basics": {
+   "R": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "marducontrol",
+  "name": "Mardu Control",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:marducontrol",
+  "pips": {
+   "W": 27,
+   "B": 34
+  },
+  "basics": {
+   "W": 0,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "marducontrol",
+  "name": "Mardu Control",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:marducontrol",
+  "pips": {
+   "B": 34,
+   "R": 15
+  },
+  "basics": {
+   "B": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "marducontrol",
+  "name": "Mardu Control",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:marducontrol",
+  "pips": {
+   "R": 15,
+   "W": 27
+  },
+  "basics": {
+   "R": 0,
+   "W": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "muster",
+  "name": "the Muster",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:muster",
+  "pips": {
+   "R": 8,
+   "W": 37
+  },
+  "basics": {
+   "R": 4,
+   "W": 8
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "bodies",
+  "key": "stampede",
+  "name": "the Stampede",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "naya:stompy",
+  "pips": {
+   "R": 8,
+   "G": 40
+  },
+  "basics": {
+   "R": 2,
+   "G": 10
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "bodies",
+  "key": "dragons",
+  "name": "Jund Dragons",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "jund:dragons",
+  "pips": {
+   "B": 17,
+   "R": 28
+  },
+  "basics": {
+   "B": 1,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "dragons",
+  "name": "Jund Dragons",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "jund:dragons",
+  "pips": {
+   "B": 17,
+   "G": 18
+  },
+  "basics": {
+   "B": 1,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "dragons",
+  "name": "Jund Dragons",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "jund:dragons",
+  "pips": {
+   "R": 28,
+   "G": 18
+  },
+  "basics": {
+   "R": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "aerie",
+  "name": "the Aerie",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "esper:skies",
+  "pips": {
+   "W": 33,
+   "U": 21
+  },
+  "basics": {
+   "W": 5,
+   "U": 8
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "mbclio",
+  "name": "Mono-Black Clio",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "grixis:mbclio",
+  "pips": {
+   "U": 4,
+   "B": 61
+  },
+  "basics": {
+   "U": 0,
+   "B": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "bantsnake",
+  "name": "Bant Countersnake",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "bodies:bantsnake",
+  "pips": {
+   "U": 32,
+   "G": 16
+  },
+  "basics": {
+   "U": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "bantsnake",
+  "name": "Bant Countersnake",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "bodies:bantsnake",
+  "pips": {
+   "W": 17,
+   "G": 16
+  },
+  "basics": {
+   "W": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "bodies",
+  "key": "bantsnake",
+  "name": "Bant Countersnake",
+  "ground": "ranksmere",
+  "pair": "WU",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "bodies:bantsnake",
+  "pips": {
+   "W": 17,
+   "U": 32
+  },
+  "basics": {
+   "W": 0,
+   "U": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "muster",
+  "name": "the Muster",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "open:muster",
+  "pips": {
+   "R": 8,
+   "W": 37
+  },
+  "basics": {
+   "R": 4,
+   "W": 8
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "thicket",
+  "name": "the Thicket",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "naya:auras",
+  "pips": {
+   "W": 19,
+   "G": 28
+  },
+  "basics": {
+   "W": 5,
+   "G": 9
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "hexaura",
+  "name": "Bant Auras (working name)",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "bant:hexaura",
+  "pips": {
+   "W": 15,
+   "G": 30
+  },
+  "basics": {
+   "W": 2,
+   "G": 11
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "tally",
+  "name": "the Tally",
+  "ground": "tallyflame_court",
+  "pair": "UR",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:tally",
+  "pips": {
+   "U": 18,
+   "R": 24
+  },
+  "basics": {
+   "U": 4,
+   "R": 9
+  },
+  "archetype": "aggro"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "emeraldsnakes",
+  "name": "Emerald Snakes",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:emeraldsnakes",
+  "pips": {
+   "R": 10,
+   "G": 40
+  },
+  "basics": {
+   "R": 0,
+   "G": 2
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "levy",
+  "name": "the Levy",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:levy",
+  "pips": {
+   "W": 33,
+   "B": 19
+  },
+  "basics": {
+   "W": 6,
+   "B": 5
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "massocrafts",
+  "name": "Massocrafts",
+  "ground": "wrackroot",
+  "pair": "UG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "sultai:massocrafts",
+  "pips": {
+   "U": 4,
+   "G": 26
+  },
+  "basics": {
+   "U": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "massocrafts",
+  "name": "Massocrafts",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "sultai:massocrafts",
+  "pips": {
+   "U": 4,
+   "B": 28
+  },
+  "basics": {
+   "U": 0,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "massocrafts",
+  "name": "Massocrafts",
+  "ground": "nightbower",
+  "pair": "BG",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "sultai:massocrafts",
+  "pips": {
+   "B": 28,
+   "G": 26
+  },
+  "basics": {
+   "B": 0,
+   "G": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "mbclio",
+  "name": "Mono-Black Clio",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "grixis:mbclio",
+  "pips": {
+   "U": 4,
+   "B": 56
+  },
+  "basics": {
+   "U": 0,
+   "B": 6
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "br",
+  "name": "BR Removal",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": false,
+  "legal": true,
+  "chris": false,
+  "root": "peasant:br",
+  "pips": {
+   "B": 33,
+   "R": 8
+  },
+  "basics": {
+   "B": 12,
+   "R": 7
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "minefield",
+  "name": "the Minefield",
+  "ground": "shevelport",
+  "pair": "WG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:minefield",
+  "pips": {
+   "W": 20,
+   "G": 12
+  },
+  "basics": {
+   "W": 0,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "minefield",
+  "name": "the Minefield",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:minefield",
+  "pips": {
+   "R": 29,
+   "W": 20
+  },
+  "basics": {
+   "R": 7,
+   "W": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "minefield",
+  "name": "the Minefield",
+  "ground": "burnfallow",
+  "pair": "RG",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:minefield",
+  "pips": {
+   "R": 29,
+   "G": 12
+  },
+  "basics": {
+   "R": 7,
+   "G": 0
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "undertow",
+  "name": "the Undertow",
+  "ground": "volmaw",
+  "pair": "UB",
+  "plays": true,
+  "legal": true,
+  "chris": false,
+  "root": "open:undertow",
+  "pips": {
+   "U": 49,
+   "B": 14
+  },
+  "basics": {
+   "U": 7,
+   "B": 3
+  },
+  "archetype": "control"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "marducontrol",
+  "name": "Mardu Control",
+  "ground": "obsidian_observatory",
+  "pair": "WB",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:marducontrol",
+  "pips": {
+   "W": 24,
+   "B": 28
+  },
+  "basics": {
+   "W": 0,
+   "B": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "marducontrol",
+  "name": "Mardu Control",
+  "ground": "cairnbrand",
+  "pair": "BR",
+  "plays": true,
+  "legal": true,
+  "chris": true,
+  "root": "open:marducontrol",
+  "pips": {
+   "B": 28,
+   "R": 12
+  },
+  "basics": {
+   "B": 0,
+   "R": 0
+  },
+  "archetype": "midrange"
+ },
+ {
+  "format": "nothing-dear",
+  "key": "marducontrol",
+  "name": "Mardu Control",
+  "ground": "hearthspire",
+  "pair": "RW",
+  "plays": false,
+  "legal": true,
+  "chris": true,
+  "root": "open:marducontrol",
+  "pips": {
+   "R": 12,
+   "W": 24
+  },
+  "basics": {
+   "R": 0,
+   "W": 0
+  },
+  "archetype": "midrange"
+ }
+]

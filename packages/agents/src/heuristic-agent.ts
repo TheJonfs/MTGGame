@@ -1255,7 +1255,7 @@ export class HeuristicAgent implements Agent {
   selfSacSearchGated(view: GameView, action: Action): boolean {
     if (action.type !== "activateAbility" || this.profile.off?.includes("orderfind")) return false;
     const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
-    if (!ab || ab.kind !== "activated" || ab.cost.sacrifice?.predicate !== "self" || !ab.effects.some((e) => e.type === "searchLibrary" && e.to === "battlefield")) return false;
+    if (!ab || ab.kind !== "activated" || ab.cost.sacrifice?.predicate !== "self" || !ab.effects.some((e) => e.type === "searchLibrary" && e.to === "battlefield" && e.predicate === "creatureCard")) return false; // S73a: a creature search only — the gate held Evolving Wilds to their end step too (the Levy, the Undertow)
     if (this.sourceThreatened(view, action.objectId)) return false;
     const inCombat = view.combat.attackers.includes(action.objectId) || view.combat.blocks.some((b) => b.blocker === action.objectId || b.attacker === action.objectId);
     if (inCombat && (view.step === "DECLARE_BLOCKERS")) return false;

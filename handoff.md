@@ -1,4 +1,4 @@
-# Handoff — after Session 72, with the post-S72 work and Session 73's Part 1 (2026-11-18)
+# Handoff — after Session 72, with the post-S72 work, Session 73 and Session 73a (2026-11-19)
 
 ## State of the world
 The ten-card hybrid two-drop cycle is complete in the pool: 315 cards, R-125 to R-129. The AI has a book for each card that needed one (165–169).
@@ -20,6 +20,64 @@ The ten-card hybrid two-drop cycle is complete in the pool: 315 cards, R-125 to 
 - **Part 5**: a land destruction sideboard row reads +7.3 in the Warband against the land decks, but cannot ship because no guide shape names a land deck.
 
 `docs/decision-updates/s72.md` is the full record. Run the app with `pnpm viewer` and the tests with `pnpm test`.
+
+## Session 73a — the adoptions, the grounds by rule, the run of record (2026-11-19; uncommitted)
+Brief `docs/briefs/session-73a-brief.md`, all seven parts. The record is `docs/decision-updates/s73.md` § S73a. **Nothing of 73a is committed.**
+
+**Read this first: the tables of record were re-run and one thing in them is known wrong.** The live rating table (v1.6) carries rows measured in v1.5's rebuild under the three book bugs Part 1 fixed. The field's sideboard builder cuts by rating, so Peasant's Elder list now sides out Dungrove Elder first and reads about 11 points low (concern 74). The repair is the rating rebuild the brief holds for Chris's word; the tables should be re-run after it.
+
+- **Part 0**: rulings recorded; `landdeck` at six (`LANDDECK_AT`); the audit table reads the bar strictly (32 clears, 2 holds).
+- **Part 1 — attribution** (nine lists eight points or more from record; books off singly, moxkeep, v1.4 ratings): the planner's expected regression (book 176, `tapmill`) is not there. **Three bugs, all fixed, ladder PASS** (`analysis/s73/ladder-73a-books.log`):
+  1. **Book 174 (`nyxsize`)** dropped a creature of printed toughness 0 from the predicted board, so Dungrove Elder went uncast (0.83 → 0.29 a game). `entryPT` now reads counted statics off the view and keeps a creature whose size it cannot know.
+  2. **Book 175 (`orderfind`)** priced every search onto the battlefield through the creature find, so a land search earned nothing (Rampant Growth, Wood Elves, Evolving Wilds, Thawing Glaciers). Land searches keep the flat credit.
+  3. **Book 175's end-step gate** held Evolving Wilds to the end step. It now asks for a creature search.
+  - After: the Stampede 35.2 → 49.7, Nothing Dear's Levy 30.6 → 41.0, the Open's Levy 26.2 → 35.4, the Undertow 23.4 → 33.4, Naya's Wurms 37.7 → 44.2, Temur's Wurmspeaker 24.2 → 30.9, Abzan Warden 49.0 → 40.9 (it had been beating ramp lists that did not ramp). The Kindling's move in Mardu is a result.
+- **Part 2 — adoptions, eighteen lists** (`analysis/s73/adopt-73a.py`): Order Druid in the Wurmspeaker ×7 (re-measured on the fixed pilot: +5.4 to +10.2); Daunting Terror in BR Removal ×2 and the Stampede; Nyxathid in Peasant's Mono-Black Removal; Storm Shaman in Mardu's Kindling; Dawnwing Marshal in the Open's Muster; Clutch Guard in Emerald Snakes ×3 and Temur Snakes; Silt Spirit in Sultai Mill. The Tally's Shaman and the Barrow's Nyxathid stay held (both already pooled over two seeds).
+- **Part 3**: Bodies and Nothing Dear before the grounds, run and not recorded (`analysis/s73/before/`).
+- **Part 4 — the grounds**: eighteen rows (ten on a second seed).
+  - **Wrackroot joins the rule** (three of three). **Tallyflame Court, Obsidian Observatory and Cairnbrand do not** (two, one and two of three) and are adopted where a row cleared. **Shevelport and Burnfallow** cleared nowhere.
+  - **ADR-201 applied: 30 planner lists, 35 swaps** (`analysis/s73/grounds-73a.py`): Hearthspire 19, Volmaw 7, Nightbower 4, Wrackroot 1; by row, Cairnbrand 2, the Court 1, the Observatory 1. By format: Jeskai 5, Naya 5, Mardu 4, Sultai 4, the Open 3, Grixis 3, Abzan 2, Esper 2, Bodies 1, Nothing Dear 1.
+  - **`groundExempt`: none.** The field is on `ListMeta`; no list carries it.
+  - **For Chris (ADR-200)**: his lists and ports still lacking a rule ground — Volmaw 15, Nightbower 15, Hearthspire 8 (`npx tsx analysis/s73/grounds-worklist.mts`).
+- **Part 5 — the run of record**: fourteen formats, 100 game ones and 60 matches a pairing, seed 91, recorded; `open:gen` run. `analysis/s73/record-diff.md` has every list against its old row. Seven lists that moved with no edit were attributed (concern 74, 75). The reading list is refreshed in s73.md.
+- **Chris's question** (Bodies and Nothing Dear, before and after):
+  - **By the rule's own edit, one list moved in each**: the Muster +8.2 and +7.9; everything else under a point; rank correlation 0.94. The rule touches one list there because the rest are his.
+  - **A study with every ground taken out of both formats** answers the larger question: **not a tide** (four lists gain five or more, the groundless lists lose two to three) **and not a reorder of the top** (rank correlation 0.90 and 0.83; the Minefield goes fifth to first in Nothing Dear, partly because its grounds are also its mana). The number of grounds a list plays does not track its gain.
+- **Part 6**: the Minefield's ramp probe (`analysis/s73/minefield/ramp-probe.mts`). With fix 2 the AI casts Wood Elves 1.29 a game against Mardu Control (0.54 before; Chris 1.4). Wall of Blossoms is 1.27 (Chris 1.7), and every remaining uncast turn is the Wall **outpriced** by another spell, never a pass or a hold. card-rating v1.7 is scheduled, not run.
+
+**Deviations (73a)**
+1. **Removal rows for the grounds**: five of the eighteen rows take a ground out of a list that plays it, because too few planner lists lacked it. Two of Wrackroot's three clears are removals.
+2. **The rule's swap, not the row's**: the Tollgate, Jeskai Sweepers and Abzan Warden were trialled with a dual swapped; the rule took a basic.
+3. **`poolAt` was not moved** on any adopted or grounded list.
+4. **Storm Shaman only in Mardu's Kindling** (the trialled row), not the Kindling's ports.
+5. **The groundless study and the attribution of the seven movers** are beyond the brief.
+6. **The reading list was refreshed by arithmetic** (each S72 gap moved by the change in game-one mean), not from his game logs.
+
+**Concerns (73a; numbering continues)**
+74. **The rating table carries rows measured under Part 1's bugs.** Dungrove Elder: cast 25% when drawn in v1.5's runs, Peasant worth 3.38 → −0.08. Evolving Wilds 1.12 → 0.35, Rampant Growth 1.19 → 0.74. The builder's fifteen cuts by rating: the Elder list reads +8.1 ± 1.7 when it does not sideboard at all. **v1.7 should rebuild the constructed and Peasant rows on the fixed pilot, not only the Limited ones, and the tables of record should follow it.** The planner's and Chris's to order.
+75. **A list with a built fifteen can side out its own best card.** Sultai Auras cuts Blanchwood Armor for Airship Crash in every matchup on v1.6 (−10.2 from its own sideboarding) with no bug behind it, only a table that moved (concern 55's kind). A floor on what the out-rule may take, or registered fifteens for the lists that matter, is a design question.
+76. **Books 174 and 175 shipped with a ladder PASS and moved eight lists by six to fourteen points.** The ladder does not hold a ramp list or a counted-size creature.
+77. **ADR-201 has no threshold for a splash**: `castingColours` counts any pip, so the Chancel (two Ushers) took Hearthspire, the Tempo lists (three Clio) Volmaw and Sultai Mill (three Zinnia) two grounds.
+78. **Five lists took two grounds at once**, never measured together; the Reeve now plays three.
+79. **Wrackroot's place in the rule rests on +2.06** (Sultai Mill, pooled, less its error) and two removal rows.
+80. **UR Pyroclasm Control loses Jeskai Sweepers by over 20 with Tallyflame Court in**, on both seeds; unexplained. The list is now last in Jeskai at 13.4.
+81. **Gaean Wurm and Ovna are now predicted at their live size** (fix 1 reads counted statics), a change beyond the bug.
+82. **Jund Reaper rose 14.4 with no edit**; books and ratings explain half. Jund's Black Forest Ham loses 4.5 to the books, not split by book.
+83. **The Minefield probe leaves 197 turns unexplained** (a ramp card in hand, never castable, 70 with three or more lands).
+
+**The audit's owed remainder**: 69 lists still have no row. On the new tables the lowest of them are Grixis's Undertow (23.7), Peasant's UR Control (24.6), Temur's Tally (26.9), Jeskai's Tally (35.2), Jund's Kindling (36.5), Bant's Thicket (38.0), Mardu's Roll (40.0) and Abzan Tokens (44.5).
+
+**Pool gaps, as card asks for Chris** (from the audit; the Cube is at 320 of 360):
+- a **control finisher** outside the legends — Jeskai Sweepers (it decks itself on three Serra Angels), the Locks;
+- a **mill card the Undertow can use** — the Undertow lists (Silt Spirit helps only the list with something to tap);
+- a **white-black tokens payoff** — the Levy lists;
+- **two-drops outside the hybrid cycle** — the Stampede, Abzan Warden;
+- an **answer to a nonbasic land or a legend** — field-wide; a one-land swap is worth +5 to +30;
+- **artifact and enchantment removal on a body** better than Banishing Cleric.
+
+**Tests**: 1,370 passed, 2 skipped, on the final state with the new tables (`analysis/s73/test-73a-record.log`; `pnpm test` still exits non-zero on the five known "Timeout calling onTaskUpdate" errors). Ladder: PASS on the final pilot (`analysis/s73/ladder-73a-books.log`); no AI code changed after it.
+
+**How to run (73a)**: `zsh analysis/s73/record-run.sh` (the tables; a tag is used once, so clear `analysis/s73/record/rr` first); `python3 analysis/s73/grounds-pool.py`; `python3 analysis/s73/before-after.py`; `npx tsx analysis/s73/minefield/ramp-probe.mts --vs marducontrol --games 120 --out f.json` then `--report f.json`; `pnpm sideboard:show --format <id> --list <key> [--rating file]`.
 
 ## Session 73, Part 1 — the vintage audit (2026-11-18; the fresh session, commit 2f172a8)
 The brief's Part 1, then Part 0's code items (the section after this one). Parts 2, 3, 4 and 5 are owed. `docs/decision-updates/s73.md` is the record; `docs/reference/vintage-audit-s73.md` is the table. **No list was edited**: every row is a trial.

@@ -682,7 +682,7 @@
      "count": 2
     },
     {
-     "cardId": "rampant_growth",
+     "cardId": "order_druid",
      "count": 4
     },
     {
@@ -694,7 +694,7 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): the Open's Wurmspeaker whole.",
+   "source": "S67 seed (the planner's): the Open's Wurmspeaker whole. S73a (the vintage audit): 4 order_druid for rampant_growth.",
    "poolAt": 286,
    "portOf": "open:wurmspeaker"
   },

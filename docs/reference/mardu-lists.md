@@ -4,24 +4,46 @@
 
 ## The table of record
 
-12 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/mardu/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-10-21; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
+12 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/mardu/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-11-19; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| Mardu Control | Usher Control (W B R) | midrange | 64.6 | 54 | +8.6 | registered |
-| the Rabble (Mardu) | Mono-Red Goblins (R) | aggro | 63.5 | 62 | +2.9 | registered |
-| the Watch (Mardu) | Boros Tokens (W R) | aggro | 59.2 | 55 | +1.1 | built |
-| the Pall | Usher Combo (B w r) | combo | 58.6 | 63 | −11.9 | registered |
-| the Chancel (Mardu) | Orzhov Control (W B) | midrange | 52.5 | 49 | −1.7 | built |
-| the Witch | Witch Presence (B w r) | midrange | 49.7 | 47 | −1.9 | registered, guided |
-| the Roll (Mardu) | Orzhov Tokens (W B) | aggro | 48.8 | 52 | +1.1 | built |
-| the Muster (Mardu) | Boros Weenie (W R) | aggro | 44.8 | 45 | −3.5 | built |
-| the Warband (Mardu) | Boros Goblins (R w) | aggro | 43.2 | 41 | +6.8 | built |
-| the Levy | Orzhov Landfall (W B) | midrange | 40.5 | 45 | +2.7 | registered |
-| the Ashen | Rakdos Removal (B R) | midrange | 38.8 | 48 | −2.5 | built |
-| the Kindling | Mono-Red Spells (R) | aggro | 35.9 | 38 | −1.9 | built |
+| Mardu Control | Usher Control (W B R) | midrange | 69.5 | 57 | +7.1 | registered |
+| the Watch (Mardu) | Boros Tokens (W R) | aggro | 62.1 | 54 | +7.7 | built |
+| the Rabble (Mardu) | Mono-Red Goblins (R) | aggro | 60.6 | 55 | +5.5 | registered |
+| the Chancel (Mardu) | Orzhov Control (W B) | midrange | 55.6 | 53 | −3.0 | built |
+| the Pall | Usher Combo (B w r) | combo | 52.6 | 64 | −14.1 | registered |
+| the Witch | Witch Presence (B w r) | midrange | 49.8 | 49 | −9.9 | registered, guided |
+| the Warband (Mardu) | Boros Goblins (R w) | aggro | 47.2 | 47 | −0.8 | built |
+| the Muster (Mardu) | Boros Weenie (W R) | aggro | 45.2 | 48 | +2.9 | built |
+| the Kindling | Mono-Red Spells (R) | aggro | 40.9 | 41 | +6.1 | built |
+| the Levy | Orzhov Landfall (W B) | midrange | 40.2 | 41 | +0.1 | registered |
+| the Roll (Mardu) | Orzhov Tokens (W B) | aggro | 40.0 | 46 | +0.7 | built |
+| the Ashen | Rakdos Removal (B R) | midrange | 36.2 | 43 | −1.7 | built |
 
 Archived (kept in the data, out of the field): none.
+
+## Among the lists above 50 (S71a — a reading lens, not the draw)
+
+The 5 lists above 50 in matches, counted against one another only. A list that gains most of its record from the bottom of the field falls here; the field's seat draw still reads the whole table.
+
+| | list | among them | the whole field | change |
+|---|---|---|---|---|
+| 1 | Mardu Control | 61.3 ± 6.2 | 69.5 | −8.3 |
+| 2 | the Watch (Mardu) | 57.9 ± 6.2 | 62.1 | −4.2 |
+| 3 | the Pall | 48.8 ± 6.3 | 52.6 | −3.9 |
+| 4 | the Rabble (Mardu) | 44.6 ± 6.3 | 60.6 | −16.0 |
+| 5 | the Chancel (Mardu) | 37.5 ± 6.1 | 55.6 | −18.1 |
+
+Head to head (the row list's matches won, %):
+
+| | marducontrol | watch | pall | rabble | chancel |
+|---|---|---|---|---|---|
+| **marducontrol** | — | 60 | 57 | 57 | 72 |
+| **watch** | 40 | — | 70 | 73 | 48 |
+| **pall** | 43 | 30 | — | 50 | 72 |
+| **rabble** | 43 | 27 | 50 | — | 58 |
+| **chancel** | 28 | 52 | 28 | 42 | — |
 
 ## Staples (ADR-170)
 
@@ -31,7 +53,7 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 6 · Vin
 
 ## Mardu Control — Usher Control (W B R)
 
-`marducontrol` · midrange · game one 54 · matches 64.6
+`marducontrol` · midrange · game one 57 · matches 69.5
 
 - **Lands (20):** 4 Badlands · 4 Scrubland · 4 Plateau · 4 Godless Shrine · 1 Cairnbrand · 1 Obsidian Observatory · 1 Blood Crypt · 1 Sacred Foundry
 - **Creatures (24):** 3 Lumen, the Hearth Fire · 3 Restoration Angel · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Blood Artist · 4 Soul Warden · 3 The Usher
@@ -41,9 +63,20 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 6 · Vin
 - **History:**
   - contributed — S66 seed (the planner's): Chris's Mardu Control whole, its fifteen with it — Mardu-legal as it stands.
 
+## the Watch (Mardu) — Boros Tokens (W R)
+
+`watch` · aggro · game one 54 · matches 62.1
+
+- **Lands (19):** 4 Sacred Foundry · 4 Plateau · 1 Hearthspire · 4 Plains · 6 Mountain
+- **Creatures (18):** 4 Soul Warden · 4 Young Pyromancer · 1 Flametongue Kavu · 1 Dawnwing Marshal · 3 Vigil Keeper · 4 Captain of the Watch · 1 Lumen, the Hearth Fire
+- **Other (23):** 1 Black Lotus · 1 Mox Ruby · 1 Mox Pearl · 4 Raise the Alarm · 4 Dragon Fodder · 4 Hordeling Outburst · 4 Glorious Anthem · 4 Lightning Bolt
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S66 seed (the planner's): Naya's Watch (RW Tokens) whole (Mardu-legal as it stands). Post-S66 (Chris, 2026-10-18): two Emeria Angels and a Dawnwing Marshal out for three Vigil Keepers (+4.8 ± 1.0 in matches, paired; +7.5 against the Usher decks, +3.2 against the rest). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.
+
 ## the Rabble (Mardu) — Mono-Red Goblins (R)
 
-`rabble` · aggro · game one 62 · matches 63.5
+`rabble` · aggro · game one 55 · matches 60.6
 
 - **Lands (19):** 1 Cairnbrand · 4 Badlands · 14 Mountain
 - **Creatures (18):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 2 Siege-Gang Commander
@@ -53,20 +86,20 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 6 · Vin
 - **History:**
   - contributed — S66 seed (the planner's): the Open's Rabble whole but for its blue mana — its four Volcanic Islands, the Tallyflame Court and Mox Sapphire out under ADR-181, six Mountains in (Badlands, Cairnbrand and Mox Jet stay: black is Mardu's).
 
-## the Watch (Mardu) — Boros Tokens (W R)
+## the Chancel (Mardu) — Orzhov Control (W B)
 
-`watch` · aggro · game one 55 · matches 59.2
+`chancel` · midrange · game one 53 · matches 55.6
 
-- **Lands (19):** 4 Sacred Foundry · 4 Plateau · 5 Plains · 6 Mountain
-- **Creatures (18):** 4 Soul Warden · 4 Young Pyromancer · 1 Flametongue Kavu · 1 Dawnwing Marshal · 3 Vigil Keeper · 4 Captain of the Watch · 1 Lumen, the Hearth Fire
-- **Other (23):** 1 Black Lotus · 1 Mox Ruby · 1 Mox Pearl · 4 Raise the Alarm · 4 Dragon Fodder · 4 Hordeling Outburst · 4 Glorious Anthem · 4 Lightning Bolt
+- **Lands (19):** 4 Scrubland · 4 Godless Shrine · 1 Obsidian Observatory · 1 Hearthspire · 2 Plains · 1 Cairnbrand · 2 Swamp · 2 Plateau · 2 Badlands
+- **Creatures (27):** 4 Karmic Mentor · 3 Restoration Angel · 3 The Jet Witch · 2 Isaura, the Levy · 1 Emeria Angel · 4 Blood Artist · 4 Soul Warden · 4 Vampire Nighthawk · 2 The Usher
+- **Other (14):** 1 Black Lotus · 1 Mox Jet · 1 Mox Pearl · 4 Vindicate · 3 Wrath of God · 3 Swords to Plowshares · 1 Demonic Tutor
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
-  - contributed — S66 seed (the planner's): Naya's Watch (RW Tokens) whole (Mardu-legal as it stands). Post-S66 (Chris, 2026-10-18): two Emeria Angels and a Dawnwing Marshal out for three Vigil Keepers (+4.8 ± 1.0 in matches, paired; +7.5 against the Usher decks, +3.2 against the rest).
+  - contributed — S66 seed (the planner's): Esper's Chancel (WB Control) whole (Mardu-legal as it stands). Revised S66 (Chris): two Ushers, Mardu's lord, for two Emeria Angels, with two Plateaus and two Badlands for two Plains and two Swamps to cast her — paired, 160 matches a pairing: 43.2 → 50.5 in matches (+7.3 ± 2.4; the mana alone −0.3 ± 0.9, the Ushers +7.6 ± 2.4). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains; 1 cairnbrand for 1 swamp (its row cleared).
 
 ## the Pall — Usher Combo (B w r)
 
-`pall` · combo · game one 63 · matches 58.6
+`pall` · combo · game one 64 · matches 52.6
 
 - **Lands (21):** 1 Cairnbrand · 4 Badlands · 4 Scrubland · 4 Swamp · 4 Blood Crypt · 4 Godless Shrine
 - **Creatures (20):** 4 The Usher · 4 The Jet Witch · 4 Blood Artist · 4 Typhoid Rats · 4 Vampire Nighthawk
@@ -77,20 +110,9 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 6 · Vin
 - **History:**
   - contributed — S66 seed (the planner's): the Open's Pall whole — Buried Alive into the Usher's loop, the Jet Witch as its engine; Mardu-legal as it stands (the brief's "mono-black": the Pall is black with the Usher's white and red, its Moxen and its duals, all within RWB). The loop in a triad for the first time; its plan as the Open's.
 
-## the Chancel (Mardu) — Orzhov Control (W B)
-
-`chancel` · midrange · game one 49 · matches 52.5
-
-- **Lands (19):** 4 Scrubland · 4 Godless Shrine · 1 Obsidian Observatory · 3 Plains · 3 Swamp · 2 Plateau · 2 Badlands
-- **Creatures (27):** 4 Karmic Mentor · 3 Restoration Angel · 3 The Jet Witch · 2 Isaura, the Levy · 1 Emeria Angel · 4 Blood Artist · 4 Soul Warden · 4 Vampire Nighthawk · 2 The Usher
-- **Other (14):** 1 Black Lotus · 1 Mox Jet · 1 Mox Pearl · 4 Vindicate · 3 Wrath of God · 3 Swords to Plowshares · 1 Demonic Tutor
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S66 seed (the planner's): Esper's Chancel (WB Control) whole (Mardu-legal as it stands). Revised S66 (Chris): two Ushers, Mardu's lord, for two Emeria Angels, with two Plateaus and two Badlands for two Plains and two Swamps to cast her — paired, 160 matches a pairing: 43.2 → 50.5 in matches (+7.3 ± 2.4; the mana alone −0.3 ± 0.9, the Ushers +7.6 ± 2.4).
-
 ## the Witch — Witch Presence (B w r)
 
-`witch` · midrange · game one 47 · matches 49.7
+`witch` · midrange · game one 49 · matches 49.8
 
 - **Lands (22):** 1 Cairnbrand · 1 Obsidian Observatory · 1 Library of Alexandria · 4 Badlands · 4 Scrubland · 4 Blood Crypt · 4 Godless Shrine · 3 Swamp
 - **Creatures (19):** 4 Hypnotic Specter · 4 Dread Presence · 4 Vampire Nighthawk · 3 The Jet Witch · 3 Drana, Kalastria Bloodchief · 1 Nekrataal
@@ -105,42 +127,42 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 6 · Vin
 - **History:**
   - contributed — Post-S66 (Chris's, 2026-10-18): won a Mardu Umbel with no Usher in the 75 (event 198333: 5–0 in the Swiss, then BR Removal 2–1, the Roll 2–0, the Pall 2–0; 16–4 in games). Nearly mono-black: the Jet Witch, Dread Presence, Hymn, Specter, Nighthawk, Gallows Djinn, Tendrils, with Rituals and the power; Vindicate the only gold. The fifteen and the guide read from Chris's swaps (working name). Post-S66 (Chris, 2026-10-18): three Dranas and a Nekrataal for the four Gallows Djinns (+5.8 ± 1.4), and three Flametongue Kavus in the fifteen for the Dranas, in for the Dark Rituals against creature decks (+4.9 ± 0.7); +10.7 ± 1.4 together over the Umbel 75 under the pilot.
 
-## the Roll (Mardu) — Orzhov Tokens (W B)
-
-`roll` · aggro · game one 52 · matches 48.8
-
-- **Lands (21):** 4 Scrubland · 4 Godless Shrine · 1 Obsidian Observatory · 6 Plains · 6 Swamp
-- **Creatures (14):** 3 Captain of the Watch · 2 Isaura, the Levy · 3 Emeria Angel · 4 Soul Warden · 2 Karmic Mentor
-- **Other (25):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Jet · 4 Raise the Alarm · 4 Bitterblossom · 3 Shadow Summoning · 4 Glorious Anthem · 4 Vindicate · 3 Swords to Plowshares
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S66 seed (the planner's): Esper's Roll (BW Tokens) whole (Mardu-legal as it stands).
-
-## the Muster (Mardu) — Boros Weenie (W R)
-
-`muster` · aggro · game one 45 · matches 44.8
-
-- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 8 Plains · 4 Mountain · 2 Secluded Steppe
-- **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 4 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu
-- **Other (17):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Ruby · 4 Raise the Alarm · 4 Glorious Anthem · 4 Lightning Bolt · 2 Swords to Plowshares
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S66 seed (the planner's): the Open's Muster whole (Mardu-legal as it stands).
-
 ## the Warband (Mardu) — Boros Goblins (R w)
 
-`warband` · aggro · game one 41 · matches 43.2
+`warband` · aggro · game one 47 · matches 47.2
 
-- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 12 Mountain · 2 Plains
+- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 1 Hearthspire · 11 Mountain · 2 Plains
 - **Creatures (22):** 4 Skirk Prospector · 4 Goblin Piker · 4 Goblin Chieftain · 2 Boggart Brute · 3 Siege-Gang Commander · 3 Lumen, the Hearth Fire · 2 Flametongue Kavu
 - **Other (16):** 1 Black Lotus · 1 Mox Ruby · 1 Mox Pearl · 4 Hordeling Outburst · 4 Goblin Grenade · 4 Lightning Bolt · 1 Sacred Helix
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
-  - contributed — S66 seed (the planner's): the Open's Warband whole (Mardu-legal as it stands).
+  - contributed — S66 seed (the planner's): the Open's Warband whole (Mardu-legal as it stands). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 mountain.
+
+## the Muster (Mardu) — Boros Weenie (W R)
+
+`muster` · aggro · game one 48 · matches 45.2
+
+- **Lands (22):** 4 Plateau · 4 Sacred Foundry · 1 Hearthspire · 7 Plains · 4 Mountain · 2 Secluded Steppe
+- **Creatures (21):** 4 Savannah Lions · 4 Soul Warden · 2 Suntail Hawk · 4 Fencing Ace · 3 Emeria Angel · 4 Flametongue Kavu
+- **Other (17):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Ruby · 4 Raise the Alarm · 4 Glorious Anthem · 4 Lightning Bolt · 2 Swords to Plowshares
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S66 seed (the planner's): the Open's Muster whole (Mardu-legal as it stands). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.
+
+## the Kindling — Mono-Red Spells (R)
+
+`burn` · aggro · game one 41 · matches 40.9
+
+- **Lands (21):** 21 Mountain
+- **Creatures (16):** 4 Guttersnipe · 4 Young Pyromancer · 3 Seasoned Pyromancer · 4 Storm Shaman · 1 The Ruby Tyrant
+- **Other (23):** 1 Mox Ruby · 1 Black Lotus · 4 Lightning Bolt · 4 Shock · 4 Char · 3 Blaze · 2 Pyroclasm · 2 Abrade · 2 Hordeling Outburst
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S66 seed (the planner's 'Mono-Red Burn': the Tally's shape without blue), built by the implementer: Guttersnipe, Young and Seasoned Pyromancer and Arc Mage paid by every spell; Bolt, Shock, Char, Blaze, Abrade and Pyroclasm; the Tyrant at the top; Hordeling Outburst. A working name. S73a (the vintage audit): 2 storm_shaman for arc_mage; 2 storm_shaman for furnace_whelp.
 
 ## the Levy — Orzhov Landfall (W B)
 
-`levy` · midrange · game one 45 · matches 40.5
+`levy` · midrange · game one 41 · matches 40.2
 
 - **Lands (24):** 4 Scrubland · 4 Godless Shrine · 5 Plains · 5 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers · 1 Obsidian Observatory
 - **Creatures (15):** 4 Emeria Angel · 4 Dread Presence · 4 Soul Warden · 1 Vampire Nighthawk · 2 Isaura, the Levy
@@ -150,9 +172,20 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 6 · Vin
 - **History:**
   - contributed — S66 seed (the planner's): the Open's Levy whole, its fifteen with it (Mardu-legal as it stands).
 
+## the Roll (Mardu) — Orzhov Tokens (W B)
+
+`roll` · aggro · game one 46 · matches 40.0
+
+- **Lands (21):** 4 Scrubland · 4 Godless Shrine · 1 Obsidian Observatory · 6 Plains · 6 Swamp
+- **Creatures (14):** 3 Captain of the Watch · 2 Isaura, the Levy · 3 Emeria Angel · 4 Soul Warden · 2 Karmic Mentor
+- **Other (25):** 1 Black Lotus · 1 Mox Pearl · 1 Mox Jet · 4 Raise the Alarm · 4 Bitterblossom · 3 Shadow Summoning · 4 Glorious Anthem · 4 Vindicate · 3 Swords to Plowshares
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S66 seed (the planner's): Esper's Roll (BW Tokens) whole (Mardu-legal as it stands).
+
 ## the Ashen — Rakdos Removal (B R)
 
-`brremoval` · midrange · game one 48 · matches 38.8
+`brremoval` · midrange · game one 43 · matches 36.2
 
 - **Lands (17):** 4 Blood Crypt · 4 Badlands · 1 Cairnbrand · 6 Swamp · 2 Mountain
 - **Creatures (27):** 4 Typhoid Rats · 4 Blood Artist · 4 Hypnotic Specter · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 2 Dread Presence · 1 Drana, Kalastria Bloodchief
@@ -160,15 +193,4 @@ The most played: Lightning Bolt 6 · Soul Warden 6 · Vampire Nighthawk 6 · Vin
 - **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
   - contributed — S66 seed (Chris: start from Peasant's BR Removal and look at the higher tiers; the brief's line was unfinished — "the Specter's cousins"): Peasant's list promoted — Hypnotic Specter for Child of Night; Hymn to Tourach, Demonic Tutor, Dread Presence and Drana for the Skeletons, Gravediggers and a Terror (the cousins: the cards that punish a hand); two Chars; Badlands, Cairnbrand, Mox Jet, Mox Ruby and the Lotus in the mana. Built by the implementer; a working name.
-
-## the Kindling — Mono-Red Spells (R)
-
-`burn` · aggro · game one 38 · matches 35.9
-
-- **Lands (21):** 21 Mountain
-- **Creatures (16):** 4 Guttersnipe · 4 Young Pyromancer · 3 Seasoned Pyromancer · 2 Arc Mage · 1 The Ruby Tyrant · 2 Furnace Whelp
-- **Other (23):** 1 Mox Ruby · 1 Black Lotus · 4 Lightning Bolt · 4 Shock · 4 Char · 3 Blaze · 2 Pyroclasm · 2 Abrade · 2 Hordeling Outburst
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S66 seed (the planner's 'Mono-Red Burn': the Tally's shape without blue), built by the implementer: Guttersnipe, Young and Seasoned Pyromancer and Arc Mage paid by every spell; Bolt, Shock, Char, Blaze, Abrade and Pyroclasm; the Tyrant at the top; Hordeling Outburst. A working name.
 

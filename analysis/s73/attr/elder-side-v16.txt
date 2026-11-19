@@ -1,0 +1,16 @@
+
+elder — its fifteen: 4 airship_crash, 1 deadly_recluse, 2 faerie_macabre, 2 loxodon_warhammer, 2 order_druid, 2 tormods_crypt, 1 treetop_snarespinner, 1 wood_elves
+  vs br: [creatures] airship_crash for dungrove_elder; airship_crash for dungrove_elder; airship_crash for dungrove_elder
+  vs brdjinn: [creatures] airship_crash for dungrove_elder; airship_crash for dungrove_elder; airship_crash for dungrove_elder
+  vs mbc: [creatures] airship_crash for dungrove_elder; airship_crash for dungrove_elder; airship_crash for dungrove_elder
+  vs rabble: [creatures] airship_crash for dungrove_elder; airship_crash for dungrove_elder; airship_crash for dungrove_elder
+  vs stompy: [relics] airship_crash for dungrove_elder; airship_crash for dungrove_elder; airship_crash for dungrove_elder  [creatures] airship_crash for dungrove_elder
+  vs muster: [relics] airship_crash for dungrove_elder; airship_crash for dungrove_elder; airship_crash for dungrove_elder  [creatures] airship_crash for dungrove_elder
+  vs tokens: [relics] airship_crash for dungrove_elder; airship_crash for dungrove_elder; airship_crash for dungrove_elder  [creatures] airship_crash for dungrove_elder
+  vs skies: [creatures] airship_crash for dungrove_elder; airship_crash for dungrove_elder; airship_crash for dungrove_elder  [blockers] treetop_snarespinner for dungrove_elder; deadly_recluse for centaur_courser
+  vs skieswall: [creatures] airship_crash for dungrove_elder; airship_crash for dungrove_elder; airship_crash for dungrove_elder  [blockers] treetop_snarespinner for dungrove_elder; deadly_recluse for centaur_courser
+  vs bw: [creatures] airship_crash for dungrove_elder; airship_crash for dungrove_elder; airship_crash for dungrove_elder  [blockers] treetop_snarespinner for dungrove_elder; deadly_recluse for centaur_courser
+  vs urcontrol: [blockers] treetop_snarespinner for dungrove_elder; deadly_recluse for dungrove_elder
+  vs naya: [creatures] airship_crash for dungrove_elder; airship_crash for dungrove_elder; airship_crash for dungrove_elder  [blockers] treetop_snarespinner for dungrove_elder; deadly_recluse for centaur_courser
+  vs wskies: [creatures] airship_crash for dungrove_elder; airship_crash for dungrove_elder; airship_crash for dungrove_elder  [blockers] treetop_snarespinner for dungrove_elder; deadly_recluse for centaur_courser
+  vs wbbasilisk: [graveyards] faerie_macabre for dungrove_elder; tormods_crypt for dungrove_elder; faerie_macabre for dungrove_elder; tormods_crypt for dungrove_elder  [relics] airship_crash for centaur_courser; airship_crash for centaur_courser; airship_crash for wall_of_blossoms  [creatures] airship_crash for wall_of_blossoms  [blockers] treetop_snarespinner for wall_of_blossoms; deadly_recluse for wall_of_blossoms

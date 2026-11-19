@@ -1,79 +1,609 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-22",
+ "when": "2026-11-19",
  "matchesAPairing": 60,
  "byList": {
   "kiln": {
-   "matches": 53,
-   "gameOne": 56.8,
-   "later": 49.9,
+   "matches": 46.4,
+   "gameOne": 46.7,
+   "later": 47.2,
    "n": 660
   },
   "locks": {
-   "matches": 53,
-   "gameOne": 53,
-   "later": 51.9,
+   "matches": 44.8,
+   "gameOne": 48.9,
+   "later": 45.1,
    "n": 660
   },
   "minefield": {
-   "matches": 58.6,
-   "gameOne": 53.6,
-   "later": 57.1,
+   "matches": 42.7,
+   "gameOne": 41,
+   "later": 47.9,
    "n": 660
   },
   "muster": {
-   "matches": 42.9,
-   "gameOne": 49.7,
-   "later": 42.7,
+   "matches": 58.3,
+   "gameOne": 56.3,
+   "later": 55.3,
    "n": 660
   },
   "rabble": {
-   "matches": 77.8,
-   "gameOne": 70.8,
-   "later": 70.1,
+   "matches": 63.7,
+   "gameOne": 62.4,
+   "later": 59.5,
    "n": 660
   },
   "skies": {
-   "matches": 54,
-   "gameOne": 52.7,
-   "later": 52.7,
+   "matches": 52.5,
+   "gameOne": 51.1,
+   "later": 53.1,
    "n": 660
   },
   "sweepers": {
-   "matches": 28.1,
-   "gameOne": 31.9,
-   "later": 35.2,
+   "matches": 51.8,
+   "gameOne": 49.8,
+   "later": 51.3,
    "n": 660
   },
   "tally": {
-   "matches": 38.3,
-   "gameOne": 42,
-   "later": 42.6,
+   "matches": 35.2,
+   "gameOne": 41.4,
+   "later": 38.6,
    "n": 660
   },
   "theft": {
-   "matches": 50.9,
-   "gameOne": 48.2,
-   "later": 51.6,
+   "matches": 69.7,
+   "gameOne": 63.2,
+   "later": 64.8,
    "n": 660
   },
   "urcontrol": {
-   "matches": 30.8,
-   "gameOne": 32.9,
-   "later": 37.2,
+   "matches": 13.4,
+   "gameOne": 22.8,
+   "later": 22.2,
    "n": 660
   },
   "warband": {
-   "matches": 47.4,
-   "gameOne": 46.1,
-   "later": 49.4,
+   "matches": 56.6,
+   "gameOne": 58.2,
+   "later": 52.6,
    "n": 660
   },
   "watch": {
-   "matches": 65.2,
-   "gameOne": 62.3,
-   "later": 60.5,
+   "matches": 64.8,
+   "gameOne": 58.3,
+   "later": 60.6,
    "n": 660
+  }
+ },
+ "byPair": {
+  "kiln|locks": {
+   "w": 35,
+   "n": 60
+  },
+  "kiln|minefield": {
+   "w": 37,
+   "n": 60
+  },
+  "kiln|muster": {
+   "w": 20,
+   "n": 60
+  },
+  "kiln|rabble": {
+   "w": 14,
+   "n": 60
+  },
+  "kiln|skies": {
+   "w": 32,
+   "n": 60
+  },
+  "kiln|sweepers": {
+   "w": 23,
+   "n": 60
+  },
+  "kiln|tally": {
+   "w": 33,
+   "n": 60
+  },
+  "kiln|theft": {
+   "w": 15,
+   "n": 60
+  },
+  "kiln|urcontrol": {
+   "w": 55,
+   "n": 60
+  },
+  "kiln|warband": {
+   "w": 24,
+   "n": 60
+  },
+  "kiln|watch": {
+   "w": 18,
+   "n": 60
+  },
+  "locks|kiln": {
+   "w": 25,
+   "n": 60
+  },
+  "locks|minefield": {
+   "w": 26,
+   "n": 60
+  },
+  "locks|muster": {
+   "w": 28,
+   "n": 60
+  },
+  "locks|rabble": {
+   "w": 16,
+   "n": 60
+  },
+  "locks|skies": {
+   "w": 32,
+   "n": 60
+  },
+  "locks|sweepers": {
+   "w": 26,
+   "n": 60
+  },
+  "locks|tally": {
+   "w": 30,
+   "n": 60
+  },
+  "locks|theft": {
+   "w": 10,
+   "n": 60
+  },
+  "locks|urcontrol": {
+   "w": 54,
+   "n": 60
+  },
+  "locks|warband": {
+   "w": 23,
+   "n": 60
+  },
+  "locks|watch": {
+   "w": 26,
+   "n": 60
+  },
+  "minefield|kiln": {
+   "w": 23,
+   "n": 60
+  },
+  "minefield|locks": {
+   "w": 34,
+   "n": 60
+  },
+  "minefield|muster": {
+   "w": 18,
+   "n": 60
+  },
+  "minefield|rabble": {
+   "w": 28,
+   "n": 60
+  },
+  "minefield|skies": {
+   "w": 6,
+   "n": 60
+  },
+  "minefield|sweepers": {
+   "w": 43,
+   "n": 60
+  },
+  "minefield|tally": {
+   "w": 34,
+   "n": 60
+  },
+  "minefield|theft": {
+   "w": 12,
+   "n": 60
+  },
+  "minefield|urcontrol": {
+   "w": 48,
+   "n": 60
+  },
+  "minefield|warband": {
+   "w": 16,
+   "n": 60
+  },
+  "minefield|watch": {
+   "w": 20,
+   "n": 60
+  },
+  "muster|kiln": {
+   "w": 40,
+   "n": 60
+  },
+  "muster|locks": {
+   "w": 32,
+   "n": 60
+  },
+  "muster|minefield": {
+   "w": 42,
+   "n": 60
+  },
+  "muster|rabble": {
+   "w": 30.5,
+   "n": 60
+  },
+  "muster|skies": {
+   "w": 40,
+   "n": 60
+  },
+  "muster|sweepers": {
+   "w": 30,
+   "n": 60
+  },
+  "muster|tally": {
+   "w": 37,
+   "n": 60
+  },
+  "muster|theft": {
+   "w": 18,
+   "n": 60
+  },
+  "muster|urcontrol": {
+   "w": 52,
+   "n": 60
+  },
+  "muster|warband": {
+   "w": 35,
+   "n": 60
+  },
+  "muster|watch": {
+   "w": 28,
+   "n": 60
+  },
+  "rabble|kiln": {
+   "w": 46,
+   "n": 60
+  },
+  "rabble|locks": {
+   "w": 44,
+   "n": 60
+  },
+  "rabble|minefield": {
+   "w": 32,
+   "n": 60
+  },
+  "rabble|muster": {
+   "w": 29.5,
+   "n": 60
+  },
+  "rabble|skies": {
+   "w": 37,
+   "n": 60
+  },
+  "rabble|sweepers": {
+   "w": 31,
+   "n": 60
+  },
+  "rabble|tally": {
+   "w": 54,
+   "n": 60
+  },
+  "rabble|theft": {
+   "w": 36,
+   "n": 60
+  },
+  "rabble|urcontrol": {
+   "w": 56,
+   "n": 60
+  },
+  "rabble|warband": {
+   "w": 40,
+   "n": 60
+  },
+  "rabble|watch": {
+   "w": 15,
+   "n": 60
+  },
+  "skies|kiln": {
+   "w": 28,
+   "n": 60
+  },
+  "skies|locks": {
+   "w": 28,
+   "n": 60
+  },
+  "skies|minefield": {
+   "w": 54,
+   "n": 60
+  },
+  "skies|muster": {
+   "w": 20,
+   "n": 60
+  },
+  "skies|rabble": {
+   "w": 23,
+   "n": 60
+  },
+  "skies|sweepers": {
+   "w": 23,
+   "n": 60
+  },
+  "skies|tally": {
+   "w": 34.5,
+   "n": 60
+  },
+  "skies|theft": {
+   "w": 15,
+   "n": 60
+  },
+  "skies|urcontrol": {
+   "w": 54,
+   "n": 60
+  },
+  "skies|warband": {
+   "w": 31,
+   "n": 60
+  },
+  "skies|watch": {
+   "w": 36,
+   "n": 60
+  },
+  "sweepers|kiln": {
+   "w": 37,
+   "n": 60
+  },
+  "sweepers|locks": {
+   "w": 34,
+   "n": 60
+  },
+  "sweepers|minefield": {
+   "w": 17,
+   "n": 60
+  },
+  "sweepers|muster": {
+   "w": 30,
+   "n": 60
+  },
+  "sweepers|rabble": {
+   "w": 29,
+   "n": 60
+  },
+  "sweepers|skies": {
+   "w": 37,
+   "n": 60
+  },
+  "sweepers|tally": {
+   "w": 34,
+   "n": 60
+  },
+  "sweepers|theft": {
+   "w": 19,
+   "n": 60
+  },
+  "sweepers|urcontrol": {
+   "w": 53,
+   "n": 60
+  },
+  "sweepers|warband": {
+   "w": 25,
+   "n": 60
+  },
+  "sweepers|watch": {
+   "w": 27,
+   "n": 60
+  },
+  "tally|kiln": {
+   "w": 27,
+   "n": 60
+  },
+  "tally|locks": {
+   "w": 30,
+   "n": 60
+  },
+  "tally|minefield": {
+   "w": 26,
+   "n": 60
+  },
+  "tally|muster": {
+   "w": 23,
+   "n": 60
+  },
+  "tally|rabble": {
+   "w": 6,
+   "n": 60
+  },
+  "tally|skies": {
+   "w": 25.5,
+   "n": 60
+  },
+  "tally|sweepers": {
+   "w": 26,
+   "n": 60
+  },
+  "tally|theft": {
+   "w": 8,
+   "n": 60
+  },
+  "tally|urcontrol": {
+   "w": 40,
+   "n": 60
+  },
+  "tally|warband": {
+   "w": 9,
+   "n": 60
+  },
+  "tally|watch": {
+   "w": 12,
+   "n": 60
+  },
+  "theft|kiln": {
+   "w": 45,
+   "n": 60
+  },
+  "theft|locks": {
+   "w": 50,
+   "n": 60
+  },
+  "theft|minefield": {
+   "w": 48,
+   "n": 60
+  },
+  "theft|muster": {
+   "w": 42,
+   "n": 60
+  },
+  "theft|rabble": {
+   "w": 24,
+   "n": 60
+  },
+  "theft|skies": {
+   "w": 45,
+   "n": 60
+  },
+  "theft|sweepers": {
+   "w": 41,
+   "n": 60
+  },
+  "theft|tally": {
+   "w": 52,
+   "n": 60
+  },
+  "theft|urcontrol": {
+   "w": 59,
+   "n": 60
+  },
+  "theft|warband": {
+   "w": 30,
+   "n": 60
+  },
+  "theft|watch": {
+   "w": 24,
+   "n": 60
+  },
+  "urcontrol|kiln": {
+   "w": 5,
+   "n": 60
+  },
+  "urcontrol|locks": {
+   "w": 6,
+   "n": 60
+  },
+  "urcontrol|minefield": {
+   "w": 12,
+   "n": 60
+  },
+  "urcontrol|muster": {
+   "w": 8,
+   "n": 60
+  },
+  "urcontrol|rabble": {
+   "w": 4,
+   "n": 60
+  },
+  "urcontrol|skies": {
+   "w": 6,
+   "n": 60
+  },
+  "urcontrol|sweepers": {
+   "w": 7,
+   "n": 60
+  },
+  "urcontrol|tally": {
+   "w": 20,
+   "n": 60
+  },
+  "urcontrol|theft": {
+   "w": 1,
+   "n": 60
+  },
+  "urcontrol|warband": {
+   "w": 10.5,
+   "n": 60
+  },
+  "urcontrol|watch": {
+   "w": 9,
+   "n": 60
+  },
+  "warband|kiln": {
+   "w": 36,
+   "n": 60
+  },
+  "warband|locks": {
+   "w": 37,
+   "n": 60
+  },
+  "warband|minefield": {
+   "w": 44,
+   "n": 60
+  },
+  "warband|muster": {
+   "w": 25,
+   "n": 60
+  },
+  "warband|rabble": {
+   "w": 20,
+   "n": 60
+  },
+  "warband|skies": {
+   "w": 29,
+   "n": 60
+  },
+  "warband|sweepers": {
+   "w": 35,
+   "n": 60
+  },
+  "warband|tally": {
+   "w": 51,
+   "n": 60
+  },
+  "warband|theft": {
+   "w": 30,
+   "n": 60
+  },
+  "warband|urcontrol": {
+   "w": 49.5,
+   "n": 60
+  },
+  "warband|watch": {
+   "w": 17,
+   "n": 60
+  },
+  "watch|kiln": {
+   "w": 42,
+   "n": 60
+  },
+  "watch|locks": {
+   "w": 34,
+   "n": 60
+  },
+  "watch|minefield": {
+   "w": 40,
+   "n": 60
+  },
+  "watch|muster": {
+   "w": 32,
+   "n": 60
+  },
+  "watch|rabble": {
+   "w": 45,
+   "n": 60
+  },
+  "watch|skies": {
+   "w": 24,
+   "n": 60
+  },
+  "watch|sweepers": {
+   "w": 33,
+   "n": 60
+  },
+  "watch|tally": {
+   "w": 48,
+   "n": 60
+  },
+  "watch|theft": {
+   "w": 36,
+   "n": 60
+  },
+  "watch|urcontrol": {
+   "w": 51,
+   "n": 60
+  },
+  "watch|warband": {
+   "w": 43,
+   "n": 60
   }
  }
 }

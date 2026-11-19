@@ -1,0 +1,8 @@
+# S73a: Order Druid for Rampant Growth on the fixed pilot (book 175 had priced Rampant Growth at no credit)
+bodies wurmspeaker druid rampant_growth:4:order_druid
+open wurmspeaker druid rampant_growth:4:order_druid
+sultai wurmspeaker druid rampant_growth:4:order_druid
+jund wurmspeaker druid rampant_growth:4:order_druid
+temur wurmspeaker druid rampant_growth:4:order_druid
+bant wurmspeaker druid rampant_growth:4:order_druid
+naya wurms druid rampant_growth:4:order_druid

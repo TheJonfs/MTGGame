@@ -169,8 +169,12 @@
      "count": 4
     },
     {
+     "cardId": "volmaw",
+     "count": 1
+    },
+    {
      "cardId": "island",
-     "count": 16
+     "count": 15
     },
     {
      "cardId": "black_lotus",
@@ -221,7 +225,7 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's): Esper's Eddy whole.",
+   "source": "S69 seed (the planner's): Esper's Eddy whole. S73a (ADR-201, the High Grounds): 1 volmaw for 1 island.",
    "poolAt": 287,
    "portOf": "esper:tempo"
   },
@@ -240,8 +244,12 @@
      "count": 4
     },
     {
+     "cardId": "volmaw",
+     "count": 1
+    },
+    {
      "cardId": "island",
-     "count": 6
+     "count": 5
     },
     {
      "cardId": "swamp",
@@ -308,7 +316,7 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): Esper's Undertow whole.",
+   "source": "S69 seed (the planner's): Esper's Undertow whole. S73a (ADR-201, the High Grounds): 1 volmaw for 1 island.",
    "poolAt": 287,
    "portOf": "esper:undertow"
   },
@@ -581,7 +589,7 @@
      "count": 2
     },
     {
-     "cardId": "rampant_growth",
+     "cardId": "order_druid",
      "count": 4
     },
     {
@@ -593,7 +601,7 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's): the Open's Wurmspeaker whole.",
+   "source": "S69 seed (the planner's): the Open's Wurmspeaker whole. S73a (the vintage audit): 4 order_druid for rampant_growth.",
    "poolAt": 287,
    "portOf": "open:wurmspeaker"
   },
@@ -778,7 +786,7 @@
    "name": "Sultai Reeve (working name)",
    "title": "Sultai Control (U B g)",
    "archetype": "control",
-   "source": "S69 seed (the planner's): built by the implementer — the Reeve over Clio, Protocol, Control Magic, Putrefy and the Forerunner (the brief); Walls of Blossoms and counters to reach her.",
+   "source": "S69 seed (the planner's): built by the implementer — the Reeve over Clio, Protocol, Control Magic, Putrefy and the Forerunner (the brief); Walls of Blossoms and counters to reach her. S73a (ADR-201, the High Grounds): 1 volmaw for 1 island; 1 nightbower for 1 forest.",
    "poolAt": 287,
    "decklist": [
     {
@@ -878,15 +886,19 @@
      "count": 1
     },
     {
+     "cardId": "volmaw",
+     "count": 1
+    },
+    {
      "cardId": "island",
-     "count": 2
+     "count": 1
     },
     {
      "cardId": "swamp",
      "count": 1
     },
     {
-     "cardId": "forest",
+     "cardId": "nightbower",
      "count": 1
     }
    ],
@@ -932,12 +944,20 @@
      "count": 4
     },
     {
+     "cardId": "wrackroot",
+     "count": 1
+    },
+    {
      "cardId": "island",
-     "count": 6
+     "count": 5
+    },
+    {
+     "cardId": "nightbower",
+     "count": 1
     },
     {
      "cardId": "swamp",
-     "count": 3
+     "count": 2
     },
     {
      "cardId": "tropical_island",
@@ -972,7 +992,7 @@
      "count": 4
     },
     {
-     "cardId": "tome_scour",
+     "cardId": "silt_spirit",
      "count": 4
     },
     {
@@ -1004,7 +1024,7 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): built by the implementer from Esper's Undertow — Sultai mill (the brief: the Undertow with Tome Scour and Clio, both already in it): its three Nighthawks for three Zinnias (a creature of theirs leaving mills its power), its four Evolving Wilds for two Bayous and two Tropical Islands. Post-S71 (Part 3, the triad read; ADR-168): Volmaw for an Underground Sea — +5.6 ± 1.3 in matches (160 a pairing, paired).",
+   "source": "S69 seed (the planner's): built by the implementer from Esper's Undertow — Sultai mill (the brief: the Undertow with Tome Scour and Clio, both already in it): its three Nighthawks for three Zinnias (a creature of theirs leaving mills its power), its four Evolving Wilds for two Bayous and two Tropical Islands. Post-S71 (Part 3, the triad read; ADR-168): Volmaw for an Underground Sea — +5.6 ± 1.3 in matches (160 a pairing, paired). S73a (the vintage audit): 4 silt_spirit for tome_scour. S73a (ADR-201, the High Grounds): 1 wrackroot for 1 island; 1 nightbower for 1 swamp.",
    "poolAt": 287
   },
   {

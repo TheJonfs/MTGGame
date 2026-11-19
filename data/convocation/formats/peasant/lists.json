@@ -209,7 +209,7 @@
    "name": "Mono-Black Removal",
    "title": "Mono-Black Removal (B)",
    "archetype": "midrange",
-   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Sign in Blood for the Ragers and a Blood Artist.",
+   "source": "S62 seed (the planner's revision of a draft from docs/penny-experiments.md). A working name until the seeds settle. +4 Sign in Blood for the Ragers and a Blood Artist. S73a (the vintage audit): 3 nyxathid for gallows_djinn.",
    "poolAt": 276,
    "decklist": [
     {
@@ -233,7 +233,7 @@
      "count": 4
     },
     {
-     "cardId": "gallows_djinn",
+     "cardId": "nyxathid",
      "count": 3
     },
     {

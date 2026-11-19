@@ -437,7 +437,7 @@
    "name": "the Locks",
    "title": "Esper Control (W U B)",
    "archetype": "control",
-   "source": "S65 seed (the planner's): the archived Locks revived with its S57/S58 revisions (the four Control Magics), plus two Protocols, two Karmic Mentors and a Wave of Reckoning beside its Wraths — for two Undermines, two Swords and a Vindicate. S66 (Part 2, the sweeper round): its fifteen with a fourth Wrath, a second Wave and a Retribution for the two Faerie Macabres and a Disenchant; its guide the Open's rows plus Wrath and the Wave in for Vindicate and Swords against `wide` (the Roll, the Levy) — +9.7 ± 5.1 there, 160 matches a pairing (Retribution measured −1.6 and left out).",
+   "source": "S65 seed (the planner's): the archived Locks revived with its S57/S58 revisions (the four Control Magics), plus two Protocols, two Karmic Mentors and a Wave of Reckoning beside its Wraths — for two Undermines, two Swords and a Vindicate. S66 (Part 2, the sweeper round): its fifteen with a fourth Wrath, a second Wave and a Retribution for the two Faerie Macabres and a Disenchant; its guide the Open's rows plus Wrath and the Wave in for Vindicate and Swords against `wide` (the Roll, the Levy) — +9.7 ± 5.1 there, 160 matches a pairing (Retribution measured −1.6 and left out). S73a (ADR-201, the High Grounds): 1 volmaw for 1 island.",
    "poolAt": 283,
    "decklist": [
     {
@@ -457,8 +457,12 @@
      "count": 4
     },
     {
+     "cardId": "volmaw",
+     "count": 1
+    },
+    {
      "cardId": "island",
-     "count": 2
+     "count": 1
     },
     {
      "cardId": "plains",
@@ -1034,7 +1038,7 @@
    "name": "the Eddy",
    "title": "Blue Tempo, splash Clio (U b)",
    "archetype": "midrange",
-   "source": "S65 seed (the planner's 'Mono-Blue Tempo', built by the implementer): Tidewall, Man-o'-War, Plumecreed Escort, Aether Channeler, Control Magic, Counterspell, Boomerang — and Clio, so black is splashed (Chris).",
+   "source": "S65 seed (the planner's 'Mono-Blue Tempo', built by the implementer): Tidewall, Man-o'-War, Plumecreed Escort, Aether Channeler, Control Magic, Counterspell, Boomerang — and Clio, so black is splashed (Chris). S73a (ADR-201, the High Grounds): 1 volmaw for 1 island.",
    "poolAt": 283,
    "decklist": [
     {
@@ -1046,8 +1050,12 @@
      "count": 4
     },
     {
+     "cardId": "volmaw",
+     "count": 1
+    },
+    {
      "cardId": "island",
-     "count": 16
+     "count": 15
     },
     {
      "cardId": "black_lotus",

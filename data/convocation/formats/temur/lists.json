@@ -404,7 +404,7 @@
      "count": 4
     },
     {
-     "cardId": "elvish_visionary",
+     "cardId": "clutch_guard",
      "count": 4
     },
     {
@@ -462,7 +462,7 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's): Emerald Snakes (Chris's, Jund's mana), its Mox Jet for Mox Sapphire and four Bayous for four Tropical Islands.",
+   "source": "S69 seed (the planner's): Emerald Snakes (Chris's, Jund's mana), its Mox Jet for Mox Sapphire and four Bayous for four Tropical Islands. S73a (the vintage audit): 4 clutch_guard for elvish_visionary.",
    "poolAt": 287,
    "portOf": "jund:emeraldsnakes"
   },
@@ -525,7 +525,7 @@
      "count": 2
     },
     {
-     "cardId": "rampant_growth",
+     "cardId": "order_druid",
      "count": 4
     },
     {
@@ -537,7 +537,7 @@
      "count": 2
     }
    ],
-   "source": "S69 seed (the planner's): the Open's Wurmspeaker whole.",
+   "source": "S69 seed (the planner's): the Open's Wurmspeaker whole. S73a (the vintage audit): 4 order_druid for rampant_growth.",
    "poolAt": 287,
    "portOf": "open:wurmspeaker"
   },
@@ -627,7 +627,7 @@
      "count": 4
     },
     {
-     "cardId": "wall_of_blossoms",
+     "cardId": "clutch_guard",
      "count": 4
     },
     {
@@ -725,7 +725,7 @@
      "count": 4
     }
    ],
-   "source": "S69 seed (the planner's) (Chris's ruling): the Open's Reaper Control revived — its three Reapers (Jund's lord) for three Emerald Keepers; Mox Jet for Mox Sapphire, Cairnbrand for the Tallyflame Court, four Bayous and four Badlands for four Tropical and four Volcanic Islands; its fifteen's four Putrefies (black) for four Abrades. Renamed Temur Snakes (Chris, 2026-10-22; the key stays `reaper`).",
+   "source": "S69 seed (the planner's) (Chris's ruling): the Open's Reaper Control revived — its three Reapers (Jund's lord) for three Emerald Keepers; Mox Jet for Mox Sapphire, Cairnbrand for the Tallyflame Court, four Bayous and four Badlands for four Tropical and four Volcanic Islands; its fifteen's four Putrefies (black) for four Abrades. Renamed Temur Snakes (Chris, 2026-10-22; the key stays `reaper`). S73a (the vintage audit): 4 clutch_guard for wall_of_blossoms.",
    "poolAt": 287,
    "portOf": "open:reaper"
   },

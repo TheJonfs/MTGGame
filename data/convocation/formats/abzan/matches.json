@@ -1,73 +1,515 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-27",
+ "when": "2026-11-19",
  "matchesAPairing": 60,
  "byList": {
   "abzantokens": {
-   "matches": 50.7,
-   "gameOne": 45.8,
-   "later": 52.8,
+   "matches": 44.5,
+   "gameOne": 50.5,
+   "later": 43.9,
    "n": 600
   },
   "auras": {
-   "matches": 55.3,
-   "gameOne": 51.5,
-   "later": 54.8,
+   "matches": 49.2,
+   "gameOne": 47.5,
+   "later": 49.6,
    "n": 600
   },
   "bfh": {
-   "matches": 39.3,
-   "gameOne": 46.8,
-   "later": 40.9,
+   "matches": 37.3,
+   "gameOne": 42.5,
+   "later": 41.8,
    "n": 600
   },
   "bw": {
-   "matches": 47.2,
-   "gameOne": 43,
-   "later": 50.5,
+   "matches": 48.3,
+   "gameOne": 43.8,
+   "later": 51.4,
    "n": 600
   },
   "bwmassacrats": {
-   "matches": 49,
-   "gameOne": 47.2,
-   "later": 50.2,
+   "matches": 51.3,
+   "gameOne": 48.7,
+   "later": 53.3,
    "n": 600
   },
   "chancel": {
-   "matches": 69.2,
-   "gameOne": 64.2,
-   "later": 62.5,
+   "matches": 62,
+   "gameOne": 59.2,
+   "later": 59.5,
    "n": 600
   },
   "levy": {
-   "matches": 51.7,
-   "gameOne": 53.8,
-   "later": 50.2,
+   "matches": 54.8,
+   "gameOne": 50.8,
+   "later": 53.4,
    "n": 600
   },
   "roll": {
-   "matches": 56.2,
-   "gameOne": 58.3,
-   "later": 53.5,
+   "matches": 58,
+   "gameOne": 57.3,
+   "later": 54.4,
    "n": 600
   },
   "thicket": {
-   "matches": 44.2,
-   "gameOne": 42.2,
-   "later": 47.4,
+   "matches": 44.8,
+   "gameOne": 47.5,
+   "later": 46.1,
    "n": 600
   },
   "warden": {
-   "matches": 39,
-   "gameOne": 49.2,
-   "later": 38.5,
+   "matches": 50.2,
+   "gameOne": 53.3,
+   "later": 48.3,
    "n": 600
   },
   "wskies": {
-   "matches": 48.3,
-   "gameOne": 48,
-   "later": 48.6,
+   "matches": 49.5,
+   "gameOne": 48.8,
+   "later": 48.7,
    "n": 600
+  }
+ },
+ "byPair": {
+  "abzantokens|auras": {
+   "w": 20,
+   "n": 60
+  },
+  "abzantokens|bfh": {
+   "w": 35,
+   "n": 60
+  },
+  "abzantokens|bw": {
+   "w": 25,
+   "n": 60
+  },
+  "abzantokens|bwmassacrats": {
+   "w": 24,
+   "n": 60
+  },
+  "abzantokens|chancel": {
+   "w": 22,
+   "n": 60
+  },
+  "abzantokens|levy": {
+   "w": 24,
+   "n": 60
+  },
+  "abzantokens|roll": {
+   "w": 19,
+   "n": 60
+  },
+  "abzantokens|thicket": {
+   "w": 33,
+   "n": 60
+  },
+  "abzantokens|warden": {
+   "w": 35,
+   "n": 60
+  },
+  "abzantokens|wskies": {
+   "w": 30,
+   "n": 60
+  },
+  "auras|abzantokens": {
+   "w": 40,
+   "n": 60
+  },
+  "auras|bfh": {
+   "w": 35,
+   "n": 60
+  },
+  "auras|bw": {
+   "w": 24,
+   "n": 60
+  },
+  "auras|bwmassacrats": {
+   "w": 30,
+   "n": 60
+  },
+  "auras|chancel": {
+   "w": 29,
+   "n": 60
+  },
+  "auras|levy": {
+   "w": 30,
+   "n": 60
+  },
+  "auras|roll": {
+   "w": 35,
+   "n": 60
+  },
+  "auras|thicket": {
+   "w": 37,
+   "n": 60
+  },
+  "auras|warden": {
+   "w": 24,
+   "n": 60
+  },
+  "auras|wskies": {
+   "w": 11,
+   "n": 60
+  },
+  "bfh|abzantokens": {
+   "w": 25,
+   "n": 60
+  },
+  "bfh|auras": {
+   "w": 25,
+   "n": 60
+  },
+  "bfh|bw": {
+   "w": 17,
+   "n": 60
+  },
+  "bfh|bwmassacrats": {
+   "w": 22,
+   "n": 60
+  },
+  "bfh|chancel": {
+   "w": 23,
+   "n": 60
+  },
+  "bfh|levy": {
+   "w": 21,
+   "n": 60
+  },
+  "bfh|roll": {
+   "w": 13,
+   "n": 60
+  },
+  "bfh|thicket": {
+   "w": 34,
+   "n": 60
+  },
+  "bfh|warden": {
+   "w": 26,
+   "n": 60
+  },
+  "bfh|wskies": {
+   "w": 18,
+   "n": 60
+  },
+  "bwmassacrats|abzantokens": {
+   "w": 36,
+   "n": 60
+  },
+  "bwmassacrats|auras": {
+   "w": 30,
+   "n": 60
+  },
+  "bwmassacrats|bfh": {
+   "w": 38,
+   "n": 60
+  },
+  "bwmassacrats|bw": {
+   "w": 18,
+   "n": 60
+  },
+  "bwmassacrats|chancel": {
+   "w": 20,
+   "n": 60
+  },
+  "bwmassacrats|levy": {
+   "w": 31,
+   "n": 60
+  },
+  "bwmassacrats|roll": {
+   "w": 34,
+   "n": 60
+  },
+  "bwmassacrats|thicket": {
+   "w": 38,
+   "n": 60
+  },
+  "bwmassacrats|warden": {
+   "w": 34,
+   "n": 60
+  },
+  "bwmassacrats|wskies": {
+   "w": 29,
+   "n": 60
+  },
+  "bw|abzantokens": {
+   "w": 35,
+   "n": 60
+  },
+  "bw|auras": {
+   "w": 36,
+   "n": 60
+  },
+  "bw|bfh": {
+   "w": 43,
+   "n": 60
+  },
+  "bw|bwmassacrats": {
+   "w": 42,
+   "n": 60
+  },
+  "bw|chancel": {
+   "w": 14,
+   "n": 60
+  },
+  "bw|levy": {
+   "w": 17,
+   "n": 60
+  },
+  "bw|roll": {
+   "w": 26,
+   "n": 60
+  },
+  "bw|thicket": {
+   "w": 24,
+   "n": 60
+  },
+  "bw|warden": {
+   "w": 20,
+   "n": 60
+  },
+  "bw|wskies": {
+   "w": 33,
+   "n": 60
+  },
+  "chancel|abzantokens": {
+   "w": 38,
+   "n": 60
+  },
+  "chancel|auras": {
+   "w": 31,
+   "n": 60
+  },
+  "chancel|bfh": {
+   "w": 37,
+   "n": 60
+  },
+  "chancel|bw": {
+   "w": 46,
+   "n": 60
+  },
+  "chancel|bwmassacrats": {
+   "w": 40,
+   "n": 60
+  },
+  "chancel|levy": {
+   "w": 35,
+   "n": 60
+  },
+  "chancel|roll": {
+   "w": 33,
+   "n": 60
+  },
+  "chancel|thicket": {
+   "w": 20,
+   "n": 60
+  },
+  "chancel|warden": {
+   "w": 40,
+   "n": 60
+  },
+  "chancel|wskies": {
+   "w": 52,
+   "n": 60
+  },
+  "levy|abzantokens": {
+   "w": 36,
+   "n": 60
+  },
+  "levy|auras": {
+   "w": 30,
+   "n": 60
+  },
+  "levy|bfh": {
+   "w": 39,
+   "n": 60
+  },
+  "levy|bw": {
+   "w": 43,
+   "n": 60
+  },
+  "levy|bwmassacrats": {
+   "w": 29,
+   "n": 60
+  },
+  "levy|chancel": {
+   "w": 25,
+   "n": 60
+  },
+  "levy|roll": {
+   "w": 30,
+   "n": 60
+  },
+  "levy|thicket": {
+   "w": 40,
+   "n": 60
+  },
+  "levy|warden": {
+   "w": 32,
+   "n": 60
+  },
+  "levy|wskies": {
+   "w": 25,
+   "n": 60
+  },
+  "roll|abzantokens": {
+   "w": 41,
+   "n": 60
+  },
+  "roll|auras": {
+   "w": 25,
+   "n": 60
+  },
+  "roll|bfh": {
+   "w": 47,
+   "n": 60
+  },
+  "roll|bw": {
+   "w": 34,
+   "n": 60
+  },
+  "roll|bwmassacrats": {
+   "w": 26,
+   "n": 60
+  },
+  "roll|chancel": {
+   "w": 27,
+   "n": 60
+  },
+  "roll|levy": {
+   "w": 30,
+   "n": 60
+  },
+  "roll|thicket": {
+   "w": 40,
+   "n": 60
+  },
+  "roll|warden": {
+   "w": 37,
+   "n": 60
+  },
+  "roll|wskies": {
+   "w": 41,
+   "n": 60
+  },
+  "thicket|abzantokens": {
+   "w": 27,
+   "n": 60
+  },
+  "thicket|auras": {
+   "w": 23,
+   "n": 60
+  },
+  "thicket|bfh": {
+   "w": 26,
+   "n": 60
+  },
+  "thicket|bw": {
+   "w": 36,
+   "n": 60
+  },
+  "thicket|bwmassacrats": {
+   "w": 22,
+   "n": 60
+  },
+  "thicket|chancel": {
+   "w": 40,
+   "n": 60
+  },
+  "thicket|levy": {
+   "w": 20,
+   "n": 60
+  },
+  "thicket|roll": {
+   "w": 20,
+   "n": 60
+  },
+  "thicket|warden": {
+   "w": 37,
+   "n": 60
+  },
+  "thicket|wskies": {
+   "w": 18,
+   "n": 60
+  },
+  "warden|abzantokens": {
+   "w": 25,
+   "n": 60
+  },
+  "warden|auras": {
+   "w": 36,
+   "n": 60
+  },
+  "warden|bfh": {
+   "w": 34,
+   "n": 60
+  },
+  "warden|bw": {
+   "w": 40,
+   "n": 60
+  },
+  "warden|bwmassacrats": {
+   "w": 26,
+   "n": 60
+  },
+  "warden|chancel": {
+   "w": 20,
+   "n": 60
+  },
+  "warden|levy": {
+   "w": 28,
+   "n": 60
+  },
+  "warden|roll": {
+   "w": 23,
+   "n": 60
+  },
+  "warden|thicket": {
+   "w": 23,
+   "n": 60
+  },
+  "warden|wskies": {
+   "w": 46,
+   "n": 60
+  },
+  "wskies|abzantokens": {
+   "w": 30,
+   "n": 60
+  },
+  "wskies|auras": {
+   "w": 49,
+   "n": 60
+  },
+  "wskies|bfh": {
+   "w": 42,
+   "n": 60
+  },
+  "wskies|bw": {
+   "w": 27,
+   "n": 60
+  },
+  "wskies|bwmassacrats": {
+   "w": 31,
+   "n": 60
+  },
+  "wskies|chancel": {
+   "w": 8,
+   "n": 60
+  },
+  "wskies|levy": {
+   "w": 35,
+   "n": 60
+  },
+  "wskies|roll": {
+   "w": 19,
+   "n": 60
+  },
+  "wskies|thicket": {
+   "w": 42,
+   "n": 60
+  },
+  "wskies|warden": {
+   "w": 14,
+   "n": 60
   }
  }
 }

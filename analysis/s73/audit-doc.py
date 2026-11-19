@@ -62,11 +62,12 @@ def verdict(t):
     if m.get('confounded'): return 'confounded (game one %+.1f ± %.1f)' % (r1['d1'], r1['e1'])
     clears = lambda r: r['d'] >= 2 and r['d'] - r['e'] > 0
     if not clears(r1): return 'below the bar'
-    if r1['d'] >= 5: return '**clears**'
+    # brief 73a: the bar read strictly — the gain less its error is at least +2 (ADR-202: under +5, on two seeds pooled)
+    if r1['d'] >= 5: return '**clears**' if r1['d'] - r1['e'] >= 2 else '**hold**: under the strict bar (the gain less its error is %+.1f); a second seed owed' % (r1['d'] - r1['e'])
     if r2 is None: return 'clears on seed 91; second seed owed'
     # pooled over the two seeds, paired
     vals = [x['S'][k]['match'] - x['B'][k]['match'] for x in (r1, r2) for k in x['keys']]; d, e = paired(vals); t['pooled'] = (d, e)
-    return ('**clears** on two seeds' if (r2['d'] >= 2 and r2['d'] - r2['e'] > 0) else '**clears** pooled over two seeds; seed 173 alone is under the bar' if (r2['d'] > 0 and d >= 2 and d - e > 0) else 'does not hold on the second seed') + ' (seed 173 %+.1f ± %.1f; pooled %+.1f ± %.1f)' % (r2['d'], r2['e'], d, e)
+    return ('**clears** on two seeds, pooled' if d - e >= 2 else '**hold**: under the strict bar pooled (the gain less its error is %+.1f)' % (d - e) if (d >= 2 and d - e > 0) else 'does not hold on the second seed') + ' (seed 173 %+.1f ± %.1f; pooled %+.1f ± %.1f)' % (r2['d'], r2['e'], d, e)
 for t in done: t['verdict'] = verdict(t)
 def rowline(t):
     r = t['r1']; lost = ', '.join(f"{cname.get(t['fmt'] + ':' + o, o)} {dd:+.0f}" for o, dd, ee in r['lost']) or '—'

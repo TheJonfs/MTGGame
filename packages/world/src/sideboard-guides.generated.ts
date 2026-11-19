@@ -2813,7 +2813,11 @@ export const SIDEBOARD_OUT_RULES: readonly { key: string; sixty: { cardId: strin
    },
    {
     "cardId": "mountain",
-    "count": 12
+    "count": 11
+   },
+   {
+    "cardId": "hearthspire",
+    "count": 1
    },
    {
     "cardId": "plains",

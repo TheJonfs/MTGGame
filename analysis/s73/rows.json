@@ -78,25 +78,38 @@
  },
  "bodies:wurmspeaker druid": {
   "role": "a ramp piece for a ramp piece: it fetches the top end",
-  "note": "S72's study put the Druid in the Gaean Wurm slot and read -1.5; this is the right slot."
+  "note": "S72's study put the Druid in the Gaean Wurm slot and read -1.5; this is the right slot. Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit.",
+  "suffix": "-fix175"
  },
  "open:wurmspeaker druid": {
-  "role": "a ramp piece for a ramp piece: it fetches the top end"
+  "role": "a ramp piece for a ramp piece: it fetches the top end",
+  "suffix": "-fix175",
+  "note": "Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit."
  },
  "sultai:wurmspeaker druid": {
-  "role": "a ramp piece for a ramp piece: it fetches the top end"
+  "role": "a ramp piece for a ramp piece: it fetches the top end",
+  "suffix": "-fix175",
+  "note": "Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit."
  },
  "jund:wurmspeaker druid": {
-  "role": "a ramp piece for a ramp piece: it fetches the top end"
+  "role": "a ramp piece for a ramp piece: it fetches the top end",
+  "suffix": "-fix175",
+  "note": "Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit."
  },
  "temur:wurmspeaker druid": {
-  "role": "a ramp piece for a ramp piece: it fetches the top end"
+  "role": "a ramp piece for a ramp piece: it fetches the top end",
+  "suffix": "-fix175",
+  "note": "Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit."
  },
  "bant:wurmspeaker druid": {
-  "role": "a ramp piece for a ramp piece: it fetches the top end"
+  "role": "a ramp piece for a ramp piece: it fetches the top end",
+  "suffix": "-fix175",
+  "note": "Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit."
  },
  "naya:wurms druid": {
-  "role": "a ramp piece for a ramp piece: it fetches the top end"
+  "role": "a ramp piece for a ramp piece: it fetches the top end",
+  "suffix": "-fix175",
+  "note": "Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit."
  },
  "bodies:stampede terror": {
   "role": "the same 3/3 a mana cheaper, with menace",

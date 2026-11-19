@@ -4,49 +4,47 @@
 
 ## The table of record
 
-13 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/grixis/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-11-09; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
+13 active lists, the AI in both seats. **Game one** is a list's mean win rate against the other active lists on the registered sixties (the round-robin of record, `formats/grixis/means.json`). **Matches** is its best-of-three win rate — the figure the field's seat draw reads since S59 (60 matches a pairing, measured 2026-11-19; ADR-171): game one on the registered sixties, games two and three sideboarded. **After sideboarding** is its games-two-and-three rate less its game-one rate inside those matches.
 
 | list | deck | pilot | matches | game one | after sideboarding | fifteen |
 |---|---|---|---|---|---|---|
-| the Rabble | Mono-Red Goblins (R) | aggro | 78.1 | 70 | +0.9 | registered |
-| Mono-Black Clio | Mono-Black Clio (B u r) | midrange | 69.4 | 64 | +0.6 | registered, guided |
-| Massacrats | Massacre Aristocrats (B u r) | midrange | 58.1 | 53 | +7.0 | registered, guided |
-| Grixis Clio (working name) | Grixis Control (U B r) | control | 58.0 | 58 | −3.1 | registered |
-| the Writ | Dimir Control (U B) | control | 53.9 | 51 | +4.3 | registered |
-| the Kiln | Izzet Spells (U R) | midrange | 51.5 | 52 | −1.0 | registered |
-| the Ashen | Rakdos Removal (B R) | midrange | 46.8 | 49 | −3.2 | built |
-| the Tally | Izzet Sparks (U R) | aggro | 45.8 | 50 | +0.1 | built |
-| the Eddy | Blue Tempo, splash Clio (U b) | midrange | 44.5 | 46 | −4.7 | built |
-| the Kindling | Mono-Red Spells (R) | aggro | 42.6 | 42 | −0.3 | built |
-| BR Removal | Rakdos Removal (B R) | midrange | 38.8 | 42 | −1.7 | built |
-| the Barrow | Mono-Black Control (B) | control | 34.2 | 35 | +1.1 | built |
-| the Undertow | Dimir Mill (U B) | control | 28.3 | 37 | +0.7 | built |
+| the Rabble | Mono-Red Goblins (R) | aggro | 75.7 | 69 | +1.0 | registered |
+| Mono-Black Clio | Mono-Black Clio (B u r) | midrange | 68.4 | 61 | +0.4 | registered, guided |
+| Grixis Clio (working name) | Grixis Control (U B r) | control | 61.6 | 58 | +1.6 | registered |
+| Massacrats | Massacre Aristocrats (B u r) | midrange | 54.7 | 53 | +6.6 | registered, guided |
+| BR Removal | Rakdos Removal (B R) | midrange | 53.5 | 53 | +2.4 | built |
+| the Kindling | Mono-Red Spells (R) | aggro | 48.3 | 48 | +0.0 | built |
+| the Eddy | Blue Tempo, splash Clio (U b) | midrange | 48.1 | 49 | −3.4 | built |
+| the Tally | Izzet Sparks (U R) | aggro | 48.0 | 48 | −1.6 | built |
+| the Writ | Dimir Control (U B) | control | 47.1 | 47 | +2.3 | registered |
+| the Kiln | Izzet Spells (U R) | midrange | 46.7 | 46 | −0.6 | registered |
+| the Ashen | Rakdos Removal (B R) | midrange | 45.4 | 49 | −3.1 | built |
+| the Barrow | Mono-Black Control (B) | control | 28.8 | 35 | −4.0 | built |
+| the Undertow | Dimir Mill (U B) | control | 23.7 | 32 | −1.5 | built |
 
 Archived (kept in the data, out of the field): none.
 
 ## Among the lists above 50 (S71a — a reading lens, not the draw)
 
-The 6 lists above 50 in matches, counted against one another only. A list that gains most of its record from the bottom of the field falls here; the field's seat draw still reads the whole table.
+The 5 lists above 50 in matches, counted against one another only. A list that gains most of its record from the bottom of the field falls here; the field's seat draw still reads the whole table.
 
 | | list | among them | the whole field | change |
 |---|---|---|---|---|
-| 1 | the Rabble | 67.8 ± 5.3 | 78.1 | −10.3 |
-| 2 | Mono-Black Clio | 61.3 ± 5.5 | 69.4 | −8.1 |
-| 3 | Massacrats | 45.3 ± 5.6 | 58.1 | −12.8 |
-| 4 | Grixis Clio (working name) | 42.2 ± 5.6 | 58.0 | −15.8 |
-| 5 | the Kiln | 42.0 ± 5.6 | 51.5 | −9.5 |
-| 6 | the Writ | 41.3 ± 5.6 | 53.9 | −12.6 |
+| 1 | the Rabble | 61.3 ± 6.2 | 75.7 | −14.5 |
+| 2 | Mono-Black Clio | 59.6 ± 6.2 | 68.4 | −8.8 |
+| 3 | Massacrats | 49.2 ± 6.3 | 54.7 | −5.5 |
+| 4 | Grixis Clio (working name) | 47.3 ± 6.3 | 61.6 | −14.3 |
+| 5 | BR Removal | 32.7 ± 5.9 | 53.5 | −20.8 |
 
 Head to head (the row list's matches won, %):
 
-| | rabble | mbclio | massacrats | clio | kiln | writ |
-|---|---|---|---|---|---|---|
-| **rabble** | — | 47 | 58 | 84 | 83 | 67 |
-| **mbclio** | 53 | — | 60 | 72 | 57 | 65 |
-| **massacrats** | 42 | 40 | — | 52 | 43 | 50 |
-| **clio** | 16 | 28 | 48 | — | 57 | 62 |
-| **kiln** | 17 | 43 | 57 | 43 | — | 50 |
-| **writ** | 33 | 35 | 50 | 38 | 50 | — |
+| | rabble | mbclio | massacrats | clio | br |
+|---|---|---|---|---|---|
+| **rabble** | — | 50 | 53 | 79 | 63 |
+| **mbclio** | 50 | — | 57 | 52 | 80 |
+| **massacrats** | 47 | 43 | — | 32 | 75 |
+| **clio** | 21 | 48 | 68 | — | 52 |
+| **br** | 38 | 20 | 25 | 48 | — |
 
 ## Staples (ADR-170)
 
@@ -56,7 +54,7 @@ The most played: Vampire Nighthawk 8 · Lightning Bolt 6 · Clio, Lady of the De
 
 ## the Rabble — Mono-Red Goblins (R)
 
-`rabble` · aggro · game one 70 · matches 78.1
+`rabble` · aggro · game one 69 · matches 75.7
 
 - **Lands (18):** 1 Cairnbrand · 4 Badlands · 1 Tallyflame Court · 4 Volcanic Island · 8 Mountain
 - **Creatures (18):** 4 Raging Goblin · 4 Goblin Chieftain · 4 Seasoned Pyromancer · 4 Flametongue Kavu · 2 Siege-Gang Commander
@@ -68,7 +66,7 @@ The most played: Vampire Nighthawk 8 · Lightning Bolt 6 · Clio, Lady of the De
 
 ## Mono-Black Clio — Mono-Black Clio (B u r)
 
-`mbclio` · midrange · game one 64 · matches 69.4
+`mbclio` · midrange · game one 61 · matches 68.4
 
 - **Lands (23):** 1 Cairnbrand · 1 Tallyflame Court · 4 Badlands · 4 Blood Crypt · 4 Underground Sea · 4 Watery Grave · 1 Library of Alexandria · 4 Swamp
 - **Creatures (23):** 3 Drana, Kalastria Bloodchief · 4 Vampire Nighthawk · 4 The Jet Witch · 4 Hypnotic Specter · 4 Clio, Lady of the Depths · 4 Dread Presence
@@ -83,9 +81,21 @@ The most played: Vampire Nighthawk 8 · Lightning Bolt 6 · Clio, Lady of the De
 - **History:**
   - contributed — Post-S67 (Chris's, 2026-10-19): 8–0 in a Grixis Convocation (event 233306; 16–1 in games — the Ashen, Grixis Clio, the Writ, the Kindling and the Rabble in the Swiss, then the Kindling, the Tally and the Rabble). The Witch's black core (Witch, Specter, Dread Presence, Nighthawk, Drana, Hymn, Rituals) with four Clios on blue duals; Pyroclasm, Kavu, Control Magic and Protocol in the fifteen. The fifteen and the guide read from Chris's swaps.
 
+## Grixis Clio (working name) — Grixis Control (U B r)
+
+`clio` · control · game one 58 · matches 61.6
+
+- **Lands (20):** 1 Library of Alexandria · 4 Underground Sea · 2 Watery Grave · 4 Volcanic Island · 1 Cairnbrand · 1 Volmaw · 1 Tallyflame Court · 2 Island · 4 Swamp
+- **Creatures (19):** 3 Flametongue Kavu · 3 Tidewall · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Clio, Lady of the Depths · 1 Faerie Formation · 1 Drana, Kalastria Bloodchief
+- **Other (21):** 1 Black Lotus · 1 Mox Jet · 1 Mox Sapphire · 1 Mox Ruby · 1 Demonic Tutor · 4 Counterspell · 3 Char · 4 Protocol · 1 Time Walk · 4 Undermine
+- **Its fifteen (registered):** 4 Tormod's Crypt · 4 Doom Blade · 4 Faerie Macabre · 3 Control Magic
+- **Its sideboard guide:** none — the general rules sideboard it.
+- **History:**
+  - contributed — S67 seed (the planner's): built by the implementer — the Writ with Kavu and Char (the brief): three Arcane Collectors for three Flametongue Kavus, three Essence Scatters for three Chars, the Gravitational Shift for Mox Ruby; the red from four Volcanic Islands and Cairnbrand for two Islands, two Watery Graves and a Swamp. S73a (ADR-201, the High Grounds): 1 volmaw for 1 island; 1 tallyflame_court for 1 island (its row cleared).
+
 ## Massacrats — Massacre Aristocrats (B u r)
 
-`massacrats` · midrange · game one 53 · matches 58.1
+`massacrats` · midrange · game one 53 · matches 54.7
 
 - **Lands (22):** 1 Cairnbrand · 1 Tallyflame Court · 1 Library of Alexandria · 4 Badlands · 4 Blood Crypt · 4 Underground Sea · 4 Watery Grave · 3 Swamp
 - **Creatures (27):** 4 Blood Artist · 4 Clio, Lady of the Depths · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Meliyan, the Torment · 2 Drana, Kalastria Bloodchief · 4 Indulgent Aristocrat · 2 Child of Night
@@ -98,21 +108,53 @@ The most played: Vampire Nighthawk 8 · Lightning Bolt 6 · Clio, Lady of the De
 - **History:**
   - contributed — Post-S68 (Chris's, 2026-10-21): won a Grixis Umbel, 7–1 (event 975263; 15–2 in games — BR Removal, the Writ, the Eddy and the Barrow 2–0, Mono-Black Clio 1–2 in the Swiss; then Grixis Clio, the Ashen and the Rabble 2–0). The Meathook Massacre over Blood Artist, Indulgent Aristocrat and Meliyan, with Clio, Nighthawks, the Witch and Drana; a second Massacre re-sweeps under the legend rule. The fifteen as Chris named it (the three Faerie Formations never came in); the guide read from his swaps. Chris: the main-deck Unearth and the Children of Night are open slots.
 
-## Grixis Clio (working name) — Grixis Control (U B r)
+## BR Removal — Rakdos Removal (B R)
 
-`clio` · control · game one 58 · matches 58.0
+`br` · midrange · game one 53 · matches 53.5
 
-- **Lands (20):** 1 Library of Alexandria · 4 Underground Sea · 2 Watery Grave · 4 Volcanic Island · 1 Cairnbrand · 4 Island · 4 Swamp
-- **Creatures (19):** 3 Flametongue Kavu · 3 Tidewall · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Clio, Lady of the Depths · 1 Faerie Formation · 1 Drana, Kalastria Bloodchief
-- **Other (21):** 1 Black Lotus · 1 Mox Jet · 1 Mox Sapphire · 1 Mox Ruby · 1 Demonic Tutor · 4 Counterspell · 3 Char · 4 Protocol · 1 Time Walk · 4 Undermine
-- **Its fifteen (registered):** 4 Tormod's Crypt · 4 Doom Blade · 4 Faerie Macabre · 3 Control Magic
-- **Its sideboard guide:** none — the general rules sideboard it.
+- **Lands (23):** 4 Blood Crypt · 1 Cairnbrand · 11 Swamp · 7 Mountain
+- **Creatures (28):** 4 Typhoid Rats · 4 Blood Artist · 4 Daunting Terror · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 2 Reassembling Skeleton · 2 Gravedigger
+- **Other (9):** 4 Doom Blade · 1 Terror · 4 Lightning Bolt
+- **Its fifteen:** built by the field's builder for each seat (none registered).
 - **History:**
-  - contributed — S67 seed (the planner's): built by the implementer — the Writ with Kavu and Char (the brief): three Arcane Collectors for three Flametongue Kavus, three Essence Scatters for three Chars, the Gravitational Shift for Mox Ruby; the red from four Volcanic Islands and Cairnbrand for two Islands, two Watery Graves and a Swamp.
+  - contributed — S67 seed (the planner's): Peasant's BR Removal, the Ashen's source (Chris's ruling: the brief's "the Ashen, BR Removal"). S73a (the vintage audit): 4 daunting_terror for child_of_night. S73a (ADR-201, the High Grounds): 1 cairnbrand for 1 swamp (its row cleared).
+
+## the Kindling — Mono-Red Spells (R)
+
+`kindling` · aggro · game one 48 · matches 48.3
+
+- **Lands (21):** 21 Mountain
+- **Creatures (16):** 4 Guttersnipe · 4 Young Pyromancer · 3 Seasoned Pyromancer · 2 Arc Mage · 1 The Ruby Tyrant · 2 Furnace Whelp
+- **Other (23):** 1 Mox Ruby · 1 Black Lotus · 4 Lightning Bolt · 4 Shock · 4 Char · 3 Blaze · 2 Pyroclasm · 2 Abrade · 2 Hordeling Outburst
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S67 seed (the planner's): Mardu's Kindling whole.
+
+## the Eddy — Blue Tempo, splash Clio (U b)
+
+`tempo` · midrange · game one 49 · matches 48.1
+
+- **Lands (24):** 4 Underground Sea · 4 Watery Grave · 1 Volmaw · 15 Island
+- **Creatures (22):** 4 Man-o'-War · 4 Aether Channeler · 4 Plumecreed Escort · 3 Tidewall · 3 Clio, Lady of the Depths · 4 Traumatizer
+- **Other (14):** 1 Black Lotus · 1 Mox Sapphire · 3 Control Magic · 4 Counterspell · 3 Boomerang · 2 Essence Scatter
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S67 seed (the planner's): Esper's Eddy whole. S73a (ADR-201, the High Grounds): 1 volmaw for 1 island.
+
+## the Tally — Izzet Sparks (U R)
+
+`tally` · aggro · game one 48 · matches 48.0
+
+- **Lands (22):** 4 Volcanic Island · 4 Steam Vents · 8 Mountain · 4 Island · 1 Tallyflame Court · 1 Forgotten Cave
+- **Creatures (12):** 4 Young Pyromancer · 4 Guttersnipe · 4 Flametongue Kavu
+- **Other (26):** 1 Black Lotus · 1 Mox Ruby · 1 Mox Sapphire · 4 Lightning Bolt · 4 Shock · 4 Char · 4 Brainstorm · 2 Counterspell · 3 Ponder · 2 Control Magic
+- **Its fifteen:** built by the field's builder for each seat (none registered).
+- **History:**
+  - contributed — S67 seed (the planner's): the Open's Tally, archived there, revived here whole.
 
 ## the Writ — Dimir Control (U B)
 
-`writ` · control · game one 51 · matches 53.9
+`writ` · control · game one 47 · matches 47.1
 
 - **Lands (20):** 1 Library of Alexandria · 4 Underground Sea · 4 Watery Grave · 6 Island · 5 Swamp
 - **Creatures (19):** 3 Arcane Collector · 3 Tidewall · 3 The Jet Witch · 4 Vampire Nighthawk · 4 Clio, Lady of the Depths · 1 Faerie Formation · 1 Drana, Kalastria Bloodchief
@@ -124,7 +166,7 @@ The most played: Vampire Nighthawk 8 · Lightning Bolt 6 · Clio, Lady of the De
 
 ## the Kiln — Izzet Spells (U R)
 
-`kiln` · midrange · game one 52 · matches 51.5
+`kiln` · midrange · game one 46 · matches 46.7
 
 - **Lands (19):** 1 Tallyflame Court · 4 Volcanic Island · 4 Steam Vents · 1 Library of Alexandria · 5 Mountain · 4 Island
 - **Creatures (21):** 3 Flametongue Kavu · 4 Tidewall · 3 Odile, the Tallyflame · 3 The Ruby Tyrant · 4 Guttersnipe · 4 Young Pyromancer
@@ -136,7 +178,7 @@ The most played: Vampire Nighthawk 8 · Lightning Bolt 6 · Clio, Lady of the De
 
 ## the Ashen — Rakdos Removal (B R)
 
-`ashen` · midrange · game one 49 · matches 46.8
+`ashen` · midrange · game one 49 · matches 45.4
 
 - **Lands (17):** 4 Blood Crypt · 4 Badlands · 1 Cairnbrand · 6 Swamp · 2 Mountain
 - **Creatures (27):** 4 Typhoid Rats · 4 Blood Artist · 4 Hypnotic Specter · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 2 Dread Presence · 1 Drana, Kalastria Bloodchief
@@ -145,53 +187,9 @@ The most played: Vampire Nighthawk 8 · Lightning Bolt 6 · Clio, Lady of the De
 - **History:**
   - contributed — S67 seed (the planner's): Mardu's Ashen whole.
 
-## the Tally — Izzet Sparks (U R)
-
-`tally` · aggro · game one 50 · matches 45.8
-
-- **Lands (22):** 4 Volcanic Island · 4 Steam Vents · 8 Mountain · 4 Island · 1 Tallyflame Court · 1 Forgotten Cave
-- **Creatures (12):** 4 Young Pyromancer · 4 Guttersnipe · 4 Flametongue Kavu
-- **Other (26):** 1 Black Lotus · 1 Mox Ruby · 1 Mox Sapphire · 4 Lightning Bolt · 4 Shock · 4 Char · 4 Brainstorm · 2 Counterspell · 3 Ponder · 2 Control Magic
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S67 seed (the planner's): the Open's Tally, archived there, revived here whole.
-
-## the Eddy — Blue Tempo, splash Clio (U b)
-
-`tempo` · midrange · game one 46 · matches 44.5
-
-- **Lands (24):** 4 Underground Sea · 4 Watery Grave · 16 Island
-- **Creatures (22):** 4 Man-o'-War · 4 Aether Channeler · 4 Plumecreed Escort · 3 Tidewall · 3 Clio, Lady of the Depths · 4 Traumatizer
-- **Other (14):** 1 Black Lotus · 1 Mox Sapphire · 3 Control Magic · 4 Counterspell · 3 Boomerang · 2 Essence Scatter
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S67 seed (the planner's): Esper's Eddy whole.
-
-## the Kindling — Mono-Red Spells (R)
-
-`kindling` · aggro · game one 42 · matches 42.6
-
-- **Lands (21):** 21 Mountain
-- **Creatures (16):** 4 Guttersnipe · 4 Young Pyromancer · 3 Seasoned Pyromancer · 2 Arc Mage · 1 The Ruby Tyrant · 2 Furnace Whelp
-- **Other (23):** 1 Mox Ruby · 1 Black Lotus · 4 Lightning Bolt · 4 Shock · 4 Char · 3 Blaze · 2 Pyroclasm · 2 Abrade · 2 Hordeling Outburst
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S67 seed (the planner's): Mardu's Kindling whole.
-
-## BR Removal — Rakdos Removal (B R)
-
-`br` · midrange · game one 42 · matches 38.8
-
-- **Lands (23):** 4 Blood Crypt · 12 Swamp · 7 Mountain
-- **Creatures (28):** 4 Typhoid Rats · 4 Blood Artist · 4 Child of Night · 4 Vampire Nighthawk · 4 Nekrataal · 4 Flametongue Kavu · 2 Reassembling Skeleton · 2 Gravedigger
-- **Other (9):** 4 Doom Blade · 1 Terror · 4 Lightning Bolt
-- **Its fifteen:** built by the field's builder for each seat (none registered).
-- **History:**
-  - contributed — S67 seed (the planner's): Peasant's BR Removal, the Ashen's source (Chris's ruling: the brief's "the Ashen, BR Removal").
-
 ## the Barrow — Mono-Black Control (B)
 
-`mbc` · control · game one 35 · matches 34.2
+`mbc` · control · game one 35 · matches 28.8
 
 - **Lands (24):** 22 Swamp · 2 Barren Moor
 - **Creatures (20):** 4 The Jet Witch · 2 Drana, Kalastria Bloodchief · 4 Vampire Nighthawk · 4 Hypnotic Specter · 4 Nekrataal · 2 Gravedigger
@@ -202,7 +200,7 @@ The most played: Vampire Nighthawk 8 · Lightning Bolt 6 · Clio, Lady of the De
 
 ## the Undertow — Dimir Mill (U B)
 
-`undertow` · control · game one 37 · matches 28.3
+`undertow` · control · game one 32 · matches 23.7
 
 - **Lands (22):** 3 Underground Sea · 1 Volmaw · 4 Watery Grave · 6 Island · 3 Swamp · 4 Evolving Wilds · 1 Thawing Glaciers
 - **Creatures (19):** 4 Hedron Crab · 4 Traumatizer · 4 Tidewall · 4 Clio, Lady of the Depths · 3 Vampire Nighthawk

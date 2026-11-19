@@ -1,142 +1,142 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-11-14",
+ "when": "2026-11-19",
  "matchesAPairing": 60,
  "byList": {
   "br": {
-   "matches": 33.7,
-   "gameOne": 39,
-   "later": 37.9,
+   "matches": 50,
+   "gameOne": 49.9,
+   "later": 49.9,
    "n": 720
   },
   "emeraldsnakes": {
-   "matches": 61.1,
-   "gameOne": 60.8,
-   "later": 56.3,
+   "matches": 65.8,
+   "gameOne": 61.5,
+   "later": 60.3,
    "n": 720
   },
   "hexaura": {
-   "matches": 57.3,
-   "gameOne": 51,
+   "matches": 56.8,
+   "gameOne": 49.9,
    "later": 57,
    "n": 720
   },
   "levy": {
-   "matches": 38.9,
-   "gameOne": 44.7,
-   "later": 41.8,
+   "matches": 35.6,
+   "gameOne": 43.2,
+   "later": 39.2,
    "n": 720
   },
   "marducontrol": {
-   "matches": 56.1,
-   "gameOne": 51.1,
-   "later": 55.3,
+   "matches": 54.7,
+   "gameOne": 50.3,
+   "later": 54.7,
    "n": 720
   },
   "massocrafts": {
-   "matches": 48.6,
-   "gameOne": 50.9,
-   "later": 48,
+   "matches": 45.6,
+   "gameOne": 49.7,
+   "later": 45.8,
    "n": 720
   },
   "mbclio": {
-   "matches": 54.9,
-   "gameOne": 51.9,
-   "later": 53.5,
+   "matches": 51.4,
+   "gameOne": 50.3,
+   "later": 50.1,
    "n": 720
   },
   "minefield": {
-   "matches": 67.6,
-   "gameOne": 62.1,
-   "later": 63,
+   "matches": 66.5,
+   "gameOne": 60.1,
+   "later": 61.5,
    "n": 720
   },
   "muster": {
-   "matches": 51.1,
-   "gameOne": 49.2,
-   "later": 50.6,
+   "matches": 55.2,
+   "gameOne": 52.4,
+   "later": 53.7,
    "n": 720
   },
   "rabble": {
-   "matches": 57.3,
-   "gameOne": 54.4,
-   "later": 55.3,
+   "matches": 52.9,
+   "gameOne": 52.5,
+   "later": 52.1,
    "n": 720
   },
   "tally": {
-   "matches": 37.9,
-   "gameOne": 45.3,
-   "later": 39.7,
+   "matches": 36.7,
+   "gameOne": 45.1,
+   "later": 38.7,
    "n": 720
   },
   "thicket": {
-   "matches": 48.3,
-   "gameOne": 47.2,
-   "later": 50.7,
+   "matches": 46.1,
+   "gameOne": 43.3,
+   "later": 50.5,
    "n": 720
   },
   "undertow": {
-   "matches": 37.2,
-   "gameOne": 42.4,
-   "later": 40.5,
+   "matches": 32.8,
+   "gameOne": 41.7,
+   "later": 35.8,
    "n": 720
   }
  },
  "byPair": {
   "br|emeraldsnakes": {
-   "w": 31,
+   "w": 33,
    "n": 60
   },
   "br|hexaura": {
-   "w": 20,
+   "w": 23,
    "n": 60
   },
   "br|levy": {
-   "w": 20,
+   "w": 35,
    "n": 60
   },
   "br|marducontrol": {
-   "w": 14,
+   "w": 29.5,
    "n": 60
   },
   "br|massocrafts": {
-   "w": 13,
-   "n": 60
-  },
-  "br|mbclio": {
-   "w": 4,
-   "n": 60
-  },
-  "br|minefield": {
-   "w": 2,
-   "n": 60
-  },
-  "br|muster": {
-   "w": 24,
-   "n": 60
-  },
-  "br|rabble": {
-   "w": 26.5,
-   "n": 60
-  },
-  "br|tally": {
-   "w": 40,
-   "n": 60
-  },
-  "br|thicket": {
-   "w": 11,
-   "n": 60
-  },
-  "br|undertow": {
-   "w": 37,
-   "n": 60
-  },
-  "emeraldsnakes|br": {
    "w": 29,
    "n": 60
   },
+  "br|mbclio": {
+   "w": 21,
+   "n": 60
+  },
+  "br|minefield": {
+   "w": 12,
+   "n": 60
+  },
+  "br|muster": {
+   "w": 21,
+   "n": 60
+  },
+  "br|rabble": {
+   "w": 34,
+   "n": 60
+  },
+  "br|tally": {
+   "w": 45.5,
+   "n": 60
+  },
+  "br|thicket": {
+   "w": 28,
+   "n": 60
+  },
+  "br|undertow": {
+   "w": 49,
+   "n": 60
+  },
+  "emeraldsnakes|br": {
+   "w": 27,
+   "n": 60
+  },
   "emeraldsnakes|hexaura": {
-   "w": 37,
+   "w": 32,
    "n": 60
   },
   "emeraldsnakes|levy": {
@@ -144,75 +144,75 @@
    "n": 60
   },
   "emeraldsnakes|marducontrol": {
-   "w": 35,
-   "n": 60
-  },
-  "emeraldsnakes|massocrafts": {
-   "w": 31,
-   "n": 60
-  },
-  "emeraldsnakes|mbclio": {
-   "w": 28,
-   "n": 60
-  },
-  "emeraldsnakes|minefield": {
-   "w": 29,
-   "n": 60
-  },
-  "emeraldsnakes|muster": {
-   "w": 33,
-   "n": 60
-  },
-  "emeraldsnakes|rabble": {
-   "w": 29,
-   "n": 60
-  },
-  "emeraldsnakes|tally": {
-   "w": 46,
-   "n": 60
-  },
-  "emeraldsnakes|thicket": {
-   "w": 39,
-   "n": 60
-  },
-  "emeraldsnakes|undertow": {
-   "w": 49,
-   "n": 60
-  },
-  "hexaura|br": {
-   "w": 40,
-   "n": 60
-  },
-  "hexaura|emeraldsnakes": {
-   "w": 23,
-   "n": 60
-  },
-  "hexaura|levy": {
-   "w": 36,
-   "n": 60
-  },
-  "hexaura|marducontrol": {
    "w": 37,
    "n": 60
   },
-  "hexaura|massocrafts": {
+  "emeraldsnakes|massocrafts": {
+   "w": 35,
+   "n": 60
+  },
+  "emeraldsnakes|mbclio": {
    "w": 38,
    "n": 60
   },
+  "emeraldsnakes|minefield": {
+   "w": 42,
+   "n": 60
+  },
+  "emeraldsnakes|muster": {
+   "w": 39,
+   "n": 60
+  },
+  "emeraldsnakes|rabble": {
+   "w": 39,
+   "n": 60
+  },
+  "emeraldsnakes|tally": {
+   "w": 44,
+   "n": 60
+  },
+  "emeraldsnakes|thicket": {
+   "w": 33,
+   "n": 60
+  },
+  "emeraldsnakes|undertow": {
+   "w": 53,
+   "n": 60
+  },
+  "hexaura|br": {
+   "w": 37,
+   "n": 60
+  },
+  "hexaura|emeraldsnakes": {
+   "w": 28,
+   "n": 60
+  },
+  "hexaura|levy": {
+   "w": 37,
+   "n": 60
+  },
+  "hexaura|marducontrol": {
+   "w": 36,
+   "n": 60
+  },
+  "hexaura|massocrafts": {
+   "w": 36,
+   "n": 60
+  },
   "hexaura|mbclio": {
-   "w": 26,
+   "w": 23,
    "n": 60
   },
   "hexaura|minefield": {
-   "w": 26,
+   "w": 21,
    "n": 60
   },
   "hexaura|muster": {
-   "w": 30,
+   "w": 28,
    "n": 60
   },
   "hexaura|rabble": {
-   "w": 22.5,
+   "w": 25,
    "n": 60
   },
   "hexaura|tally": {
@@ -220,15 +220,15 @@
    "n": 60
   },
   "hexaura|thicket": {
-   "w": 34,
+   "w": 37,
    "n": 60
   },
   "hexaura|undertow": {
-   "w": 51,
+   "w": 52,
    "n": 60
   },
   "levy|br": {
-   "w": 40,
+   "w": 25,
    "n": 60
   },
   "levy|emeraldsnakes": {
@@ -236,7 +236,7 @@
    "n": 60
   },
   "levy|hexaura": {
-   "w": 24,
+   "w": 23,
    "n": 60
   },
   "levy|marducontrol": {
@@ -244,19 +244,19 @@
    "n": 60
   },
   "levy|massocrafts": {
-   "w": 32,
+   "w": 33,
    "n": 60
   },
   "levy|mbclio": {
-   "w": 28,
+   "w": 26,
    "n": 60
   },
   "levy|minefield": {
-   "w": 20,
+   "w": 19,
    "n": 60
   },
   "levy|muster": {
-   "w": 21,
+   "w": 18,
    "n": 60
   },
   "levy|rabble": {
@@ -264,27 +264,27 @@
    "n": 60
   },
   "levy|tally": {
-   "w": 28,
-   "n": 60
-  },
-  "levy|thicket": {
-   "w": 34,
-   "n": 60
-  },
-  "levy|undertow": {
-   "w": 19,
-   "n": 60
-  },
-  "marducontrol|br": {
-   "w": 46,
-   "n": 60
-  },
-  "marducontrol|emeraldsnakes": {
    "w": 25,
    "n": 60
   },
-  "marducontrol|hexaura": {
+  "levy|thicket": {
+   "w": 32,
+   "n": 60
+  },
+  "levy|undertow": {
+   "w": 21,
+   "n": 60
+  },
+  "marducontrol|br": {
+   "w": 30.5,
+   "n": 60
+  },
+  "marducontrol|emeraldsnakes": {
    "w": 23,
+   "n": 60
+  },
+  "marducontrol|hexaura": {
+   "w": 24,
    "n": 60
   },
   "marducontrol|levy": {
@@ -292,19 +292,19 @@
    "n": 60
   },
   "marducontrol|massocrafts": {
-   "w": 41,
+   "w": 44,
    "n": 60
   },
   "marducontrol|mbclio": {
-   "w": 36,
+   "w": 35,
    "n": 60
   },
   "marducontrol|minefield": {
-   "w": 29,
+   "w": 25,
    "n": 60
   },
   "marducontrol|muster": {
-   "w": 25,
+   "w": 21,
    "n": 60
   },
   "marducontrol|rabble": {
@@ -312,51 +312,51 @@
    "n": 60
   },
   "marducontrol|tally": {
-   "w": 37,
+   "w": 34,
    "n": 60
   },
   "marducontrol|thicket": {
-   "w": 33,
+   "w": 36,
    "n": 60
   },
   "marducontrol|undertow": {
-   "w": 27,
+   "w": 39,
    "n": 60
   },
   "massocrafts|br": {
-   "w": 47,
+   "w": 31,
    "n": 60
   },
   "massocrafts|emeraldsnakes": {
-   "w": 29,
-   "n": 60
-  },
-  "massocrafts|hexaura": {
-   "w": 22,
-   "n": 60
-  },
-  "massocrafts|levy": {
-   "w": 28,
-   "n": 60
-  },
-  "massocrafts|marducontrol": {
-   "w": 19,
-   "n": 60
-  },
-  "massocrafts|mbclio": {
    "w": 25,
    "n": 60
   },
-  "massocrafts|minefield": {
-   "w": 21,
+  "massocrafts|hexaura": {
+   "w": 24,
    "n": 60
   },
-  "massocrafts|muster": {
+  "massocrafts|levy": {
+   "w": 27,
+   "n": 60
+  },
+  "massocrafts|marducontrol": {
+   "w": 16,
+   "n": 60
+  },
+  "massocrafts|mbclio": {
    "w": 33,
    "n": 60
   },
+  "massocrafts|minefield": {
+   "w": 19,
+   "n": 60
+  },
+  "massocrafts|muster": {
+   "w": 28,
+   "n": 60
+  },
   "massocrafts|rabble": {
-   "w": 34,
+   "w": 31,
    "n": 60
   },
   "massocrafts|tally": {
@@ -364,47 +364,47 @@
    "n": 60
   },
   "massocrafts|thicket": {
-   "w": 35,
+   "w": 40,
    "n": 60
   },
   "massocrafts|undertow": {
-   "w": 27,
-   "n": 60
-  },
-  "mbclio|br": {
-   "w": 56,
-   "n": 60
-  },
-  "mbclio|emeraldsnakes": {
-   "w": 32,
-   "n": 60
-  },
-  "mbclio|hexaura": {
-   "w": 34,
-   "n": 60
-  },
-  "mbclio|levy": {
-   "w": 32,
-   "n": 60
-  },
-  "mbclio|marducontrol": {
    "w": 24,
    "n": 60
   },
+  "mbclio|br": {
+   "w": 39,
+   "n": 60
+  },
+  "mbclio|emeraldsnakes": {
+   "w": 22,
+   "n": 60
+  },
+  "mbclio|hexaura": {
+   "w": 37,
+   "n": 60
+  },
+  "mbclio|levy": {
+   "w": 34,
+   "n": 60
+  },
+  "mbclio|marducontrol": {
+   "w": 25,
+   "n": 60
+  },
   "mbclio|massocrafts": {
-   "w": 35,
+   "w": 27,
    "n": 60
   },
   "mbclio|minefield": {
-   "w": 8,
+   "w": 10,
    "n": 60
   },
   "mbclio|muster": {
-   "w": 38,
+   "w": 36,
    "n": 60
   },
   "mbclio|rabble": {
-   "w": 37,
+   "w": 42,
    "n": 60
   },
   "mbclio|tally": {
@@ -416,43 +416,43 @@
    "n": 60
   },
   "mbclio|undertow": {
-   "w": 36,
+   "w": 35,
    "n": 60
   },
   "minefield|br": {
-   "w": 58,
+   "w": 48,
    "n": 60
   },
   "minefield|emeraldsnakes": {
-   "w": 31,
+   "w": 18,
    "n": 60
   },
   "minefield|hexaura": {
-   "w": 34,
-   "n": 60
-  },
-  "minefield|levy": {
-   "w": 40,
-   "n": 60
-  },
-  "minefield|marducontrol": {
-   "w": 31,
-   "n": 60
-  },
-  "minefield|massocrafts": {
    "w": 39,
    "n": 60
   },
+  "minefield|levy": {
+   "w": 41,
+   "n": 60
+  },
+  "minefield|marducontrol": {
+   "w": 35,
+   "n": 60
+  },
+  "minefield|massocrafts": {
+   "w": 41,
+   "n": 60
+  },
   "minefield|mbclio": {
-   "w": 52,
+   "w": 50,
    "n": 60
   },
   "minefield|muster": {
-   "w": 56,
+   "w": 52,
    "n": 60
   },
   "minefield|rabble": {
-   "w": 46,
+   "w": 43,
    "n": 60
   },
   "minefield|tally": {
@@ -460,71 +460,71 @@
    "n": 60
   },
   "minefield|thicket": {
-   "w": 28,
+   "w": 37,
    "n": 60
   },
   "minefield|undertow": {
-   "w": 15,
+   "w": 18,
    "n": 60
   },
   "muster|br": {
-   "w": 36,
-   "n": 60
-  },
-  "muster|emeraldsnakes": {
-   "w": 27,
-   "n": 60
-  },
-  "muster|hexaura": {
-   "w": 30,
-   "n": 60
-  },
-  "muster|levy": {
    "w": 39,
    "n": 60
   },
-  "muster|marducontrol": {
-   "w": 35,
+  "muster|emeraldsnakes": {
+   "w": 21,
    "n": 60
   },
-  "muster|massocrafts": {
-   "w": 27,
-   "n": 60
-  },
-  "muster|mbclio": {
-   "w": 22,
-   "n": 60
-  },
-  "muster|minefield": {
-   "w": 4,
-   "n": 60
-  },
-  "muster|rabble": {
+  "muster|hexaura": {
    "w": 32,
    "n": 60
   },
+  "muster|levy": {
+   "w": 42,
+   "n": 60
+  },
+  "muster|marducontrol": {
+   "w": 39,
+   "n": 60
+  },
+  "muster|massocrafts": {
+   "w": 32,
+   "n": 60
+  },
+  "muster|mbclio": {
+   "w": 24,
+   "n": 60
+  },
+  "muster|minefield": {
+   "w": 8,
+   "n": 60
+  },
+  "muster|rabble": {
+   "w": 40,
+   "n": 60
+  },
   "muster|tally": {
-   "w": 33,
+   "w": 40.5,
    "n": 60
   },
   "muster|thicket": {
-   "w": 38,
+   "w": 41,
    "n": 60
   },
   "muster|undertow": {
-   "w": 45,
+   "w": 39,
    "n": 60
   },
   "rabble|br": {
-   "w": 33.5,
+   "w": 26,
    "n": 60
   },
   "rabble|emeraldsnakes": {
-   "w": 31,
+   "w": 21,
    "n": 60
   },
   "rabble|hexaura": {
-   "w": 37.5,
+   "w": 35,
    "n": 60
   },
   "rabble|levy": {
@@ -536,19 +536,19 @@
    "n": 60
   },
   "rabble|massocrafts": {
-   "w": 26,
+   "w": 29,
    "n": 60
   },
   "rabble|mbclio": {
-   "w": 23,
+   "w": 18,
    "n": 60
   },
   "rabble|minefield": {
-   "w": 14,
+   "w": 17,
    "n": 60
   },
   "rabble|muster": {
-   "w": 28,
+   "w": 20,
    "n": 60
   },
   "rabble|tally": {
@@ -556,19 +556,19 @@
    "n": 60
   },
   "rabble|thicket": {
-   "w": 47.5,
+   "w": 44,
    "n": 60
   },
   "rabble|undertow": {
-   "w": 54,
+   "w": 53,
    "n": 60
   },
   "tally|br": {
-   "w": 20,
+   "w": 14.5,
    "n": 60
   },
   "tally|emeraldsnakes": {
-   "w": 14,
+   "w": 16,
    "n": 60
   },
   "tally|hexaura": {
@@ -576,11 +576,11 @@
    "n": 60
   },
   "tally|levy": {
-   "w": 32,
+   "w": 35,
    "n": 60
   },
   "tally|marducontrol": {
-   "w": 23,
+   "w": 26,
    "n": 60
   },
   "tally|massocrafts": {
@@ -596,7 +596,7 @@
    "n": 60
   },
   "tally|muster": {
-   "w": 27,
+   "w": 19.5,
    "n": 60
   },
   "tally|rabble": {
@@ -604,35 +604,35 @@
    "n": 60
   },
   "tally|thicket": {
-   "w": 12,
+   "w": 10,
    "n": 60
   },
   "tally|undertow": {
-   "w": 54,
+   "w": 52,
    "n": 60
   },
   "thicket|br": {
-   "w": 49,
+   "w": 32,
    "n": 60
   },
   "thicket|emeraldsnakes": {
-   "w": 21,
-   "n": 60
-  },
-  "thicket|hexaura": {
-   "w": 26,
-   "n": 60
-  },
-  "thicket|levy": {
-   "w": 26,
-   "n": 60
-  },
-  "thicket|marducontrol": {
    "w": 27,
    "n": 60
   },
+  "thicket|hexaura": {
+   "w": 23,
+   "n": 60
+  },
+  "thicket|levy": {
+   "w": 28,
+   "n": 60
+  },
+  "thicket|marducontrol": {
+   "w": 24,
+   "n": 60
+  },
   "thicket|massocrafts": {
-   "w": 25,
+   "w": 20,
    "n": 60
   },
   "thicket|mbclio": {
@@ -640,71 +640,71 @@
    "n": 60
   },
   "thicket|minefield": {
-   "w": 32,
-   "n": 60
-  },
-  "thicket|muster": {
-   "w": 22,
-   "n": 60
-  },
-  "thicket|rabble": {
-   "w": 12.5,
-   "n": 60
-  },
-  "thicket|tally": {
-   "w": 48,
-   "n": 60
-  },
-  "thicket|undertow": {
-   "w": 38,
-   "n": 60
-  },
-  "undertow|br": {
    "w": 23,
    "n": 60
   },
-  "undertow|emeraldsnakes": {
+  "thicket|muster": {
+   "w": 19,
+   "n": 60
+  },
+  "thicket|rabble": {
+   "w": 16,
+   "n": 60
+  },
+  "thicket|tally": {
+   "w": 50,
+   "n": 60
+  },
+  "thicket|undertow": {
+   "w": 49,
+   "n": 60
+  },
+  "undertow|br": {
    "w": 11,
    "n": 60
   },
+  "undertow|emeraldsnakes": {
+   "w": 7,
+   "n": 60
+  },
   "undertow|hexaura": {
-   "w": 9,
+   "w": 8,
    "n": 60
   },
   "undertow|levy": {
-   "w": 41,
+   "w": 39,
    "n": 60
   },
   "undertow|marducontrol": {
-   "w": 33,
+   "w": 21,
    "n": 60
   },
   "undertow|massocrafts": {
-   "w": 33,
+   "w": 36,
    "n": 60
   },
   "undertow|mbclio": {
-   "w": 24,
+   "w": 25,
    "n": 60
   },
   "undertow|minefield": {
-   "w": 45,
+   "w": 42,
    "n": 60
   },
   "undertow|muster": {
-   "w": 15,
+   "w": 21,
    "n": 60
   },
   "undertow|rabble": {
-   "w": 6,
+   "w": 7,
    "n": 60
   },
   "undertow|tally": {
-   "w": 6,
+   "w": 8,
    "n": 60
   },
   "undertow|thicket": {
-   "w": 22,
+   "w": 11,
    "n": 60
   }
  }

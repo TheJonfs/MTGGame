@@ -1,73 +1,515 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-21",
+ "when": "2026-11-19",
  "matchesAPairing": 60,
  "byList": {
   "ashen": {
-   "matches": 54.3,
-   "gameOne": 57.3,
-   "later": 51.2,
+   "matches": 53.3,
+   "gameOne": 60.5,
+   "later": 49.4,
    "n": 600
   },
   "auras": {
-   "matches": 63,
-   "gameOne": 57.4,
-   "later": 59.4,
+   "matches": 53.4,
+   "gameOne": 53.8,
+   "later": 51.9,
    "n": 600
   },
   "bfh": {
-   "matches": 42.8,
-   "gameOne": 41.7,
-   "later": 47.2,
+   "matches": 31.8,
+   "gameOne": 37,
+   "later": 37.4,
    "n": 600
   },
   "dragons": {
-   "matches": 40.5,
-   "gameOne": 46.2,
-   "later": 42.4,
+   "matches": 44.7,
+   "gameOne": 43.2,
+   "later": 47.5,
    "n": 600
   },
   "emeraldsnakes": {
-   "matches": 66.8,
-   "gameOne": 63.7,
-   "later": 59.6,
+   "matches": 61.5,
+   "gameOne": 62,
+   "later": 55.2,
    "n": 600
   },
   "kindling": {
-   "matches": 35.1,
-   "gameOne": 36.6,
-   "later": 40.8,
+   "matches": 36.5,
+   "gameOne": 39.1,
+   "later": 41.3,
    "n": 600
   },
   "rabble": {
-   "matches": 58.8,
-   "gameOne": 55.8,
-   "later": 56.6,
+   "matches": 64,
+   "gameOne": 55.1,
+   "later": 62,
    "n": 600
   },
   "reaper": {
-   "matches": 51.7,
-   "gameOne": 51.5,
-   "later": 50.5,
+   "matches": 66.1,
+   "gameOne": 59.7,
+   "later": 61.1,
    "n": 600
   },
   "stompy": {
-   "matches": 57.8,
-   "gameOne": 52.1,
-   "later": 56.4,
+   "matches": 51.2,
+   "gameOne": 46.9,
+   "later": 52.7,
    "n": 600
   },
   "sweep": {
-   "matches": 43.2,
-   "gameOne": 45.3,
-   "later": 45.2,
+   "matches": 45.9,
+   "gameOne": 45.4,
+   "later": 48.4,
    "n": 600
   },
   "wurmspeaker": {
-   "matches": 36.1,
-   "gameOne": 42.6,
-   "later": 40.3,
+   "matches": 41.7,
+   "gameOne": 47.3,
+   "later": 43.1,
    "n": 600
+  }
+ },
+ "byPair": {
+  "ashen|auras": {
+   "w": 26.5,
+   "n": 60
+  },
+  "ashen|bfh": {
+   "w": 44,
+   "n": 60
+  },
+  "ashen|dragons": {
+   "w": 42,
+   "n": 60
+  },
+  "ashen|emeraldsnakes": {
+   "w": 33,
+   "n": 60
+  },
+  "ashen|kindling": {
+   "w": 32,
+   "n": 60
+  },
+  "ashen|rabble": {
+   "w": 23,
+   "n": 60
+  },
+  "ashen|reaper": {
+   "w": 16,
+   "n": 60
+  },
+  "ashen|stompy": {
+   "w": 30,
+   "n": 60
+  },
+  "ashen|sweep": {
+   "w": 30,
+   "n": 60
+  },
+  "ashen|wurmspeaker": {
+   "w": 43,
+   "n": 60
+  },
+  "auras|ashen": {
+   "w": 33.5,
+   "n": 60
+  },
+  "auras|bfh": {
+   "w": 34,
+   "n": 60
+  },
+  "auras|dragons": {
+   "w": 32,
+   "n": 60
+  },
+  "auras|emeraldsnakes": {
+   "w": 23,
+   "n": 60
+  },
+  "auras|kindling": {
+   "w": 50,
+   "n": 60
+  },
+  "auras|rabble": {
+   "w": 27,
+   "n": 60
+  },
+  "auras|reaper": {
+   "w": 34,
+   "n": 60
+  },
+  "auras|stompy": {
+   "w": 33,
+   "n": 60
+  },
+  "auras|sweep": {
+   "w": 31,
+   "n": 60
+  },
+  "auras|wurmspeaker": {
+   "w": 23,
+   "n": 60
+  },
+  "bfh|ashen": {
+   "w": 16,
+   "n": 60
+  },
+  "bfh|auras": {
+   "w": 26,
+   "n": 60
+  },
+  "bfh|dragons": {
+   "w": 22,
+   "n": 60
+  },
+  "bfh|emeraldsnakes": {
+   "w": 13,
+   "n": 60
+  },
+  "bfh|kindling": {
+   "w": 37,
+   "n": 60
+  },
+  "bfh|rabble": {
+   "w": 9,
+   "n": 60
+  },
+  "bfh|reaper": {
+   "w": 12,
+   "n": 60
+  },
+  "bfh|stompy": {
+   "w": 24,
+   "n": 60
+  },
+  "bfh|sweep": {
+   "w": 17,
+   "n": 60
+  },
+  "bfh|wurmspeaker": {
+   "w": 15,
+   "n": 60
+  },
+  "dragons|ashen": {
+   "w": 18,
+   "n": 60
+  },
+  "dragons|auras": {
+   "w": 28,
+   "n": 60
+  },
+  "dragons|bfh": {
+   "w": 38,
+   "n": 60
+  },
+  "dragons|emeraldsnakes": {
+   "w": 26,
+   "n": 60
+  },
+  "dragons|kindling": {
+   "w": 26.5,
+   "n": 60
+  },
+  "dragons|rabble": {
+   "w": 21.5,
+   "n": 60
+  },
+  "dragons|reaper": {
+   "w": 22,
+   "n": 60
+  },
+  "dragons|stompy": {
+   "w": 27,
+   "n": 60
+  },
+  "dragons|sweep": {
+   "w": 24,
+   "n": 60
+  },
+  "dragons|wurmspeaker": {
+   "w": 37,
+   "n": 60
+  },
+  "emeraldsnakes|ashen": {
+   "w": 27,
+   "n": 60
+  },
+  "emeraldsnakes|auras": {
+   "w": 37,
+   "n": 60
+  },
+  "emeraldsnakes|bfh": {
+   "w": 47,
+   "n": 60
+  },
+  "emeraldsnakes|dragons": {
+   "w": 34,
+   "n": 60
+  },
+  "emeraldsnakes|kindling": {
+   "w": 42,
+   "n": 60
+  },
+  "emeraldsnakes|rabble": {
+   "w": 35,
+   "n": 60
+  },
+  "emeraldsnakes|reaper": {
+   "w": 25,
+   "n": 60
+  },
+  "emeraldsnakes|stompy": {
+   "w": 37,
+   "n": 60
+  },
+  "emeraldsnakes|sweep": {
+   "w": 39,
+   "n": 60
+  },
+  "emeraldsnakes|wurmspeaker": {
+   "w": 46,
+   "n": 60
+  },
+  "kindling|ashen": {
+   "w": 28,
+   "n": 60
+  },
+  "kindling|auras": {
+   "w": 10,
+   "n": 60
+  },
+  "kindling|bfh": {
+   "w": 23,
+   "n": 60
+  },
+  "kindling|dragons": {
+   "w": 33.5,
+   "n": 60
+  },
+  "kindling|emeraldsnakes": {
+   "w": 18,
+   "n": 60
+  },
+  "kindling|rabble": {
+   "w": 9,
+   "n": 60
+  },
+  "kindling|reaper": {
+   "w": 10,
+   "n": 60
+  },
+  "kindling|stompy": {
+   "w": 21.5,
+   "n": 60
+  },
+  "kindling|sweep": {
+   "w": 31,
+   "n": 60
+  },
+  "kindling|wurmspeaker": {
+   "w": 35,
+   "n": 60
+  },
+  "rabble|ashen": {
+   "w": 37,
+   "n": 60
+  },
+  "rabble|auras": {
+   "w": 33,
+   "n": 60
+  },
+  "rabble|bfh": {
+   "w": 51,
+   "n": 60
+  },
+  "rabble|dragons": {
+   "w": 38.5,
+   "n": 60
+  },
+  "rabble|emeraldsnakes": {
+   "w": 25,
+   "n": 60
+  },
+  "rabble|kindling": {
+   "w": 51,
+   "n": 60
+  },
+  "rabble|reaper": {
+   "w": 29,
+   "n": 60
+  },
+  "rabble|stompy": {
+   "w": 40.5,
+   "n": 60
+  },
+  "rabble|sweep": {
+   "w": 38,
+   "n": 60
+  },
+  "rabble|wurmspeaker": {
+   "w": 41,
+   "n": 60
+  },
+  "reaper|ashen": {
+   "w": 44,
+   "n": 60
+  },
+  "reaper|auras": {
+   "w": 26,
+   "n": 60
+  },
+  "reaper|bfh": {
+   "w": 48,
+   "n": 60
+  },
+  "reaper|dragons": {
+   "w": 38,
+   "n": 60
+  },
+  "reaper|emeraldsnakes": {
+   "w": 35,
+   "n": 60
+  },
+  "reaper|kindling": {
+   "w": 50,
+   "n": 60
+  },
+  "reaper|rabble": {
+   "w": 31,
+   "n": 60
+  },
+  "reaper|stompy": {
+   "w": 31,
+   "n": 60
+  },
+  "reaper|sweep": {
+   "w": 42.5,
+   "n": 60
+  },
+  "reaper|wurmspeaker": {
+   "w": 51,
+   "n": 60
+  },
+  "stompy|ashen": {
+   "w": 30,
+   "n": 60
+  },
+  "stompy|auras": {
+   "w": 27,
+   "n": 60
+  },
+  "stompy|bfh": {
+   "w": 36,
+   "n": 60
+  },
+  "stompy|dragons": {
+   "w": 33,
+   "n": 60
+  },
+  "stompy|emeraldsnakes": {
+   "w": 23,
+   "n": 60
+  },
+  "stompy|kindling": {
+   "w": 38.5,
+   "n": 60
+  },
+  "stompy|rabble": {
+   "w": 19.5,
+   "n": 60
+  },
+  "stompy|reaper": {
+   "w": 29,
+   "n": 60
+  },
+  "stompy|sweep": {
+   "w": 42,
+   "n": 60
+  },
+  "stompy|wurmspeaker": {
+   "w": 29,
+   "n": 60
+  },
+  "sweep|ashen": {
+   "w": 30,
+   "n": 60
+  },
+  "sweep|auras": {
+   "w": 29,
+   "n": 60
+  },
+  "sweep|bfh": {
+   "w": 43,
+   "n": 60
+  },
+  "sweep|dragons": {
+   "w": 36,
+   "n": 60
+  },
+  "sweep|emeraldsnakes": {
+   "w": 21,
+   "n": 60
+  },
+  "sweep|kindling": {
+   "w": 29,
+   "n": 60
+  },
+  "sweep|rabble": {
+   "w": 22,
+   "n": 60
+  },
+  "sweep|reaper": {
+   "w": 17.5,
+   "n": 60
+  },
+  "sweep|stompy": {
+   "w": 18,
+   "n": 60
+  },
+  "sweep|wurmspeaker": {
+   "w": 30,
+   "n": 60
+  },
+  "wurmspeaker|ashen": {
+   "w": 17,
+   "n": 60
+  },
+  "wurmspeaker|auras": {
+   "w": 37,
+   "n": 60
+  },
+  "wurmspeaker|bfh": {
+   "w": 45,
+   "n": 60
+  },
+  "wurmspeaker|dragons": {
+   "w": 23,
+   "n": 60
+  },
+  "wurmspeaker|emeraldsnakes": {
+   "w": 14,
+   "n": 60
+  },
+  "wurmspeaker|kindling": {
+   "w": 25,
+   "n": 60
+  },
+  "wurmspeaker|rabble": {
+   "w": 19,
+   "n": 60
+  },
+  "wurmspeaker|reaper": {
+   "w": 9,
+   "n": 60
+  },
+  "wurmspeaker|stompy": {
+   "w": 31,
+   "n": 60
+  },
+  "wurmspeaker|sweep": {
+   "w": 30,
+   "n": 60
   }
  }
 }

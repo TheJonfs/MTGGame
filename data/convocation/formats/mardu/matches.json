@@ -1,79 +1,609 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-10-21",
+ "when": "2026-11-19",
  "matchesAPairing": 60,
  "byList": {
   "brremoval": {
-   "matches": 38.8,
-   "gameOne": 43.6,
-   "later": 41.1,
+   "matches": 36.2,
+   "gameOne": 42.1,
+   "later": 40.4,
    "n": 660
   },
   "burn": {
-   "matches": 35.9,
-   "gameOne": 40.7,
-   "later": 38.8,
+   "matches": 40.9,
+   "gameOne": 39.1,
+   "later": 45.2,
    "n": 660
   },
   "chancel": {
-   "matches": 52.5,
-   "gameOne": 53,
-   "later": 51.3,
+   "matches": 55.6,
+   "gameOne": 55.1,
+   "later": 52.1,
    "n": 660
   },
   "levy": {
-   "matches": 40.5,
-   "gameOne": 41.8,
-   "later": 44.5,
+   "matches": 40.2,
+   "gameOne": 43,
+   "later": 43.1,
    "n": 660
   },
   "marducontrol": {
-   "matches": 64.6,
-   "gameOne": 55,
-   "later": 63.6,
+   "matches": 69.5,
+   "gameOne": 58.6,
+   "later": 65.7,
    "n": 660
   },
   "muster": {
-   "matches": 44.8,
-   "gameOne": 48.8,
-   "later": 45.3,
+   "matches": 45.2,
+   "gameOne": 45,
+   "later": 47.9,
    "n": 660
   },
   "pall": {
-   "matches": 58.6,
-   "gameOne": 63.2,
-   "later": 51.3,
+   "matches": 52.6,
+   "gameOne": 60.9,
+   "later": 46.8,
    "n": 660
   },
   "rabble": {
-   "matches": 63.5,
-   "gameOne": 58.1,
-   "later": 61,
+   "matches": 60.6,
+   "gameOne": 54.2,
+   "later": 59.7,
    "n": 660
   },
   "roll": {
-   "matches": 48.8,
-   "gameOne": 49.1,
-   "later": 50.2,
+   "matches": 40,
+   "gameOne": 42.9,
+   "later": 43.6,
    "n": 660
   },
   "warband": {
-   "matches": 43.2,
-   "gameOne": 40.3,
-   "later": 47.1,
+   "matches": 47.2,
+   "gameOne": 49,
+   "later": 48.2,
    "n": 660
   },
   "watch": {
-   "matches": 59.2,
-   "gameOne": 55.5,
-   "later": 56.6,
+   "matches": 62.1,
+   "gameOne": 53.5,
+   "later": 61.2,
    "n": 660
   },
   "witch": {
-   "matches": 49.7,
-   "gameOne": 51,
-   "later": 49.1,
+   "matches": 49.8,
+   "gameOne": 56.6,
+   "later": 46.7,
    "n": 660
+  }
+ },
+ "byPair": {
+  "brremoval|burn": {
+   "w": 23,
+   "n": 60
+  },
+  "brremoval|chancel": {
+   "w": 10,
+   "n": 60
+  },
+  "brremoval|levy": {
+   "w": 30,
+   "n": 60
+  },
+  "brremoval|marducontrol": {
+   "w": 6,
+   "n": 60
+  },
+  "brremoval|muster": {
+   "w": 30,
+   "n": 60
+  },
+  "brremoval|pall": {
+   "w": 19,
+   "n": 60
+  },
+  "brremoval|rabble": {
+   "w": 17,
+   "n": 60
+  },
+  "brremoval|roll": {
+   "w": 30,
+   "n": 60
+  },
+  "brremoval|warband": {
+   "w": 34,
+   "n": 60
+  },
+  "brremoval|watch": {
+   "w": 23,
+   "n": 60
+  },
+  "brremoval|witch": {
+   "w": 17,
+   "n": 60
+  },
+  "burn|brremoval": {
+   "w": 37,
+   "n": 60
+  },
+  "burn|chancel": {
+   "w": 25,
+   "n": 60
+  },
+  "burn|levy": {
+   "w": 34.5,
+   "n": 60
+  },
+  "burn|marducontrol": {
+   "w": 19,
+   "n": 60
+  },
+  "burn|muster": {
+   "w": 19.5,
+   "n": 60
+  },
+  "burn|pall": {
+   "w": 22,
+   "n": 60
+  },
+  "burn|rabble": {
+   "w": 11.5,
+   "n": 60
+  },
+  "burn|roll": {
+   "w": 36,
+   "n": 60
+  },
+  "burn|warband": {
+   "w": 24,
+   "n": 60
+  },
+  "burn|watch": {
+   "w": 9,
+   "n": 60
+  },
+  "burn|witch": {
+   "w": 32.5,
+   "n": 60
+  },
+  "chancel|brremoval": {
+   "w": 50,
+   "n": 60
+  },
+  "chancel|burn": {
+   "w": 35,
+   "n": 60
+  },
+  "chancel|levy": {
+   "w": 39,
+   "n": 60
+  },
+  "chancel|marducontrol": {
+   "w": 17,
+   "n": 60
+  },
+  "chancel|muster": {
+   "w": 40,
+   "n": 60
+  },
+  "chancel|pall": {
+   "w": 17,
+   "n": 60
+  },
+  "chancel|rabble": {
+   "w": 25,
+   "n": 60
+  },
+  "chancel|roll": {
+   "w": 38,
+   "n": 60
+  },
+  "chancel|warband": {
+   "w": 38,
+   "n": 60
+  },
+  "chancel|watch": {
+   "w": 31,
+   "n": 60
+  },
+  "chancel|witch": {
+   "w": 37,
+   "n": 60
+  },
+  "levy|brremoval": {
+   "w": 30,
+   "n": 60
+  },
+  "levy|burn": {
+   "w": 25.5,
+   "n": 60
+  },
+  "levy|chancel": {
+   "w": 21,
+   "n": 60
+  },
+  "levy|marducontrol": {
+   "w": 17,
+   "n": 60
+  },
+  "levy|muster": {
+   "w": 24,
+   "n": 60
+  },
+  "levy|pall": {
+   "w": 27,
+   "n": 60
+  },
+  "levy|rabble": {
+   "w": 20,
+   "n": 60
+  },
+  "levy|roll": {
+   "w": 36,
+   "n": 60
+  },
+  "levy|warband": {
+   "w": 25,
+   "n": 60
+  },
+  "levy|watch": {
+   "w": 19,
+   "n": 60
+  },
+  "levy|witch": {
+   "w": 21,
+   "n": 60
+  },
+  "marducontrol|brremoval": {
+   "w": 54,
+   "n": 60
+  },
+  "marducontrol|burn": {
+   "w": 41,
+   "n": 60
+  },
+  "marducontrol|chancel": {
+   "w": 43,
+   "n": 60
+  },
+  "marducontrol|levy": {
+   "w": 43,
+   "n": 60
+  },
+  "marducontrol|muster": {
+   "w": 46,
+   "n": 60
+  },
+  "marducontrol|pall": {
+   "w": 34,
+   "n": 60
+  },
+  "marducontrol|rabble": {
+   "w": 34,
+   "n": 60
+  },
+  "marducontrol|roll": {
+   "w": 46,
+   "n": 60
+  },
+  "marducontrol|warband": {
+   "w": 42,
+   "n": 60
+  },
+  "marducontrol|watch": {
+   "w": 36,
+   "n": 60
+  },
+  "marducontrol|witch": {
+   "w": 40,
+   "n": 60
+  },
+  "muster|brremoval": {
+   "w": 30,
+   "n": 60
+  },
+  "muster|burn": {
+   "w": 40.5,
+   "n": 60
+  },
+  "muster|chancel": {
+   "w": 20,
+   "n": 60
+  },
+  "muster|levy": {
+   "w": 36,
+   "n": 60
+  },
+  "muster|marducontrol": {
+   "w": 14,
+   "n": 60
+  },
+  "muster|pall": {
+   "w": 28,
+   "n": 60
+  },
+  "muster|rabble": {
+   "w": 18.5,
+   "n": 60
+  },
+  "muster|roll": {
+   "w": 33,
+   "n": 60
+  },
+  "muster|warband": {
+   "w": 34,
+   "n": 60
+  },
+  "muster|watch": {
+   "w": 17,
+   "n": 60
+  },
+  "muster|witch": {
+   "w": 27,
+   "n": 60
+  },
+  "pall|brremoval": {
+   "w": 41,
+   "n": 60
+  },
+  "pall|burn": {
+   "w": 38,
+   "n": 60
+  },
+  "pall|chancel": {
+   "w": 43,
+   "n": 60
+  },
+  "pall|levy": {
+   "w": 33,
+   "n": 60
+  },
+  "pall|marducontrol": {
+   "w": 26,
+   "n": 60
+  },
+  "pall|muster": {
+   "w": 32,
+   "n": 60
+  },
+  "pall|rabble": {
+   "w": 30,
+   "n": 60
+  },
+  "pall|roll": {
+   "w": 31,
+   "n": 60
+  },
+  "pall|warband": {
+   "w": 31,
+   "n": 60
+  },
+  "pall|watch": {
+   "w": 18,
+   "n": 60
+  },
+  "pall|witch": {
+   "w": 24,
+   "n": 60
+  },
+  "rabble|brremoval": {
+   "w": 43,
+   "n": 60
+  },
+  "rabble|burn": {
+   "w": 48.5,
+   "n": 60
+  },
+  "rabble|chancel": {
+   "w": 35,
+   "n": 60
+  },
+  "rabble|levy": {
+   "w": 40,
+   "n": 60
+  },
+  "rabble|marducontrol": {
+   "w": 26,
+   "n": 60
+  },
+  "rabble|muster": {
+   "w": 41.5,
+   "n": 60
+  },
+  "rabble|pall": {
+   "w": 30,
+   "n": 60
+  },
+  "rabble|roll": {
+   "w": 41,
+   "n": 60
+  },
+  "rabble|warband": {
+   "w": 34.5,
+   "n": 60
+  },
+  "rabble|watch": {
+   "w": 16,
+   "n": 60
+  },
+  "rabble|witch": {
+   "w": 44.5,
+   "n": 60
+  },
+  "roll|brremoval": {
+   "w": 30,
+   "n": 60
+  },
+  "roll|burn": {
+   "w": 24,
+   "n": 60
+  },
+  "roll|chancel": {
+   "w": 22,
+   "n": 60
+  },
+  "roll|levy": {
+   "w": 24,
+   "n": 60
+  },
+  "roll|marducontrol": {
+   "w": 14,
+   "n": 60
+  },
+  "roll|muster": {
+   "w": 27,
+   "n": 60
+  },
+  "roll|pall": {
+   "w": 29,
+   "n": 60
+  },
+  "roll|rabble": {
+   "w": 19,
+   "n": 60
+  },
+  "roll|warband": {
+   "w": 21,
+   "n": 60
+  },
+  "roll|watch": {
+   "w": 27,
+   "n": 60
+  },
+  "roll|witch": {
+   "w": 27,
+   "n": 60
+  },
+  "warband|brremoval": {
+   "w": 26,
+   "n": 60
+  },
+  "warband|burn": {
+   "w": 36,
+   "n": 60
+  },
+  "warband|chancel": {
+   "w": 22,
+   "n": 60
+  },
+  "warband|levy": {
+   "w": 35,
+   "n": 60
+  },
+  "warband|marducontrol": {
+   "w": 18,
+   "n": 60
+  },
+  "warband|muster": {
+   "w": 26,
+   "n": 60
+  },
+  "warband|pall": {
+   "w": 29,
+   "n": 60
+  },
+  "warband|rabble": {
+   "w": 25.5,
+   "n": 60
+  },
+  "warband|roll": {
+   "w": 39,
+   "n": 60
+  },
+  "warband|watch": {
+   "w": 21,
+   "n": 60
+  },
+  "warband|witch": {
+   "w": 34,
+   "n": 60
+  },
+  "watch|brremoval": {
+   "w": 37,
+   "n": 60
+  },
+  "watch|burn": {
+   "w": 51,
+   "n": 60
+  },
+  "watch|chancel": {
+   "w": 29,
+   "n": 60
+  },
+  "watch|levy": {
+   "w": 41,
+   "n": 60
+  },
+  "watch|marducontrol": {
+   "w": 24,
+   "n": 60
+  },
+  "watch|muster": {
+   "w": 43,
+   "n": 60
+  },
+  "watch|pall": {
+   "w": 42,
+   "n": 60
+  },
+  "watch|rabble": {
+   "w": 44,
+   "n": 60
+  },
+  "watch|roll": {
+   "w": 33,
+   "n": 60
+  },
+  "watch|warband": {
+   "w": 39,
+   "n": 60
+  },
+  "watch|witch": {
+   "w": 27,
+   "n": 60
+  },
+  "witch|brremoval": {
+   "w": 43,
+   "n": 60
+  },
+  "witch|burn": {
+   "w": 27.5,
+   "n": 60
+  },
+  "witch|chancel": {
+   "w": 23,
+   "n": 60
+  },
+  "witch|levy": {
+   "w": 39,
+   "n": 60
+  },
+  "witch|marducontrol": {
+   "w": 20,
+   "n": 60
+  },
+  "witch|muster": {
+   "w": 33,
+   "n": 60
+  },
+  "witch|pall": {
+   "w": 36,
+   "n": 60
+  },
+  "witch|rabble": {
+   "w": 15.5,
+   "n": 60
+  },
+  "witch|roll": {
+   "w": 33,
+   "n": 60
+  },
+  "witch|warband": {
+   "w": 26,
+   "n": 60
+  },
+  "witch|watch": {
+   "w": 33,
+   "n": 60
   }
  }
 }

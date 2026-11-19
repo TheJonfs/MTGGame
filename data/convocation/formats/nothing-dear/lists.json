@@ -302,7 +302,7 @@
    "name": "the Muster",
    "title": "Boros Weenie (W R)",
    "archetype": "aggro",
-   "source": "S72 (the Nothing Dear seeds): the Muster from the Open, without the Power — the Power for three Dawnwing Marshals (Bodies' swap).",
+   "source": "S72 (the Nothing Dear seeds): the Muster from the Open, without the Power — the Power for three Dawnwing Marshals (Bodies' swap). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.",
    "poolAt": 315,
    "portOf": "open:muster",
    "decklist": [
@@ -315,8 +315,12 @@
      "count": 4
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "plains",
-     "count": 8
+     "count": 7
     },
     {
      "cardId": "mountain",
@@ -1165,7 +1169,7 @@
    "name": "BR Removal",
    "title": "Rakdos Removal (B R)",
    "archetype": "midrange",
-   "source": "S72 (the Nothing Dear seeds): BR Removal from Grixis — legal as it stands (no Power, nothing above four).",
+   "source": "S72 (the Nothing Dear seeds): BR Removal from Grixis — legal as it stands (no Power, nothing above four). S73a (the vintage audit): 4 daunting_terror for child_of_night.",
    "poolAt": 315,
    "portOf": "grixis:br",
    "decklist": [
@@ -1190,7 +1194,7 @@
      "count": 4
     },
     {
-     "cardId": "child_of_night",
+     "cardId": "daunting_terror",
      "count": 4
     },
     {

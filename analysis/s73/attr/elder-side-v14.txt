@@ -1,0 +1,16 @@
+
+elder — its fifteen: 4 airship_crash, 2 deadly_recluse, 2 faerie_macabre, 2 loxodon_warhammer, 2 sapwell_dryad, 2 tormods_crypt, 1 treetop_snarespinner
+  vs br: [creatures] airship_crash for centaur_courser; airship_crash for centaur_courser; airship_crash for gladecover_scout
+  vs brdjinn: [creatures] airship_crash for centaur_courser; airship_crash for centaur_courser; airship_crash for gladecover_scout
+  vs mbc: [creatures] airship_crash for centaur_courser; airship_crash for centaur_courser; airship_crash for gladecover_scout
+  vs rabble: [creatures] airship_crash for centaur_courser; airship_crash for centaur_courser; airship_crash for gladecover_scout
+  vs stompy: [relics] airship_crash for centaur_courser; airship_crash for centaur_courser; airship_crash for gladecover_scout  [creatures] airship_crash for gladecover_scout
+  vs muster: [relics] airship_crash for centaur_courser; airship_crash for centaur_courser; airship_crash for gladecover_scout  [creatures] airship_crash for gladecover_scout
+  vs tokens: [relics] airship_crash for centaur_courser; airship_crash for centaur_courser; airship_crash for gladecover_scout  [creatures] airship_crash for gladecover_scout
+  vs skies: [creatures] airship_crash for centaur_courser; airship_crash for centaur_courser; airship_crash for gladecover_scout  [blockers] deadly_recluse for gladecover_scout; deadly_recluse for gladecover_scout
+  vs skieswall: [creatures] airship_crash for centaur_courser; airship_crash for centaur_courser; airship_crash for gladecover_scout  [blockers] deadly_recluse for gladecover_scout; deadly_recluse for gladecover_scout
+  vs bw: [creatures] airship_crash for centaur_courser; airship_crash for centaur_courser; airship_crash for gladecover_scout  [blockers] deadly_recluse for gladecover_scout; deadly_recluse for gladecover_scout
+  vs urcontrol: [blockers] deadly_recluse for centaur_courser; deadly_recluse for centaur_courser
+  vs naya: [creatures] airship_crash for centaur_courser; airship_crash for centaur_courser; airship_crash for gladecover_scout  [blockers] deadly_recluse for gladecover_scout; deadly_recluse for gladecover_scout
+  vs wskies: [creatures] airship_crash for centaur_courser; airship_crash for centaur_courser; airship_crash for gladecover_scout  [blockers] deadly_recluse for gladecover_scout; deadly_recluse for gladecover_scout
+  vs wbbasilisk: [graveyards] faerie_macabre for centaur_courser; tormods_crypt for centaur_courser; faerie_macabre for gladecover_scout; tormods_crypt for gladecover_scout  [relics] airship_crash for gladecover_scout; airship_crash for gladecover_scout; airship_crash for wall_of_blossoms  [creatures] airship_crash for wall_of_blossoms  [blockers] deadly_recluse for wall_of_blossoms; deadly_recluse for wall_of_blossoms

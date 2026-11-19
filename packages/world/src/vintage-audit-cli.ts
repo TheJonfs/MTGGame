@@ -30,7 +30,7 @@ export function loadMetas(root: string): Record<string, ListMeta> {
   for (const id of FIELD_FORMAT_IDS) {
     const files = id === "open" ? [read("open/seeds.json"), read("open/contributed.json")] : [read(`${id}/lists.json`)];
     const archived = Object.assign({}, ...files.map((f) => f.archived ?? {})) as Record<string, string>;
-    for (const f of files) for (const l of f.lists ?? f.seeds ?? []) metas[`${id}:${l.key}`] = { poolAt: l.poolAt, portOf: l.portOf, source: l.source, name: l.name, archived: !!archived[l.key] };
+    for (const f of files) for (const l of f.lists ?? f.seeds ?? []) metas[`${id}:${l.key}`] = { poolAt: l.poolAt, portOf: l.portOf, source: l.source, name: l.name, groundExempt: l.groundExempt, archived: !!archived[l.key] };
   }
   // the Loop is built from the Coin (open-lists.ts), not written in the seeds
   if (metas["open:coin"]) metas["open:loop"] = { ...metas["open:coin"], archived: true };

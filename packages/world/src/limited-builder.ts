@@ -57,7 +57,7 @@ export function pairScores(poolIds: readonly string[], rating: CardRatingTable, 
   const out: { pair: [PackColor, PackColor]; score: number }[] = [];
   for (let i = 0; i < COLORS.length; i++) for (let j = i + 1; j < COLORS.length; j++) {
     const pair: [PackColor, PackColor] = [COLORS[i]!, COLORS[j]!];
-    const top = spells.filter((id) => cardColors(cards.get(id)!).every((c) => pair.includes(c))).sort((a, b) => cardRating(cards.get(b)!, rating) - cardRating(cards.get(a)!, rating) || a.localeCompare(b)).slice(0, 23);
+    const top = spells.filter((id) => castableWith(cards.get(id)!, pair)).sort((a, b) => cardRating(cards.get(b)!, rating) - cardRating(cards.get(a)!, rating) || a.localeCompare(b)).slice(0, 23);
     out.push({ pair, score: top.reduce((n, id) => n + cardRating(cards.get(id)!, rating), 0) - (23 - top.length) * 1.0 - Math.max(0, LIMITED_TARGETS.creatures - top.filter((id) => cards.get(id)!.types.includes("Creature")).length) * 0.3 });
   }
   return out.sort((a, b) => b.score - a.score);
@@ -74,7 +74,7 @@ export function buildLimitedDeck(poolIds: readonly string[], rating: CardRatingT
   const pips = (id: string, c: PackColor) => colourPips(parseManaCost(def(id).manaCost))[c];
   const byRating = (a: string, b: string) => rate(b) - rate(a) || a.localeCompare(b);
   const spells = ids.filter((id) => !isLand(id)), lands = ids.filter(isLand);
-  const within = (id: string, cs: readonly PackColor[]) => cardColors(def(id)).every((c) => cs.includes(c));
+  const within = (id: string, cs: readonly PackColor[]) => castableWith(def(id), cs); // S73a (concern 69): a hybrid card fits a deck that makes either colour
 
   // 1. the pair
   const scored: { pair: [PackColor, PackColor]; score: number }[] = [];

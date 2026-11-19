@@ -1914,7 +1914,7 @@
    "name": "the Tollgate",
    "title": "Naya Minefield Control (R W G)",
    "archetype": "control",
-   "source": "The planner's overhaul of the Ford (2026-10-10), promoted by Chris in its place: Powerstone Minefield and the Fordkeeper behind Walls, Kavus and sweepers, Sacred Helix to close. Measured in the Ford's seat before it was registered; mana creatures, tried at Chris's suggestion, measured worse. The planner's name.",
+   "source": "The planner's overhaul of the Ford (2026-10-10), promoted by Chris in its place: Powerstone Minefield and the Fordkeeper behind Walls, Kavus and sweepers, Sacred Helix to close. Measured in the Ford's seat before it was registered; mana creatures, tried at Chris's suggestion, measured worse. The planner's name. S73a (ADR-201, the High Grounds): 1 hearthspire for 1 mountain.",
    "poolAt": 265,
    "decklist": [
     {
@@ -1946,8 +1946,12 @@
      "count": 2
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "mountain",
-     "count": 2
+     "count": 1
     },
     {
      "cardId": "forest",
@@ -2334,7 +2338,7 @@
    "name": "Emerald Snakes",
    "title": "Snake Keeper (G R, Moxen)",
    "archetype": "midrange",
-   "source": "Chris's Convocations, 2026-10-16/17 — the Snake Keeper list 8–0 in matches (16–1 in games), then his V2 13–1 in Constructed matches: Manaba and Rage Cobra as the engine, the Emerald Keeper off Manaba mana as the finisher (Clio is beaten by never letting power go negative), Reaper's Forerunner, Kavus, Harmonize and Gaean Wurms. As registered (his V5, after the pilot's study, 160 matches a pairing against the field): V2 less three Sharpshooters and a Volcanic Island, plus a Harmonize, a Gaean Wurm, a Bayou and the fourth Kavu — 65.8 in matches in the AI's hands (V2 59.8; the first list as played 48.2, with Kavus for its Elders 59.6, and Harmonize for its Armors 65.6). His fifteen (Airship Crash, Foxglove Dose, Savage Twister, Tormod's Crypt, the big Wurms, Baru, two Walls of Razors), no guide yet. Chris's name for it.",
+   "source": "Chris's Convocations, 2026-10-16/17 — the Snake Keeper list 8–0 in matches (16–1 in games), then his V2 13–1 in Constructed matches: Manaba and Rage Cobra as the engine, the Emerald Keeper off Manaba mana as the finisher (Clio is beaten by never letting power go negative), Reaper's Forerunner, Kavus, Harmonize and Gaean Wurms. As registered (his V5, after the pilot's study, 160 matches a pairing against the field): V2 less three Sharpshooters and a Volcanic Island, plus a Harmonize, a Gaean Wurm, a Bayou and the fourth Kavu — 65.8 in matches in the AI's hands (V2 59.8; the first list as played 48.2, with Kavus for its Elders 59.6, and Harmonize for its Armors 65.6). His fifteen (Airship Crash, Foxglove Dose, Savage Twister, Tormod's Crypt, the big Wurms, Baru, two Walls of Razors), no guide yet. Chris's name for it. S73a (the vintage audit): 4 clutch_guard for elvish_visionary.",
    "poolAt": 285,
    "decklist": [
     {
@@ -2390,7 +2394,7 @@
      "count": 4
     },
     {
-     "cardId": "elvish_visionary",
+     "cardId": "clutch_guard",
      "count": 4
     },
     {

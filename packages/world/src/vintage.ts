@@ -13,7 +13,9 @@ import { cardColors, manaValue, parseManaCost, type CardDef } from "@shandalar/c
 import { checkDeck, isBasic, type DeckRule } from "./legality.js";
 
 export type Colour = "W" | "U" | "B" | "R" | "G";
-export interface ListMeta { poolAt?: number | undefined; portOf?: string | undefined; archived?: boolean | undefined; source?: string | undefined; name?: string | undefined }
+/** `groundExempt` (ADR-201): a High Ground of the list's pair it does not play, each with its reason (it cannot pay the
+ * ground's cost; the ground's ability does nothing in it). A list in the pair with neither the ground nor a reason is owed one. */
+export interface ListMeta { poolAt?: number | undefined; portOf?: string | undefined; archived?: boolean | undefined; source?: string | undefined; name?: string | undefined; groundExempt?: Record<string, string> | undefined }
 export interface PoolHistory { cards: Record<string, { added: string; pool: number }> }
 type Deck = readonly { cardId: string; count: number }[];
 

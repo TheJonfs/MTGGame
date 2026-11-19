@@ -111,7 +111,8 @@
    "cards": {
     "Plateau": 4,
     "Sacred Foundry": 4,
-    "Plains": 8,
+    "Plains": 7,
+    "Hearthspire": 1,
     "Mountain": 4,
     "Secluded Steppe": 2,
     "Black Lotus": 1,
@@ -119,8 +120,9 @@
     "Mox Ruby": 1,
     "Savannah Lions": 4,
     "Soul Warden": 4,
-    "Suntail Hawk": 4,
-    "Fencing Ace": 4,
+    "Suntail Hawk": 2,
+    "Fencing Ace": 3,
+    "Dawnwing Marshal": 3,
     "Emeria Angel": 3,
     "Raise the Alarm": 4,
     "Glorious Anthem": 4,
@@ -138,7 +140,8 @@
    "cards": {
     "Plateau": 4,
     "Sacred Foundry": 4,
-    "Mountain": 12,
+    "Mountain": 11,
+    "Hearthspire": 1,
     "Plains": 2,
     "Black Lotus": 1,
     "Mox Ruby": 1,
@@ -239,7 +242,7 @@
     "Baru, Wurmspeaker": 3,
     "Treetop Snarespinner": 2,
     "The Emerald Keeper": 2,
-    "Rampant Growth": 4,
+    "Order Druid": 4,
     "Prey Upon": 2
    }
   },

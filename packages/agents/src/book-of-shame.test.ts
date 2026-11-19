@@ -2934,6 +2934,14 @@ describe("book of shame 174 (post-S72 — Nyxathid R-131 and the Banishing Cleri
     expect(a.scorePriorityAction(v(1), castNyx)).toBeGreaterThan(a.scorePriorityAction(v(1), pass));
     expect(a.scorePriorityAction(v(1), castNyx)).toBeGreaterThan(a.scorePriorityAction(v(5), castNyx));
   });
+  it("book of shame 177 (S73a, the repairs to books 174 and 175): Dungrove Elder enters at its count of Forests — with three it is a 3/3 worth casting, not a 0/0 dead on arrival", () => {
+    const F = Array.from({ length: 3 }, (_, i) => ({ id: `f${i}`, cardId: "forest", controller: 0 as const }));
+    const v = mkView({ hand: [{ objectId: "h_e", cardId: "dungrove_elder" }], battlefield: F });
+    const a = agent("midrange"), cast = { type: "castSpell" as const, objectId: "h_e", targets: [] };
+    expect(a.scorePriorityAction(v, cast)).toBeGreaterThan(a.scorePriorityAction(v, pass));
+    const noForest = mkView({ hand: [{ objectId: "h_e", cardId: "dungrove_elder" }], battlefield: S });
+    expect(a.scorePriorityAction(v, cast)).toBeGreaterThan(a.scorePriorityAction(noForest, cast)); // with no Forest it is the 0/0
+  });
   it("heldback: a Bolt at the Cleric holding our Serra Angel beats a Bolt at their Grizzly Bears — killing it hands the Angel back", () => {
     const a = agent("midrange"), old = new HeuristicAgent(1, pool, { ...difficultyProfile("master", "midrange", []), off: ["heldback"] });
     const v = mkView({ hand: [{ objectId: "h_b", cardId: "lightning_bolt" }], battlefield: [{ id: "m0", cardId: "mountain", controller: 0 }, { id: "bc", cardId: "banishing_cleric", controller: 1 }, { id: "gb", cardId: "grizzly_bears", controller: 1 }] });
@@ -2973,6 +2981,15 @@ describe("book of shame 175 (post-S72 — the Order Druid, R-132)", () => {
     const drawn = { ...mkView({ battlefield: bf, activePlayer: 1, step: "MAIN1" }), stack: [{ id: "s1", kind: "spell", cardId: "divination", controller: 1, targets: [] }] } as unknown as GameView;
     expect(a.selfSacSearchGated(drawn, act)).toBe(true); // a draw spell is no threat: wait for the end step
     expect(druid(["orderfind"]).selfSacSearchGated(mkView({ battlefield: bf, step: "MAIN1" }), act)).toBe(false);
+  });
+  it("book of shame 177 (S73a): the gate is the creature search's alone — Evolving Wilds is cracked in our own main phase as before", () => {
+    const wilds = mkView({ battlefield: [{ id: "ew", cardId: "evolving_wilds", controller: 0 }], step: "MAIN1" });
+    expect(druid().selfSacSearchGated(wilds, { type: "activateAbility", objectId: "ew", abilityIndex: 0, targets: [] })).toBe(false);
+  });
+  it("book of shame 177 (S73a): a land search keeps its flat credit — Rampant Growth is priced the same with the book on or off", () => {
+    const v = mkView({ hand: [{ objectId: "h_r", cardId: "rampant_growth" }], battlefield: bf, step: "MAIN1" });
+    const cast = { type: "castSpell" as const, objectId: "h_r", targets: [] };
+    expect(druid().scorePriorityAction(v, cast)).toBeCloseTo(druid(["orderfind"]).scorePriorityAction(v, cast), 6);
   });
 });
 

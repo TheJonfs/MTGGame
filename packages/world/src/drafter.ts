@@ -10,7 +10,7 @@
  *    the bonus when it taps outside them.
  *  - THE CURVE: from pick 20, a seat short of two-drops in its colours rates them up.
  */
-import { cardColors, manaValue, parseManaCost, type CardDef } from "@shandalar/cards";
+import { cardColors, castableWith, manaValue, parseManaCost, type CardDef } from "@shandalar/cards";
 import { packColors, rollPack, resolveSet, type ConvocationPackData, type PackColor, type Recipe, type SetDef } from "./packs.js";
 import { cardRating, type CardRatingTable } from "./rating.js";
 import { WorldRng } from "./rng.js";
@@ -135,11 +135,12 @@ function pickValueBase(cardId: string, picks: readonly string[], pick: number, r
   const slope = DRAFT_TERMS.bonusPerPick * (pick < DRAFT_TERMS.cutAt ? DRAFT_TERMS.earlySlope : 1); // S50: half the slope before the cut
   const bonus = Math.min(DRAFT_TERMS.bonusCap, slope * (pick - DRAFT_TERMS.freePicks));
   const cs = land ? packColors(d) : cardColors(d);
-  const inMain = cs.every((c) => main.includes(c)), inThree = cs.every((c) => main.includes(c) || c === third);
+  // S73a (concern 69): a spell is in the colours when they cast it — a hybrid card needs one of its two, not both
+  const inMain = land ? cs.every((c) => main.includes(c)) : castableWith(d, main), inThree = land ? cs.every((c) => main.includes(c) || c === third) : castableWith(d, [...main, third]);
   if (land) return cs.length >= 1 && inMain ? base : DRAFT_TERMS.landFlat - (cs.length ? bonus : 0); // the rating inside the colours; less than flat outside them
   let v = base + (inMain ? bonus : pick < DRAFT_TERMS.cutAt && inThree ? bonus * DRAFT_TERMS.thirdShare : 0);
   if (pick >= DRAFT_TERMS.curveFrom && inMain && manaValue(parseManaCost(d.manaCost)) <= 2) {
-    const twos = picks.filter((id) => { const p = cards.get(id)!; return !p.types.includes("Land") && manaValue(parseManaCost(p.manaCost)) <= 2 && cardColors(p).every((c) => main.includes(c)); }).length;
+    const twos = picks.filter((id) => { const p = cards.get(id)!; return !p.types.includes("Land") && manaValue(parseManaCost(p.manaCost)) <= 2 && castableWith(p, main); }).length;
     if (twos < DRAFT_TERMS.twoDropsWanted) v += DRAFT_TERMS.curveBonus;
   }
   return v;

@@ -165,8 +165,8 @@ function removeObject(view: GameView, id: string): void {
 /** Book 174 (R-131, Nyxathid): an entering creature's P/T after its own hand-count static (−1/−1 for each card in the
  * chosen player's hand) — the printed 7/7 is a 0/0 into a full hand. `me` is the caster; `handAfter` its hand once the
  * spell has left it. Other self statics keep the printed numbers (unchanged behaviour). */
-export function entryPT(d: CardDef, view: GameView, me: 0 | 1, handAfter: number): { power: number; toughness: number } {
-  let p = d.power ?? 0, t = d.toughness ?? 0;
+export function entryPT(d: CardDef, view: GameView, me: 0 | 1, handAfter: number, defs?: Map<string, CardDef> | null): { power: number; toughness: number; known: boolean } {
+  let p = d.power ?? 0, t = d.toughness ?? 0, known = true;
   for (const a of d.abilities ?? []) {
     if (a.kind !== "static") continue;
     for (const e of a.effects) {
@@ -174,14 +174,24 @@ export function entryPT(d: CardDef, view: GameView, me: 0 | 1, handAfter: number
       const read = (v: unknown): number => {
         if (typeof v === "number") return v;
         const r = v as { ref?: string; who?: string; times?: number };
-        if (r?.ref !== "handCount") return 0;
+        // S73a: a count of permanents (Dungrove Elder's Forests) is read off the view; book 174 read it as zero and
+        // dropped the Elder, printed 0/0, from every predicted board. A reference not read here leaves the size unknown.
+        if (r?.ref === "count") {
+          const q = (v as { predicate?: { subtype?: string; cardType?: string; controller?: string } }).predicate ?? {};
+          if (!defs || Object.keys(q).some((k) => k !== "subtype" && k !== "cardType" && k !== "controller")) { known = false; return 0; }
+          return view.battlefield.filter((o) => {
+            const od = defs.get(o.cardId);
+            return !!od && (q.controller === undefined || (q.controller === "you") === (o.controller === me)) && (!q.subtype || (od.subtypes ?? []).includes(q.subtype)) && (!q.cardType || od.types.includes(q.cardType as never));
+          }).length * (r.times ?? 1);
+        }
+        if (r?.ref !== "handCount") { known = false; return 0; }
         const n = r.who === "you" ? handAfter : view.you === me ? view.opponentHandCount : view.hand.length; // "chosen"/"opponent": the caster's opponent
         return n * (r.times ?? 1);
       };
       p += read(e.power); t += read(e.toughness);
     }
   }
-  return { power: p, toughness: t };
+  return { power: p, toughness: t, known };
 }
 /**
  * Post-S69 (Chris: the pilot's Massacres killed 26 of its own creatures to 15 of theirs): the life the deaths of a
@@ -398,8 +408,9 @@ export function predictAction(
       // priced Faerie Formation a hair above the flower and bloomed a turn late (heart-sim, seed 510).
       if ((d.abilities ?? []).some((a) => a.kind === "triggered" && a.effects.some((e) => e.type === "createLaw"))) adjustment += 2.5;
       // Book 174: a hand-count creature enters at its live size, and a 0-toughness one dies on arrival (CR 704.5f).
-      const ept = simOff.includes("nyxsize") ? { power: d.power ?? 0, toughness: d.toughness ?? 0 } : entryPT(d, view, me as 0 | 1, view.hand.length - 1);
-      if (!d.types.includes("Creature") || ept.toughness > 0) next.battlefield.push({
+      // (S73a: a size the prediction cannot read keeps its body, and the switch restores the old push whole.)
+      const ept = simOff.includes("nyxsize") ? { power: d.power ?? 0, toughness: d.toughness ?? 0, known: false } : entryPT(d, view, me as 0 | 1, view.hand.length - 1, defs);
+      if (!d.types.includes("Creature") || ept.toughness > 0 || !ept.known) next.battlefield.push({
         id: `pred_${predSeq++}`, cardId: d.id, controller: me, tapped: false, damage: 0,
         attachedTo: null,
         power: d.types.includes("Creature") ? ept.power : null,
@@ -1057,7 +1068,9 @@ function applyEffect(
     case "searchLibrary": {
       // Book 175 (R-132): a creature search onto the battlefield puts the library's best match into the prediction
       // (summoning-sick; its enter trigger is not played out). Off "orderfind", or an unknown library: the flat credit.
-      if (e.to !== "battlefield" || simOff.includes("orderfind") || !simLibrary) return 0.5;
+      // S73a: a land search keeps the flat credit. Book 175 sent it through the creature find, which returns nothing for a
+      // land, so Rampant Growth, Wood Elves, Evolving Wilds and the Glaciers were priced at no credit at all.
+      if (e.to !== "battlefield" || simOff.includes("orderfind") || !simLibrary || (e.predicate !== "creatureCard" && e.predicate !== "anyCard")) return 0.5;
       const d = bestSearchFind(e, simLibrary, defs);
       if (!d) return 0;
       const creature = d.types.includes("Creature");

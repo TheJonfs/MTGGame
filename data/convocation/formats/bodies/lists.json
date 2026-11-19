@@ -259,7 +259,7 @@
    "name": "Emerald Snakes",
    "title": "Snake Keeper (G R)",
    "archetype": "midrange",
-   "source": "Post-S71a (the Bodies seeds): Emerald Snakes from the Open, without the Power — the Power for two Forests, a third Harmonize, Rancor and Bolt.",
+   "source": "Post-S71a (the Bodies seeds): Emerald Snakes from the Open, without the Power — the Power for two Forests, a third Harmonize, Rancor and Bolt. S73a (the vintage audit): 4 clutch_guard for elvish_visionary.",
    "poolAt": 305,
    "portOf": "open:emeraldsnakes",
    "decklist": [
@@ -292,7 +292,7 @@
      "count": 4
     },
     {
-     "cardId": "elvish_visionary",
+     "cardId": "clutch_guard",
      "count": 4
     },
     {
@@ -783,7 +783,7 @@
    "name": "the Wurmspeaker",
    "title": "Wurm Ramp (G)",
    "archetype": "midrange",
-   "source": "Post-S71a (the Bodies seeds): the Wurmspeaker from the Open, without the Power — the Lotus and Mox for a third Prey Upon and a third Pelakka Wurm.",
+   "source": "Post-S71a (the Bodies seeds): the Wurmspeaker from the Open, without the Power — the Lotus and Mox for a third Prey Upon and a third Pelakka Wurm. S73a (the vintage audit): 4 order_druid for rampant_growth.",
    "poolAt": 305,
    "portOf": "open:wurmspeaker",
    "decklist": [
@@ -832,7 +832,7 @@
      "count": 2
     },
     {
-     "cardId": "rampant_growth",
+     "cardId": "order_druid",
      "count": 4
     },
     {
@@ -943,7 +943,7 @@
    "name": "the Muster",
    "title": "Boros Weenie (W r)",
    "archetype": "aggro",
-   "source": "Post-S71a (the Bodies seeds): the Muster from the Open, without the Power — to twenty-four creatures: the Power for three Dawnwing Marshals.",
+   "source": "Post-S71a (the Bodies seeds): the Muster from the Open, without the Power — to twenty-four creatures: the Power for three Dawnwing Marshals. S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.",
    "poolAt": 305,
    "portOf": "open:muster",
    "decklist": [
@@ -956,8 +956,12 @@
      "count": 4
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "plains",
-     "count": 8
+     "count": 7
     },
     {
      "cardId": "mountain",
@@ -1022,7 +1026,7 @@
    "name": "the Stampede",
    "title": "Gruul Stompy (G R)",
    "archetype": "aggro",
-   "source": "Post-S71a (the Bodies seeds): the Stampede from Naya, without the Power — from Naya; the Power for a Forest and two Little Bears.",
+   "source": "Post-S71a (the Bodies seeds): the Stampede from Naya, without the Power — from Naya; the Power for a Forest and two Little Bears. S73a (the vintage audit): 4 daunting_terror for centaur_courser.",
    "poolAt": 305,
    "portOf": "naya:stompy",
    "decklist": [
@@ -1055,7 +1059,7 @@
      "count": 4
     },
     {
-     "cardId": "centaur_courser",
+     "cardId": "daunting_terror",
      "count": 4
     },
     {

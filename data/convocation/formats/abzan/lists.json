@@ -865,7 +865,7 @@
    "name": "Abzan Warden (working name)",
    "title": "Abzan Lifegain (W b g)",
    "archetype": "midrange",
-   "source": "S69 seed (the planner's): built by the implementer — the Warden (Abzan's lord) over Soul Warden, Dazzling Angel, Vitalist, Karmic Mentor and the Forerunner (the brief); Nighthawks, Swords and Putrefy.",
+   "source": "S69 seed (the planner's): built by the implementer — the Warden (Abzan's lord) over Soul Warden, Dazzling Angel, Vitalist, Karmic Mentor and the Forerunner (the brief); Nighthawks, Swords and Putrefy. S73a (ADR-201, the High Grounds): 1 nightbower for 1 forest; 1 obsidian_observatory for 1 plains (its row cleared).",
    "poolAt": 287,
    "decklist": [
     {
@@ -949,11 +949,15 @@
      "count": 2
     },
     {
-     "cardId": "plains",
-     "count": 3
+     "cardId": "obsidian_observatory",
+     "count": 1
     },
     {
-     "cardId": "forest",
+     "cardId": "plains",
+     "count": 2
+    },
+    {
+     "cardId": "nightbower",
      "count": 1
     }
    ],
@@ -1011,8 +1015,12 @@
      "count": 2
     },
     {
+     "cardId": "nightbower",
+     "count": 1
+    },
+    {
      "cardId": "swamp",
-     "count": 2
+     "count": 1
     },
     {
      "cardId": "bayou",
@@ -1083,7 +1091,7 @@
      "count": 3
     }
    ],
-   "source": "S69 seed (the planner's): built by the implementer from Esper's Roll — Abzan tokens (the brief: the Roll with Rampaging Baloths and Harmonize): its four Vindicates for two Baloths and two Harmonizes; four Swamps for two Savannahs and two Bayous, two Plains for two Temple Gardens, Mox Jet for Mox Emerald.",
+   "source": "S69 seed (the planner's): built by the implementer from Esper's Roll — Abzan tokens (the brief: the Roll with Rampaging Baloths and Harmonize): its four Vindicates for two Baloths and two Harmonizes; four Swamps for two Savannahs and two Bayous, two Plains for two Temple Gardens, Mox Jet for Mox Emerald. S73a (ADR-201, the High Grounds): 1 nightbower for 1 swamp.",
    "poolAt": 287
   },
   {

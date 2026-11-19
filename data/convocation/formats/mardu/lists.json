@@ -480,7 +480,7 @@
    "name": "the Muster (Mardu)",
    "title": "Boros Weenie (W R)",
    "archetype": "aggro",
-   "source": "S66 seed (the planner's): the Open's Muster whole (Mardu-legal as it stands).",
+   "source": "S66 seed (the planner's): the Open's Muster whole (Mardu-legal as it stands). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.",
    "poolAt": 285,
    "portOf": "open:muster",
    "decklist": [
@@ -493,8 +493,12 @@
      "count": 4
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "plains",
-     "count": 8
+     "count": 7
     },
     {
      "cardId": "mountain",
@@ -563,7 +567,7 @@
    "name": "the Warband (Mardu)",
    "title": "Boros Goblins (R w)",
    "archetype": "aggro",
-   "source": "S66 seed (the planner's): the Open's Warband whole (Mardu-legal as it stands).",
+   "source": "S66 seed (the planner's): the Open's Warband whole (Mardu-legal as it stands). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 mountain.",
    "poolAt": 285,
    "portOf": "open:warband",
    "decklist": [
@@ -576,8 +580,12 @@
      "count": 4
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "mountain",
-     "count": 12
+     "count": 11
     },
     {
      "cardId": "plains",
@@ -866,7 +874,7 @@
    "name": "the Chancel (Mardu)",
    "title": "Orzhov Control (W B)",
    "archetype": "midrange",
-   "source": "S66 seed (the planner's): Esper's Chancel (WB Control) whole (Mardu-legal as it stands). Revised S66 (Chris): two Ushers, Mardu's lord, for two Emeria Angels, with two Plateaus and two Badlands for two Plains and two Swamps to cast her — paired, 160 matches a pairing: 43.2 → 50.5 in matches (+7.3 ± 2.4; the mana alone −0.3 ± 0.9, the Ushers +7.6 ± 2.4).",
+   "source": "S66 seed (the planner's): Esper's Chancel (WB Control) whole (Mardu-legal as it stands). Revised S66 (Chris): two Ushers, Mardu's lord, for two Emeria Angels, with two Plateaus and two Badlands for two Plains and two Swamps to cast her — paired, 160 matches a pairing: 43.2 → 50.5 in matches (+7.3 ± 2.4; the mana alone −0.3 ± 0.9, the Ushers +7.6 ± 2.4). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains; 1 cairnbrand for 1 swamp (its row cleared).",
    "poolAt": 285,
    "portOf": "esper:wbcontrol",
    "decklist": [
@@ -883,12 +891,20 @@
      "count": 1
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "plains",
-     "count": 3
+     "count": 2
+    },
+    {
+     "cardId": "cairnbrand",
+     "count": 1
     },
     {
      "cardId": "swamp",
-     "count": 3
+     "count": 2
     },
     {
      "cardId": "black_lotus",
@@ -969,7 +985,7 @@
    "name": "the Watch (Mardu)",
    "title": "Boros Tokens (W R)",
    "archetype": "aggro",
-   "source": "S66 seed (the planner's): Naya's Watch (RW Tokens) whole (Mardu-legal as it stands). Post-S66 (Chris, 2026-10-18): two Emeria Angels and a Dawnwing Marshal out for three Vigil Keepers (+4.8 ± 1.0 in matches, paired; +7.5 against the Usher decks, +3.2 against the rest).",
+   "source": "S66 seed (the planner's): Naya's Watch (RW Tokens) whole (Mardu-legal as it stands). Post-S66 (Chris, 2026-10-18): two Emeria Angels and a Dawnwing Marshal out for three Vigil Keepers (+4.8 ± 1.0 in matches, paired; +7.5 against the Usher decks, +3.2 against the rest). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.",
    "poolAt": 285,
    "portOf": "naya:tokens",
    "decklist": [
@@ -982,8 +998,12 @@
      "count": 4
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "plains",
-     "count": 5
+     "count": 4
     },
     {
      "cardId": "mountain",
@@ -1150,7 +1170,7 @@
    "name": "the Kindling",
    "title": "Mono-Red Spells (R)",
    "archetype": "aggro",
-   "source": "S66 seed (the planner's 'Mono-Red Burn': the Tally's shape without blue), built by the implementer: Guttersnipe, Young and Seasoned Pyromancer and Arc Mage paid by every spell; Bolt, Shock, Char, Blaze, Abrade and Pyroclasm; the Tyrant at the top; Hordeling Outburst. A working name.",
+   "source": "S66 seed (the planner's 'Mono-Red Burn': the Tally's shape without blue), built by the implementer: Guttersnipe, Young and Seasoned Pyromancer and Arc Mage paid by every spell; Bolt, Shock, Char, Blaze, Abrade and Pyroclasm; the Tyrant at the top; Hordeling Outburst. A working name. S73a (the vintage audit): 2 storm_shaman for arc_mage; 2 storm_shaman for furnace_whelp.",
    "poolAt": 285,
    "decklist": [
     {
@@ -1178,16 +1198,12 @@
      "count": 3
     },
     {
-     "cardId": "arc_mage",
-     "count": 2
+     "cardId": "storm_shaman",
+     "count": 4
     },
     {
      "cardId": "the_ruby_tyrant",
      "count": 1
-    },
-    {
-     "cardId": "furnace_whelp",
-     "count": 2
     },
     {
      "cardId": "lightning_bolt",

@@ -4,20 +4,20 @@
 
 ## The reading in brief
 - **172 active lists** were given a vintage. **39** have trial rows (58 rows), **68** are Chris's or ports of his and are reported to him, and **69** are owed.
-- **34 rows clear ADR-168's bar.** They are six findings, not 34:
+- **32 rows clear ADR-168's bar.** They are six findings, not 32:
   1. **The planner's lists never got their High Grounds.** All fourteen Hearthspire rows and the one Nightbower row clear (+5.2 to +30.2), each a single land for a land. Chris's ruling (2026-11-18): the High Grounds are Power-class, and a list in the pair needs a reason not to play its own. The census below lists every planner list still without one.
-  2. **Order Druid belongs in the Wurmspeaker's ramp slot** (for Rampant Growth): +10.3 to +13.9 in all seven formats the list is in. S72's study had it in the Gaean Wurm's slot and read −1.5.
+  2. **Order Druid belongs in the Wurmspeaker's ramp slot** (for Rampant Growth): +5.4 to +10.2 in all seven formats the list is in (re-run in S73a on the fixed pilot; the first run read +10.3 to +13.9 while book 175 priced Rampant Growth at no credit). S72's study had it in the Gaean Wurm's slot and read −1.5.
   3. **Clutch Guard beats Elvish Visionary and Wall of Blossoms in every Snake list it is legal in** (four rows, +8.5 to +15.3). All four lists are Chris's or ports of his.
   4. **Daunting Terror for Child of Night in BR Removal**: +16.9 in Nothing Dear, +12.8 in Grixis. For Centaur Courser in Bodies' Stampede: +5.3 pooled over two seeds.
-  5. **Nyxathid's clean home is Peasant's Mono-Black Removal** (+10.8 for the Gallows Djinn). In the Barrow it clears pooled over two seeds (+3.0 ± 1.8). In BR Removal it gains against the field and loses the Tally in both formats: conditional.
-  6. **Two smaller clears held on a second seed**: Storm Shaman in the Kindling (pooled +5.0 ± 1.6) and in the Tally's Ponder slot (+2.6 ± 1.2); Dawnwing Marshal for the Muster's Hawks and Ace (+3.2 ± 1.1).
+  5. **Nyxathid's clean home is Peasant's Mono-Black Removal** (+10.8 for the Gallows Djinn). In the Barrow it reads +3.0 ± 1.8 pooled over two seeds: a hold under the bar read strictly (brief 73a: the gain less its error is at least +2). In BR Removal it gains against the field and loses the Tally in both formats: conditional.
+  6. **Two smaller clears held on a second seed**: Storm Shaman in the Kindling (pooled +5.0 ± 1.6) and Dawnwing Marshal for the Muster's Hawks and Ace (+3.2 ± 1.1). Storm Shaman in the Tally's Ponder slot (+2.6 ± 1.2) is a hold under the strict bar.
 - **Banishing Cleric has no home by the bar**, as Chris expects of it: five hosts, best +2.3 ± 2.3.
 - **The Undertow and the Levy took nothing** from the cards added since they were seeded.
 - **Silt Spirit beyond Sultai Mill**: level in the Undertow; +3.1 in UR Pyroclasm Control with two pairings lost.
 - **Four hybrid rows were confounded** by a defect in the field's sideboard builder. It is fixed and the rows are re-run (below); one of them, Daunting Terror in the Stampede, now clears.
 
 ## The trial rows
-160 matches a pairing against the format's whole field, seed 91, paired match by match. The gain is in matches; game one is beside it. "Pairings lost" are those lost clear of their own error.
+160 matches a pairing against the format's whole field, seed 91, paired match by match. The bar is read strictly (brief 73a): a row clears when its gain less its error is at least +2, and a gain under +5 is read on two seeds pooled (ADR-202). A hold is a row over +2 on the estimate that does not clear strictly. The gain is in matches; game one is beside it. "Pairings lost" are those lost clear of their own error.
 
 | format | list | swap | why by role | matches | gain | game one | pairings lost | verdict |
 |---|---|---|---|---|---|---|---|---|
@@ -25,12 +25,7 @@
 | Nothing Dear | BR Removal | 4 Daunting Terror for 4 Child of Night | a two-drop body for a two-drop body | 40.9 → 57.8 | **+16.9 ± 2.0** | +11.3 ± 1.7 | — | **clears** |
 | Jeskai | the Muster | 1 Hearthspire for 1 Plains | a land for a land: the pair's High Ground | 42.6 → 58.7 | **+16.1 ± 1.7** | +11.0 ± 1.5 | — | **clears** |
 | Temur | Emerald Snakes | 4 Clutch Guard for 4 Elvish Visionary | a cantrip two-drop for a cantrip two-drop, and a Snake | 57.0 → 72.3 | **+15.3 ± 2.2** | +6.6 ± 1.4 | — | **clears** |
-| Bant | the Wurmspeaker | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 31.1 → 45.1 | **+13.9 ± 2.4** | +12.9 ± 2.0 | — | **clears** |
-| Naya | Mono-Green Wurms | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 37.6 → 50.9 | **+13.2 ± 2.3** | +9.9 ± 1.9 | — | **clears** |
 | Grixis | BR Removal | 4 Daunting Terror for 4 Child of Night | a two-drop body for a two-drop body | 40.2 → 53.0 | **+12.8 ± 1.9** | +9.3 ± 1.7 | — | **clears** |
-| the Open | the Wurmspeaker | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 28.5 → 40.8 | **+12.4 ± 1.6** | +10.3 ± 1.3 | — | **clears** |
-| Jund | the Wurmspeaker | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 33.1 → 45.4 | **+12.2 ± 2.2** | +10.8 ± 2.0 | — | **clears** |
-| Temur | the Wurmspeaker | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 24.2 → 36.4 | **+12.2 ± 2.2** | +10.4 ± 1.9 | — | **clears** |
 | Jeskai | the Warband (Chris's list to test against the Muster) | 1 Hearthspire for 1 Mountain | a land for a land: the pair's High Ground | 51.0 → 63.1 | **+12.1 ± 1.6** | +8.3 ± 1.3 | — | **clears** |
 | the Open | the Tollgate | 1 Hearthspire for 1 Plateau | a land for a land: the pair's High Ground | 32.6 → 44.4 | **+11.7 ± 1.2** | +9.1 ± 1.1 | — | **clears** |
 | Naya | the Tollgate | 1 Hearthspire for 1 Plateau | a land for a land: the pair's High Ground | 47.2 → 58.5 | **+11.3 ± 1.5** | +9.9 ± 1.4 | — | **clears** |
@@ -38,8 +33,7 @@
 | Abzan | Abzan Warden (working name) | 1 Nightbower for 1 Overgrown Tomb | a land for a land: the pair's High Ground | 48.9 → 60.1 | **+11.2 ± 1.6** | +7.8 ± 1.4 | — | **clears** |
 | Temur | Temur Snakes | 4 Clutch Guard for 4 Wall of Blossoms | a cantrip body for a cantrip body, and a Snake | 66.5 → 77.4 | **+10.9 ± 2.0** | +7.6 ± 1.8 | — | **clears** |
 | Peasant | Mono-Black Removal | 3 Nyxathid for 3 Gallows Djinn | a finisher for a finisher, a mana cheaper | 51.9 → 62.7 | **+10.8 ± 1.7** | +7.8 ± 1.6 | — | **clears** |
-| Sultai | the Wurmspeaker | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 27.8 → 38.6 | **+10.8 ± 2.1** | +10.9 ± 1.9 | — | **clears** |
-| Bodies | the Wurmspeaker | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 20.2 → 30.5 | **+10.3 ± 2.1** | +11.8 ± 1.9 | — | **clears** |
+| Bant | the Wurmspeaker | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 31.0 → 41.2 | **+10.2 ± 2.4** | +7.4 ± 2.0 | — | **clears** |
 | Bodies | Emerald Snakes | 4 Clutch Guard for 4 Elvish Visionary | a cantrip two-drop for a cantrip two-drop, and a Snake | 60.1 → 69.6 | **+9.5 ± 2.2** | +2.1 ± 1.4 | — | **clears** |
 | the Open | the Muster | 1 Hearthspire for 1 Plains | a land for a land: the pair's High Ground | 40.3 → 49.7 | **+9.4 ± 1.1** | +5.9 ± 0.9 | — | **clears** |
 | Naya | the Warband | 1 Hearthspire for 1 Mountain | a land for a land: the pair's High Ground | 47.9 → 57.0 | **+9.0 ± 1.4** | +5.5 ± 1.1 | — | **clears** |
@@ -48,17 +42,23 @@
 | the Open | the Warband (Chris's list to test against the Muster) | 1 Hearthspire for 1 Mountain | a land for a land: the pair's High Ground | 43.9 → 51.5 | **+7.5 ± 1.1** | +4.3 ± 0.8 | — | **clears** |
 | Bodies | the Muster | 1 Hearthspire for 1 Plains | a land for a land: the pair's High Ground | 42.5 → 49.9 | **+7.4 ± 1.4** | +4.2 ± 1.1 | — | **clears** |
 | Naya | the Chantry | 1 Hearthspire for 1 Plains | a land for a land: the pair's High Ground | 49.1 → 56.3 | **+7.2 ± 1.2** | +5.2 ± 1.1 | — | **clears** |
+| the Open | the Wurmspeaker | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 32.0 → 39.2 | **+7.2 ± 1.6** | +5.1 ± 1.4 | — | **clears** |
 | Nothing Dear | BR Removal | 4 Nyxathid for 2 Gravedigger, 2 Reassembling Skeleton | a threat for the list's two value bodies | 40.9 → 47.9 | **+7.1 ± 2.2** | +5.5 ± 1.7 | the Tally -12 | conditional |
+| Jund | the Wurmspeaker | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 33.4 → 40.4 | **+7.0 ± 2.4** | +5.1 ± 2.0 | — | **clears** |
 | Nothing Dear | the Muster | 1 Hearthspire for 1 Plains | a land for a land: the pair's High Ground | 57.0 → 64.0 | **+7.0 ± 1.2** | +4.9 ± 1.0 | — | **clears** |
+| Temur | the Wurmspeaker | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 30.9 → 36.8 | **+5.8 ± 2.2** | +4.1 ± 1.9 | — | **clears** |
+| Naya | Mono-Green Wurms | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 44.2 → 49.9 | **+5.7 ± 2.4** | +3.0 ± 1.9 | — | **clears** |
+| Sultai | the Wurmspeaker | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 27.2 → 32.8 | **+5.5 ± 2.3** | +6.0 ± 2.1 | — | **clears** |
+| Bodies | the Wurmspeaker | 4 Order Druid for 4 Rampant Growth | a ramp piece for a ramp piece: it fetches the top end | 24.7 → 30.1 | **+5.4 ± 2.1** | +4.9 ± 2.0 | — | **clears** |
 | Mardu | the Warband (Mardu) | 1 Hearthspire for 1 Mountain | a land for a land: the pair's High Ground | 46.9 → 52.0 | **+5.2 ± 1.3** | +3.8 ± 1.0 | — | **clears** |
-| Bodies | the Stampede | 4 Daunting Terror for 4 Centaur Courser | the same 3/3 a mana cheaper, with menace | 35.2 → 39.9 | **+4.7 ± 2.3** | +3.8 ± 1.8 | — | **clears** on two seeds (seed 173 +5.9 ± 2.4; pooled +5.3 ± 1.7) |
+| Bodies | the Stampede | 4 Daunting Terror for 4 Centaur Courser | the same 3/3 a mana cheaper, with menace | 35.2 → 39.9 | **+4.7 ± 2.3** | +3.8 ± 1.8 | — | **clears** on two seeds, pooled (seed 173 +5.9 ± 2.4; pooled +5.3 ± 1.7) |
 | Grixis | BR Removal | 4 Nyxathid for 2 Gravedigger, 2 Reassembling Skeleton | a threat for the list's two value bodies | 40.2 → 43.9 | **+3.8 ± 2.1** | +2.5 ± 1.6 | the Tally -11 | conditional |
 | the Open | the Wurmspeaker | 4 Sapwell Dryad for 4 Rampant Growth | a ramp piece for a ramp piece, with a body | 28.5 → 32.2 | **+3.7 ± 1.4** | +2.9 ± 1.1 | Countersnake -6 | runner-up |
-| Esper | the Barrow | 2 Nyxathid for 2 Gravedigger | a threat for the list's value body | 40.5 → 44.2 | **+3.7 ± 2.5** | +2.7 ± 1.6 | — | **clears** pooled over two seeds; seed 173 alone is under the bar (seed 173 +2.3 ± 2.5; pooled +3.0 ± 1.8) |
-| Mardu | the Kindling | 4 Storm Shaman for 2 Arc Mage, 2 Furnace Whelp | a spells body for the list's two weakest bodies | 44.6 → 47.9 | **+3.3 ± 2.2** | +4.7 ± 1.5 | — | **clears** on two seeds (seed 173 +6.7 ± 2.2; pooled +5.0 ± 1.6) |
-| Nothing Dear | the Tally | 4 Storm Shaman for 4 Ponder | the brief's slot: Ponder's | 41.6 → 44.7 | **+3.1 ± 1.8** | +3.6 ± 1.7 | — | **clears** on two seeds (seed 173 +2.2 ± 1.7; pooled +2.6 ± 1.2) |
+| Esper | the Barrow | 2 Nyxathid for 2 Gravedigger | a threat for the list's value body | 40.5 → 44.2 | **+3.7 ± 2.5** | +2.7 ± 1.6 | — | **hold**: under the strict bar pooled (the gain less its error is +1.3) (seed 173 +2.3 ± 2.5; pooled +3.0 ± 1.8) |
+| Mardu | the Kindling | 4 Storm Shaman for 2 Arc Mage, 2 Furnace Whelp | a spells body for the list's two weakest bodies | 44.6 → 47.9 | **+3.3 ± 2.2** | +4.7 ± 1.5 | — | **clears** on two seeds, pooled (seed 173 +6.7 ± 2.2; pooled +5.0 ± 1.6) |
+| Nothing Dear | the Tally | 4 Storm Shaman for 4 Ponder | the brief's slot: Ponder's | 41.6 → 44.7 | **+3.1 ± 1.8** | +3.6 ± 1.7 | — | **hold**: under the strict bar pooled (the gain less its error is +1.4) (seed 173 +2.2 ± 1.7; pooled +2.6 ± 1.2) |
 | Jeskai | UR Pyroclasm Control | 4 Silt Spirit for 4 Wall of Air | a wall for a wall, with a win condition | 23.4 → 26.4 | **+3.1 ± 2.2** | +2.8 ± 1.9 | the Muster -15, the Warband (Chris's list to test against the Muster) -15 | conditional |
-| the Open | the Muster | 3 Dawnwing Marshal for 2 Suntail Hawk, 1 Fencing Ace | a flier for the fliers | 40.3 → 43.2 | **+2.9 ± 1.5** | +3.5 ± 1.0 | — | **clears** on two seeds (seed 173 +3.5 ± 1.5; pooled +3.2 ± 1.1) |
+| the Open | the Muster | 3 Dawnwing Marshal for 2 Suntail Hawk, 1 Fencing Ace | a flier for the fliers | 40.3 → 43.2 | **+2.9 ± 1.5** | +3.5 ± 1.0 | — | **clears** on two seeds, pooled (seed 173 +3.5 ± 1.5; pooled +3.2 ± 1.1) |
 | Esper | the Chancel | 4 Banishing Cleric for 4 Karmic Mentor | a three-drop body for a three-drop body | 57.7 → 60.0 | **+2.3 ± 2.3** | +1.1 ± 1.9 | — | below the bar |
 | Peasant | Naya Flash Snakes | 3 Banishing Cleric for 3 Little Bear | a three-drop body for a three-drop body | 44.1 → 46.1 | **+2.0 ± 2.0** | +1.4 ± 1.4 | the Rabble (Peasant) -9 | below the bar |
 | Bodies | the Wurmspeaker | 4 Sapwell Dryad for 4 Rampant Growth | a ramp piece for a ramp piece, with a body | 20.2 → 21.8 | **+1.7 ± 1.9** | +3.9 ± 1.5 | — | below the bar |
@@ -84,10 +84,16 @@
 - **Jeskai's Jeskai Sweepers (working name), Hearthspire**: The list was losing 957 of 4,233 games by decking itself (three Serra Angels are its only way to win); with Hearthspire 526. The land is also the list's second win condition.
 - **Temur's Emerald Snakes, Clutch Guard**: In place of the brief's Naya row: the Guard is blue, so it is not legal in Naya or Jund (ADR-197).
 - **Temur's Temur Snakes, Clutch Guard**: Game one carries it (+7.6).
-- **Bodies's the Wurmspeaker, Order Druid**: S72's study put the Druid in the Gaean Wurm slot and read -1.5; this is the right slot.
+- **Bant's the Wurmspeaker, Order Druid**: Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit.
 - **Bodies's Emerald Snakes, Clutch Guard**: Game one +2.1; the rest is the sideboarded games, as in the Open.
 - **the Open's Emerald Snakes, Clutch Guard**: The brief's first trial. Most of the gain is in the sideboarded games: the pilot boards the Visionary out and keeps the Guard in.
+- **the Open's the Wurmspeaker, Order Druid**: Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit.
 - **Nothing Dear's BR Removal, Nyxathid**: Clears on the estimate but loses the Tally pairing clear of its error (-12 +/- 7): the planner's call under ADR-168's second clause.
+- **Jund's the Wurmspeaker, Order Druid**: Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit.
+- **Temur's the Wurmspeaker, Order Druid**: Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit.
+- **Naya's Mono-Green Wurms, Order Druid**: Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit.
+- **Sultai's the Wurmspeaker, Order Druid**: Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit.
+- **Bodies's the Wurmspeaker, Order Druid**: S72's study put the Druid in the Gaean Wurm slot and read -1.5; this is the right slot. Re-run in S73a on the fixed pilot: the first run (+10.3 to +13.9 across the seven) was made while book 175 priced Rampant Growth at no credit.
 - **Bodies's the Stampede, Daunting Terror**: Re-run after the builder fix (concern 59); the first run read -1.0 in matches against +3.8 in game one.
 - **Grixis's BR Removal, Nyxathid**: The same shape as Nothing Dear's row: a gain on the estimate with the Tally pairing lost (-11 +/- 7). Nyxathid shrinks against a full hand, and the Tally keeps one.
 - **the Open's the Wurmspeaker, Sapwell Dryad**: Clears on seed 91, but Order Druid reads +12.4 in the same slot; no second seed run.
@@ -295,15 +301,15 @@ The base arms were played under `card-rating.json` v1.5 and pilot 176; the table
 | Nothing Dear | the Undertow | 37.2 | 23.5 | -13.7 |
 | the Open | the Levy | 38.0 | 26.2 | -11.8 |
 | Bodies | the Stampede | 46.6 | 35.2 | -11.4 |
-| Naya | Mono-Green Wurms | 47.9 | 37.6 | -10.3 |
-| Temur | the Wurmspeaker | 33.8 | 24.2 | -9.6 |
 | Nothing Dear | the Levy | 38.9 | 30.5 | -8.4 |
 | Jeskai | UR Pyroclasm Control | 30.8 | 23.4 | -7.4 |
 | Bodies | the Wurmspeaker | 27.5 | 20.2 | -7.3 |
 | the Open | the Wurmspeaker | 32.4 | 28.5 | -3.9 |
+| Naya | Mono-Green Wurms | 47.9 | 44.2 | -3.7 |
 | Temur | Emerald Snakes | 60.5 | 57.0 | -3.5 |
-| Bant | the Wurmspeaker | 34.2 | 31.1 | -3.1 |
-| Jund | the Wurmspeaker | 36.1 | 33.1 | -3.0 |
+| Bant | the Wurmspeaker | 34.2 | 31.0 | -3.2 |
+| Temur | the Wurmspeaker | 33.8 | 30.9 | -2.9 |
+| Jund | the Wurmspeaker | 36.1 | 33.4 | -2.7 |
 | Mardu | the Muster (Mardu) | 44.8 | 43.2 | -1.6 |
 | Jeskai | the Muster | 42.9 | 42.6 | -0.3 |
 | the Open | the Tollgate | 32.9 | 32.6 | -0.3 |
@@ -319,10 +325,10 @@ The base arms were played under `card-rating.json` v1.5 and pilot 176; the table
 | Mardu | the Warband (Mardu) | 43.2 | 46.9 | +3.7 |
 | Nothing Dear | the Tally | 37.9 | 41.6 | +3.7 |
 | Peasant | Mono-Black Removal | 48.0 | 51.9 | +3.9 |
+| Sultai | the Wurmspeaker | 23.2 | 27.2 | +4.1 |
 | Peasant | Naya Flash Snakes | 39.9 | 44.1 | +4.2 |
 | Naya | the Tollgate | 42.9 | 47.2 | +4.3 |
 | Esper | the Barrow | 36.0 | 40.5 | +4.5 |
-| Sultai | the Wurmspeaker | 23.2 | 27.8 | +4.6 |
 | Naya | the Muster | 36.1 | 41.3 | +5.2 |
 | Nothing Dear | the Muster | 51.1 | 57.0 | +5.9 |
 | Naya | the Warband | 41.2 | 47.9 | +6.7 |
@@ -342,7 +348,7 @@ Every active list: its vintage, the vintage it is read at (a port's root in brac
 
 | list | matches of record | base arm now | poolAt | read at | delta | rows run | status |
 |---|---|---|---|---|---|---|---|
-| the Wurmspeaker | 32.4 | 28.5 | 260 | 260 | 20 | 3 | trialled: 1 clear |
+| the Wurmspeaker | 32.4 | 32.0 | 260 | 260 | 20 | 3 | trialled: 1 clear |
 | the Tollgate | 32.9 | 32.6 | 265 | 265 | 40 | 1 | trialled: 1 clear |
 | the Kiln | 36.2 | — | 262 | 262 | 26 | 0 | contributed: to Chris |
 | the Muster | 36.8 | 40.3 | 260 | 260 | 32 | 3 | trialled: 2 clear |
@@ -392,7 +398,7 @@ Every active list: its vintage, the vintage it is read at (a port's root in brac
 | the Warband | 41.2 | 47.9 | 283 | 260 (open:warband) | 27 | 1 | trialled: 1 clear |
 | the Tollgate | 42.9 | 47.2 | 283 | 265 (open:tollgate) | 31 | 1 | trialled: 1 clear |
 | the Watch | 47.4 | — | 283 | 283 | 16 | 0 | owed |
-| Mono-Green Wurms | 47.9 | 37.6 | 283 | 260 (open:wurmspeaker) | 15 | 1 | trialled: 1 clear |
+| Mono-Green Wurms | 47.9 | 44.2 | 283 | 260 (open:wurmspeaker) | 15 | 1 | trialled: 1 clear |
 | the Thicket | 49.4 | — | 283 | 283 | 13 | 0 | owed |
 | the Minefield | 53.5 | — | 304 | 304 (open:minefield) | 6 | 0 | contributed: to Chris |
 | the Brood | 55.5 | — | 283 | 283 | 19 | 0 | contributed: to Chris |
@@ -404,7 +410,7 @@ Every active list: its vintage, the vintage it is read at (a port's root in brac
 
 | list | matches of record | base arm now | poolAt | read at | delta | rows run | status |
 |---|---|---|---|---|---|---|---|
-| the Barrow | 36 | 40.5 | 283 | 283 | 9 | 2 | trialled: 1 clear |
+| the Barrow | 36 | 40.5 | 283 | 283 | 9 | 2 | trialled: nothing clears |
 | the Locks | 45.4 | — | 283 | 283 | 17 | 0 | owed |
 | the Levy | 46.9 | — | 283 | 260 (open:levy) | 26 | 0 | owed |
 | the Undertow | 49.4 | — | 283 | 260 (open:undertow) | 18 | 0 | owed |
@@ -454,7 +460,7 @@ Every active list: its vintage, the vintage it is read at (a port's root in brac
 | list | matches of record | base arm now | poolAt | read at | delta | rows run | status |
 |---|---|---|---|---|---|---|---|
 | the Kindling | 35.1 | — | 286 | 285 (mardu:burn) | 10 | 0 | owed |
-| the Wurmspeaker | 36.1 | 33.1 | 286 | 260 (open:wurmspeaker) | 15 | 1 | trialled: 1 clear |
+| the Wurmspeaker | 36.1 | 33.4 | 286 | 260 (open:wurmspeaker) | 15 | 1 | trialled: 1 clear |
 | Jund Dragons | 40.5 | — | 286 | 286 | 19 | 0 | contributed: to Chris |
 | Black Forest Ham | 42.8 | — | 286 | 286 | 14 | 0 | contributed: to Chris |
 | the Sweep | 43.2 | — | 286 | 260 (open:sweep) | 30 | 0 | contributed: to Chris |
@@ -486,7 +492,7 @@ Every active list: its vintage, the vintage it is read at (a port's root in brac
 
 | list | matches of record | base arm now | poolAt | read at | delta | rows run | status |
 |---|---|---|---|---|---|---|---|
-| the Wurmspeaker | 23.2 | 27.8 | 287 | 260 (open:wurmspeaker) | 14 | 1 | trialled: 1 clear |
+| the Wurmspeaker | 23.2 | 27.2 | 287 | 260 (open:wurmspeaker) | 14 | 1 | trialled: 1 clear |
 | Black Forest Ham | 33.5 | — | 287 | 286 (jund:bfh) | 13 | 0 | contributed: to Chris |
 | Sultai Mill (working name) | 41.8 | — | 287 | 287 | 13 | 0 | owed |
 | the Barrow | 43.8 | — | 287 | 283 (esper:mbc) | 9 | 0 | owed |
@@ -519,7 +525,7 @@ Every active list: its vintage, the vintage it is read at (a port's root in brac
 | list | matches of record | base arm now | poolAt | read at | delta | rows run | status |
 |---|---|---|---|---|---|---|---|
 | the Tally | 26.9 | — | 287 | 260 (open:tally) | 19 | 0 | owed |
-| the Wurmspeaker | 33.8 | 24.2 | 287 | 260 (open:wurmspeaker) | 14 | 1 | trialled: 1 clear |
+| the Wurmspeaker | 33.8 | 30.9 | 287 | 260 (open:wurmspeaker) | 14 | 1 | trialled: 1 clear |
 | the Kindling | 37.6 | — | 287 | 285 (mardu:burn) | 9 | 0 | owed |
 | the Kiln | 41.6 | — | 287 | 262 (open:kiln) | 18 | 0 | contributed: to Chris |
 | the Stampede | 53.1 | — | 287 | 283 (naya:stompy) | 14 | 0 | owed |
@@ -534,7 +540,7 @@ Every active list: its vintage, the vintage it is read at (a port's root in brac
 
 | list | matches of record | base arm now | poolAt | read at | delta | rows run | status |
 |---|---|---|---|---|---|---|---|
-| the Wurmspeaker | 34.2 | 31.1 | 287 | 260 (open:wurmspeaker) | 13 | 1 | trialled: 1 clear |
+| the Wurmspeaker | 34.2 | 31.0 | 287 | 260 (open:wurmspeaker) | 13 | 1 | trialled: 1 clear |
 | UW Skies | 39.5 | — | 287 | 276 (peasant:skies) | 16 | 0 | owed |
 | White Skies | 41.5 | — | 287 | 278 (peasant:wskies) | 10 | 0 | contributed: to Chris |
 | the Thicket | 43 | — | 287 | 283 (naya:auras) | 11 | 0 | owed |
@@ -550,7 +556,7 @@ Every active list: its vintage, the vintage it is read at (a port's root in brac
 
 | list | matches of record | base arm now | poolAt | read at | delta | rows run | status |
 |---|---|---|---|---|---|---|---|
-| the Wurmspeaker | 27.5 | 20.2 | 305 | 260 (open:wurmspeaker) | 19 | 3 | trialled: 1 clear |
+| the Wurmspeaker | 27.5 | 24.7 | 305 | 260 (open:wurmspeaker) | 19 | 3 | trialled: 1 clear |
 | Jund Dragons | 39 | — | 305 | 286 (jund:dragons) | 26 | 0 | contributed: to Chris |
 | the Muster | 40 | 42.5 | 305 | 260 (open:muster) | 29 | 1 | trialled: 1 clear |
 | the Aerie | 40.3 | — | 305 | 283 (esper:skies) | 19 | 0 | owed |
@@ -568,7 +574,7 @@ Every active list: its vintage, the vintage it is read at (a port's root in brac
 |---|---|---|---|---|---|---|---|
 | BR Removal | 33.7 | 39.5 | 315 | 276 (peasant:br) | 25 | 3 | trialled: 1 clear |
 | the Undertow | 37.2 | 23.5 | 315 | 260 (open:undertow) | 26 | 2 | trialled: nothing clears |
-| the Tally | 37.9 | 41.6 | 315 | 260 (open:tally) | 26 | 2 | trialled: 1 clear |
+| the Tally | 37.9 | 41.6 | 315 | 260 (open:tally) | 26 | 2 | trialled: nothing clears |
 | the Levy | 38.9 | 30.5 | 315 | 260 (open:levy) | 33 | 3 | trialled: nothing clears |
 | the Thicket | 48.3 | — | 315 | 283 (naya:auras) | 18 | 0 | owed |
 | Massocrafts | 48.6 | — | 315 | 287 (sultai:massocrafts) | 23 | 0 | contributed: to Chris |

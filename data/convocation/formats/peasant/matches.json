@@ -1,97 +1,939 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-11-01",
+ "when": "2026-11-19",
  "matchesAPairing": 60,
  "byList": {
   "br": {
-   "matches": 61.4,
-   "gameOne": 58.1,
-   "later": 58,
+   "matches": 60.2,
+   "gameOne": 57.3,
+   "later": 56.6,
    "n": 840
   },
   "brdjinn": {
-   "matches": 60.8,
-   "gameOne": 55.8,
-   "later": 58.1,
+   "matches": 58.8,
+   "gameOne": 55.5,
+   "later": 57.1,
    "n": 840
   },
   "bw": {
-   "matches": 55.4,
-   "gameOne": 57,
-   "later": 52.9,
+   "matches": 58.6,
+   "gameOne": 57.1,
+   "later": 56,
    "n": 840
   },
   "elder": {
-   "matches": 68.3,
-   "gameOne": 61.8,
-   "later": 63.7,
+   "matches": 55.1,
+   "gameOne": 60.2,
+   "later": 50,
    "n": 840
   },
   "mbc": {
-   "matches": 48,
-   "gameOne": 47.5,
-   "later": 49.1,
+   "matches": 61,
+   "gameOne": 55,
+   "later": 59.1,
    "n": 840
   },
   "muster": {
-   "matches": 41.4,
-   "gameOne": 44.1,
-   "later": 45,
-   "n": 840
-  },
-  "naya": {
-   "matches": 39.9,
-   "gameOne": 44.7,
-   "later": 41.9,
-   "n": 840
-  },
-  "rabble": {
-   "matches": 50.7,
-   "gameOne": 50.2,
-   "later": 50.2,
-   "n": 840
-  },
-  "skies": {
-   "matches": 56.8,
-   "gameOne": 52.9,
-   "later": 54.9,
-   "n": 840
-  },
-  "skieswall": {
-   "matches": 46.3,
-   "gameOne": 50.1,
+   "matches": 43.9,
+   "gameOne": 43.9,
    "later": 46.6,
    "n": 840
   },
+  "naya": {
+   "matches": 42.5,
+   "gameOne": 42.6,
+   "later": 45.1,
+   "n": 840
+  },
+  "rabble": {
+   "matches": 49.7,
+   "gameOne": 48.6,
+   "later": 49.9,
+   "n": 840
+  },
+  "skies": {
+   "matches": 57.3,
+   "gameOne": 52.4,
+   "later": 56.8,
+   "n": 840
+  },
+  "skieswall": {
+   "matches": 48.8,
+   "gameOne": 50.5,
+   "later": 48.8,
+   "n": 840
+  },
   "stompy": {
-   "matches": 49.3,
-   "gameOne": 45.4,
-   "later": 51.3,
+   "matches": 44.8,
+   "gameOne": 43.8,
+   "later": 48.2,
    "n": 840
   },
   "tokens": {
-   "matches": 50.4,
-   "gameOne": 50.7,
-   "later": 49.5,
+   "matches": 52.8,
+   "gameOne": 50.4,
+   "later": 52.5,
    "n": 840
   },
   "urcontrol": {
-   "matches": 31,
-   "gameOne": 31,
-   "later": 39.5,
+   "matches": 24.6,
+   "gameOne": 32,
+   "later": 31.3,
    "n": 840
   },
   "wbbasilisk": {
-   "matches": 29.5,
-   "gameOne": 37.6,
-   "later": 33.5,
+   "matches": 25.2,
+   "gameOne": 35.8,
+   "later": 30,
    "n": 840
   },
   "wskies": {
-   "matches": 61,
-   "gameOne": 63.1,
-   "later": 55.5,
+   "matches": 66.8,
+   "gameOne": 65.1,
+   "later": 60.5,
    "n": 840
+  }
+ },
+ "byPair": {
+  "brdjinn|br": {
+   "w": 37,
+   "n": 60
+  },
+  "brdjinn|bw": {
+   "w": 39,
+   "n": 60
+  },
+  "brdjinn|elder": {
+   "w": 22.5,
+   "n": 60
+  },
+  "brdjinn|mbc": {
+   "w": 32,
+   "n": 60
+  },
+  "brdjinn|muster": {
+   "w": 34,
+   "n": 60
+  },
+  "brdjinn|naya": {
+   "w": 38,
+   "n": 60
+  },
+  "brdjinn|rabble": {
+   "w": 35,
+   "n": 60
+  },
+  "brdjinn|skies": {
+   "w": 34,
+   "n": 60
+  },
+  "brdjinn|skieswall": {
+   "w": 44,
+   "n": 60
+  },
+  "brdjinn|stompy": {
+   "w": 42,
+   "n": 60
+  },
+  "brdjinn|tokens": {
+   "w": 20,
+   "n": 60
+  },
+  "brdjinn|urcontrol": {
+   "w": 53,
+   "n": 60
+  },
+  "brdjinn|wbbasilisk": {
+   "w": 45,
+   "n": 60
+  },
+  "brdjinn|wskies": {
+   "w": 18,
+   "n": 60
+  },
+  "br|brdjinn": {
+   "w": 23,
+   "n": 60
+  },
+  "br|bw": {
+   "w": 37,
+   "n": 60
+  },
+  "br|elder": {
+   "w": 30,
+   "n": 60
+  },
+  "br|mbc": {
+   "w": 43,
+   "n": 60
+  },
+  "br|muster": {
+   "w": 37,
+   "n": 60
+  },
+  "br|naya": {
+   "w": 44,
+   "n": 60
+  },
+  "br|rabble": {
+   "w": 36,
+   "n": 60
+  },
+  "br|skies": {
+   "w": 31,
+   "n": 60
+  },
+  "br|skieswall": {
+   "w": 34,
+   "n": 60
+  },
+  "br|stompy": {
+   "w": 45,
+   "n": 60
+  },
+  "br|tokens": {
+   "w": 25,
+   "n": 60
+  },
+  "br|urcontrol": {
+   "w": 50,
+   "n": 60
+  },
+  "br|wbbasilisk": {
+   "w": 53,
+   "n": 60
+  },
+  "br|wskies": {
+   "w": 18,
+   "n": 60
+  },
+  "bw|br": {
+   "w": 23,
+   "n": 60
+  },
+  "bw|brdjinn": {
+   "w": 21,
+   "n": 60
+  },
+  "bw|elder": {
+   "w": 45,
+   "n": 60
+  },
+  "bw|mbc": {
+   "w": 27,
+   "n": 60
+  },
+  "bw|muster": {
+   "w": 31,
+   "n": 60
+  },
+  "bw|naya": {
+   "w": 34,
+   "n": 60
+  },
+  "bw|rabble": {
+   "w": 32.5,
+   "n": 60
+  },
+  "bw|skies": {
+   "w": 37,
+   "n": 60
+  },
+  "bw|skieswall": {
+   "w": 32,
+   "n": 60
+  },
+  "bw|stompy": {
+   "w": 38,
+   "n": 60
+  },
+  "bw|tokens": {
+   "w": 33,
+   "n": 60
+  },
+  "bw|urcontrol": {
+   "w": 44,
+   "n": 60
+  },
+  "bw|wbbasilisk": {
+   "w": 57,
+   "n": 60
+  },
+  "bw|wskies": {
+   "w": 38,
+   "n": 60
+  },
+  "elder|br": {
+   "w": 30,
+   "n": 60
+  },
+  "elder|brdjinn": {
+   "w": 37.5,
+   "n": 60
+  },
+  "elder|bw": {
+   "w": 15,
+   "n": 60
+  },
+  "elder|mbc": {
+   "w": 31,
+   "n": 60
+  },
+  "elder|muster": {
+   "w": 41,
+   "n": 60
+  },
+  "elder|naya": {
+   "w": 43,
+   "n": 60
+  },
+  "elder|rabble": {
+   "w": 36,
+   "n": 60
+  },
+  "elder|skies": {
+   "w": 31,
+   "n": 60
+  },
+  "elder|skieswall": {
+   "w": 31,
+   "n": 60
+  },
+  "elder|stompy": {
+   "w": 44,
+   "n": 60
+  },
+  "elder|tokens": {
+   "w": 32,
+   "n": 60
+  },
+  "elder|urcontrol": {
+   "w": 57,
+   "n": 60
+  },
+  "elder|wbbasilisk": {
+   "w": 22,
+   "n": 60
+  },
+  "elder|wskies": {
+   "w": 12,
+   "n": 60
+  },
+  "mbc|br": {
+   "w": 17,
+   "n": 60
+  },
+  "mbc|brdjinn": {
+   "w": 28,
+   "n": 60
+  },
+  "mbc|bw": {
+   "w": 33,
+   "n": 60
+  },
+  "mbc|elder": {
+   "w": 29,
+   "n": 60
+  },
+  "mbc|muster": {
+   "w": 44,
+   "n": 60
+  },
+  "mbc|naya": {
+   "w": 52,
+   "n": 60
+  },
+  "mbc|rabble": {
+   "w": 32,
+   "n": 60
+  },
+  "mbc|skies": {
+   "w": 25,
+   "n": 60
+  },
+  "mbc|skieswall": {
+   "w": 37,
+   "n": 60
+  },
+  "mbc|stompy": {
+   "w": 51,
+   "n": 60
+  },
+  "mbc|tokens": {
+   "w": 25,
+   "n": 60
+  },
+  "mbc|urcontrol": {
+   "w": 55,
+   "n": 60
+  },
+  "mbc|wbbasilisk": {
+   "w": 51,
+   "n": 60
+  },
+  "mbc|wskies": {
+   "w": 33,
+   "n": 60
+  },
+  "muster|br": {
+   "w": 23,
+   "n": 60
+  },
+  "muster|brdjinn": {
+   "w": 26,
+   "n": 60
+  },
+  "muster|bw": {
+   "w": 29,
+   "n": 60
+  },
+  "muster|elder": {
+   "w": 19,
+   "n": 60
+  },
+  "muster|mbc": {
+   "w": 16,
+   "n": 60
+  },
+  "muster|naya": {
+   "w": 22,
+   "n": 60
+  },
+  "muster|rabble": {
+   "w": 32,
+   "n": 60
+  },
+  "muster|skies": {
+   "w": 23,
+   "n": 60
+  },
+  "muster|skieswall": {
+   "w": 32,
+   "n": 60
+  },
+  "muster|stompy": {
+   "w": 26,
+   "n": 60
+  },
+  "muster|tokens": {
+   "w": 25,
+   "n": 60
+  },
+  "muster|urcontrol": {
+   "w": 40.5,
+   "n": 60
+  },
+  "muster|wbbasilisk": {
+   "w": 45,
+   "n": 60
+  },
+  "muster|wskies": {
+   "w": 10,
+   "n": 60
+  },
+  "naya|br": {
+   "w": 16,
+   "n": 60
+  },
+  "naya|brdjinn": {
+   "w": 22,
+   "n": 60
+  },
+  "naya|bw": {
+   "w": 26,
+   "n": 60
+  },
+  "naya|elder": {
+   "w": 17,
+   "n": 60
+  },
+  "naya|mbc": {
+   "w": 8,
+   "n": 60
+  },
+  "naya|muster": {
+   "w": 38,
+   "n": 60
+  },
+  "naya|rabble": {
+   "w": 15,
+   "n": 60
+  },
+  "naya|skies": {
+   "w": 22,
+   "n": 60
+  },
+  "naya|skieswall": {
+   "w": 22,
+   "n": 60
+  },
+  "naya|stompy": {
+   "w": 24,
+   "n": 60
+  },
+  "naya|tokens": {
+   "w": 33,
+   "n": 60
+  },
+  "naya|urcontrol": {
+   "w": 32,
+   "n": 60
+  },
+  "naya|wbbasilisk": {
+   "w": 55,
+   "n": 60
+  },
+  "naya|wskies": {
+   "w": 27,
+   "n": 60
+  },
+  "rabble|br": {
+   "w": 24,
+   "n": 60
+  },
+  "rabble|brdjinn": {
+   "w": 25,
+   "n": 60
+  },
+  "rabble|bw": {
+   "w": 27.5,
+   "n": 60
+  },
+  "rabble|elder": {
+   "w": 24,
+   "n": 60
+  },
+  "rabble|mbc": {
+   "w": 28,
+   "n": 60
+  },
+  "rabble|muster": {
+   "w": 28,
+   "n": 60
+  },
+  "rabble|naya": {
+   "w": 45,
+   "n": 60
+  },
+  "rabble|skies": {
+   "w": 32,
+   "n": 60
+  },
+  "rabble|skieswall": {
+   "w": 42,
+   "n": 60
+  },
+  "rabble|stompy": {
+   "w": 30.5,
+   "n": 60
+  },
+  "rabble|tokens": {
+   "w": 23,
+   "n": 60
+  },
+  "rabble|urcontrol": {
+   "w": 51.5,
+   "n": 60
+  },
+  "rabble|wbbasilisk": {
+   "w": 28,
+   "n": 60
+  },
+  "rabble|wskies": {
+   "w": 9,
+   "n": 60
+  },
+  "skieswall|br": {
+   "w": 26,
+   "n": 60
+  },
+  "skieswall|brdjinn": {
+   "w": 16,
+   "n": 60
+  },
+  "skieswall|bw": {
+   "w": 28,
+   "n": 60
+  },
+  "skieswall|elder": {
+   "w": 29,
+   "n": 60
+  },
+  "skieswall|mbc": {
+   "w": 23,
+   "n": 60
+  },
+  "skieswall|muster": {
+   "w": 28,
+   "n": 60
+  },
+  "skieswall|naya": {
+   "w": 38,
+   "n": 60
+  },
+  "skieswall|rabble": {
+   "w": 18,
+   "n": 60
+  },
+  "skieswall|skies": {
+   "w": 20,
+   "n": 60
+  },
+  "skieswall|stompy": {
+   "w": 24,
+   "n": 60
+  },
+  "skieswall|tokens": {
+   "w": 25,
+   "n": 60
+  },
+  "skieswall|urcontrol": {
+   "w": 48,
+   "n": 60
+  },
+  "skieswall|wbbasilisk": {
+   "w": 55,
+   "n": 60
+  },
+  "skieswall|wskies": {
+   "w": 32,
+   "n": 60
+  },
+  "skies|br": {
+   "w": 29,
+   "n": 60
+  },
+  "skies|brdjinn": {
+   "w": 26,
+   "n": 60
+  },
+  "skies|bw": {
+   "w": 23,
+   "n": 60
+  },
+  "skies|elder": {
+   "w": 29,
+   "n": 60
+  },
+  "skies|mbc": {
+   "w": 35,
+   "n": 60
+  },
+  "skies|muster": {
+   "w": 37,
+   "n": 60
+  },
+  "skies|naya": {
+   "w": 38,
+   "n": 60
+  },
+  "skies|rabble": {
+   "w": 28,
+   "n": 60
+  },
+  "skies|skieswall": {
+   "w": 40,
+   "n": 60
+  },
+  "skies|stompy": {
+   "w": 22,
+   "n": 60
+  },
+  "skies|tokens": {
+   "w": 33,
+   "n": 60
+  },
+  "skies|urcontrol": {
+   "w": 48.5,
+   "n": 60
+  },
+  "skies|wbbasilisk": {
+   "w": 52,
+   "n": 60
+  },
+  "skies|wskies": {
+   "w": 41,
+   "n": 60
+  },
+  "stompy|br": {
+   "w": 15,
+   "n": 60
+  },
+  "stompy|brdjinn": {
+   "w": 18,
+   "n": 60
+  },
+  "stompy|bw": {
+   "w": 22,
+   "n": 60
+  },
+  "stompy|elder": {
+   "w": 16,
+   "n": 60
+  },
+  "stompy|mbc": {
+   "w": 9,
+   "n": 60
+  },
+  "stompy|muster": {
+   "w": 34,
+   "n": 60
+  },
+  "stompy|naya": {
+   "w": 36,
+   "n": 60
+  },
+  "stompy|rabble": {
+   "w": 29.5,
+   "n": 60
+  },
+  "stompy|skies": {
+   "w": 38,
+   "n": 60
+  },
+  "stompy|skieswall": {
+   "w": 36,
+   "n": 60
+  },
+  "stompy|tokens": {
+   "w": 40,
+   "n": 60
+  },
+  "stompy|urcontrol": {
+   "w": 48.5,
+   "n": 60
+  },
+  "stompy|wbbasilisk": {
+   "w": 22,
+   "n": 60
+  },
+  "stompy|wskies": {
+   "w": 12,
+   "n": 60
+  },
+  "tokens|br": {
+   "w": 35,
+   "n": 60
+  },
+  "tokens|brdjinn": {
+   "w": 40,
+   "n": 60
+  },
+  "tokens|bw": {
+   "w": 27,
+   "n": 60
+  },
+  "tokens|elder": {
+   "w": 28,
+   "n": 60
+  },
+  "tokens|mbc": {
+   "w": 35,
+   "n": 60
+  },
+  "tokens|muster": {
+   "w": 35,
+   "n": 60
+  },
+  "tokens|naya": {
+   "w": 27,
+   "n": 60
+  },
+  "tokens|rabble": {
+   "w": 37,
+   "n": 60
+  },
+  "tokens|skies": {
+   "w": 27,
+   "n": 60
+  },
+  "tokens|skieswall": {
+   "w": 35,
+   "n": 60
+  },
+  "tokens|stompy": {
+   "w": 20,
+   "n": 60
+  },
+  "tokens|urcontrol": {
+   "w": 40.5,
+   "n": 60
+  },
+  "tokens|wbbasilisk": {
+   "w": 45,
+   "n": 60
+  },
+  "tokens|wskies": {
+   "w": 12,
+   "n": 60
+  },
+  "urcontrol|br": {
+   "w": 10,
+   "n": 60
+  },
+  "urcontrol|brdjinn": {
+   "w": 7,
+   "n": 60
+  },
+  "urcontrol|bw": {
+   "w": 16,
+   "n": 60
+  },
+  "urcontrol|elder": {
+   "w": 3,
+   "n": 60
+  },
+  "urcontrol|mbc": {
+   "w": 5,
+   "n": 60
+  },
+  "urcontrol|muster": {
+   "w": 19.5,
+   "n": 60
+  },
+  "urcontrol|naya": {
+   "w": 28,
+   "n": 60
+  },
+  "urcontrol|rabble": {
+   "w": 8.5,
+   "n": 60
+  },
+  "urcontrol|skies": {
+   "w": 11.5,
+   "n": 60
+  },
+  "urcontrol|skieswall": {
+   "w": 12,
+   "n": 60
+  },
+  "urcontrol|stompy": {
+   "w": 11.5,
+   "n": 60
+  },
+  "urcontrol|tokens": {
+   "w": 19.5,
+   "n": 60
+  },
+  "urcontrol|wbbasilisk": {
+   "w": 38,
+   "n": 60
+  },
+  "urcontrol|wskies": {
+   "w": 17,
+   "n": 60
+  },
+  "wbbasilisk|br": {
+   "w": 7,
+   "n": 60
+  },
+  "wbbasilisk|brdjinn": {
+   "w": 15,
+   "n": 60
+  },
+  "wbbasilisk|bw": {
+   "w": 3,
+   "n": 60
+  },
+  "wbbasilisk|elder": {
+   "w": 38,
+   "n": 60
+  },
+  "wbbasilisk|mbc": {
+   "w": 9,
+   "n": 60
+  },
+  "wbbasilisk|muster": {
+   "w": 15,
+   "n": 60
+  },
+  "wbbasilisk|naya": {
+   "w": 5,
+   "n": 60
+  },
+  "wbbasilisk|rabble": {
+   "w": 32,
+   "n": 60
+  },
+  "wbbasilisk|skies": {
+   "w": 8,
+   "n": 60
+  },
+  "wbbasilisk|skieswall": {
+   "w": 5,
+   "n": 60
+  },
+  "wbbasilisk|stompy": {
+   "w": 38,
+   "n": 60
+  },
+  "wbbasilisk|tokens": {
+   "w": 15,
+   "n": 60
+  },
+  "wbbasilisk|urcontrol": {
+   "w": 22,
+   "n": 60
+  },
+  "wbbasilisk|wskies": {
+   "w": 0,
+   "n": 60
+  },
+  "wskies|br": {
+   "w": 42,
+   "n": 60
+  },
+  "wskies|brdjinn": {
+   "w": 42,
+   "n": 60
+  },
+  "wskies|bw": {
+   "w": 22,
+   "n": 60
+  },
+  "wskies|elder": {
+   "w": 48,
+   "n": 60
+  },
+  "wskies|mbc": {
+   "w": 27,
+   "n": 60
+  },
+  "wskies|muster": {
+   "w": 50,
+   "n": 60
+  },
+  "wskies|naya": {
+   "w": 33,
+   "n": 60
+  },
+  "wskies|rabble": {
+   "w": 51,
+   "n": 60
+  },
+  "wskies|skies": {
+   "w": 19,
+   "n": 60
+  },
+  "wskies|skieswall": {
+   "w": 28,
+   "n": 60
+  },
+  "wskies|stompy": {
+   "w": 48,
+   "n": 60
+  },
+  "wskies|tokens": {
+   "w": 48,
+   "n": 60
+  },
+  "wskies|urcontrol": {
+   "w": 43,
+   "n": 60
+  },
+  "wskies|wbbasilisk": {
+   "w": 60,
+   "n": 60
   }
  }
 }

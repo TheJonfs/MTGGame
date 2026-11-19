@@ -1,0 +1,20 @@
+# S73a Part 4 (ADR-201): three rows for each ground with no row. "no<ground>" rows are removals — the list plays the
+# ground and the swap arm takes it out for a basic; the ground's worth is the row's gain with the sign turned.
+jeskai urcontrol tallyflame island:1:tallyflame_court
+grixis clio tallyflame island:1:tallyflame_court
+nothing-dear tally notallyflame tallyflame_court:1:mountain
+sultai mill wrackroot island:1:wrackroot
+temur ramp nowrackroot wrackroot:1:forest
+bant sower nowrackroot wrackroot:1:island
+naya lifegain shevelport plains:1:shevelport
+abzan warden shevelport plains:1:shevelport
+abzan abzantokens shevelport plains:1:shevelport
+abzan bw obsidian swamp:1:obsidian_observatory
+abzan warden obsidian plains:1:obsidian_observatory
+nothing-dear levy noobsidian obsidian_observatory:1:plains
+grixis br cairnbrand swamp:1:cairnbrand
+mardu chancel cairnbrand swamp:1:cairnbrand
+grixis ashen nocairnbrand cairnbrand:1:swamp
+naya stompy burnfallow forest:1:burnfallow
+temur ramp burnfallow forest:1:burnfallow
+naya tollgate burnfallow mountain:1:burnfallow

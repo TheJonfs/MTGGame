@@ -199,7 +199,7 @@
    "name": "the Tollgate",
    "title": "Naya Control (R G W)",
    "archetype": "control",
-   "source": "S64 seed (the planner's): the Open's Tollgate whole (Naya-legal as it stands). Its fifteen loses the two Faerie Macabres (black): a fourth Tormod's Crypt and a Retribution of the Meek.",
+   "source": "S64 seed (the planner's): the Open's Tollgate whole (Naya-legal as it stands). Its fifteen loses the two Faerie Macabres (black): a fourth Tormod's Crypt and a Retribution of the Meek. S73a (ADR-201, the High Grounds): 1 hearthspire for 1 mountain.",
    "poolAt": 283,
    "portOf": "open:tollgate",
    "decklist": [
@@ -232,8 +232,12 @@
      "count": 2
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "mountain",
-     "count": 2
+     "count": 1
     },
     {
      "cardId": "forest",
@@ -480,7 +484,7 @@
    "name": "the Muster",
    "title": "Boros Weenie (W R)",
    "archetype": "aggro",
-   "source": "S64 seed (the planner's): the Open's Muster whole.",
+   "source": "S64 seed (the planner's): the Open's Muster whole. S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.",
    "poolAt": 283,
    "portOf": "open:muster",
    "decklist": [
@@ -493,8 +497,12 @@
      "count": 4
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "plains",
-     "count": 8
+     "count": 7
     },
     {
      "cardId": "mountain",
@@ -563,7 +571,7 @@
    "name": "the Warband",
    "title": "Boros Goblins (R w)",
    "archetype": "aggro",
-   "source": "S64 seed (the planner's): the Open's Warband whole.",
+   "source": "S64 seed (the planner's): the Open's Warband whole. S73a (ADR-201, the High Grounds): 1 hearthspire for 1 mountain.",
    "poolAt": 283,
    "portOf": "open:warband",
    "decklist": [
@@ -576,8 +584,12 @@
      "count": 4
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "mountain",
-     "count": 12
+     "count": 11
     },
     {
      "cardId": "plains",
@@ -646,7 +658,7 @@
    "name": "the Watch",
    "title": "Boros Tokens (W R)",
    "archetype": "aggro",
-   "source": "S64 seed (the planner's, built by the implementer): Peasant's RW Tokens promoted — four Captains of the Watch, two Emeria Angels and Lumen for two Marshals and two Kavus; Plateaus and the Naya power for basics. Named the Watch in the plane's register (S65; it was RW Tokens (Naya)).",
+   "source": "S64 seed (the planner's, built by the implementer): Peasant's RW Tokens promoted — four Captains of the Watch, two Emeria Angels and Lumen for two Marshals and two Kavus; Plateaus and the Naya power for basics. Named the Watch in the plane's register (S65; it was RW Tokens (Naya)). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.",
    "poolAt": 283,
    "decklist": [
     {
@@ -658,8 +670,12 @@
      "count": 4
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "plains",
-     "count": 5
+     "count": 4
     },
     {
      "cardId": "mountain",
@@ -814,7 +830,7 @@
    "name": "Mono-Green Wurms",
    "title": "Mono-Green Ramp (G)",
    "archetype": "midrange",
-   "source": "S64 seed (the planner's): the Open's Wurmspeaker whole.",
+   "source": "S64 seed (the planner's): the Open's Wurmspeaker whole. S73a (the vintage audit): 4 order_druid for rampant_growth.",
    "poolAt": 283,
    "portOf": "open:wurmspeaker",
    "decklist": [
@@ -871,7 +887,7 @@
      "count": 2
     },
     {
-     "cardId": "rampant_growth",
+     "cardId": "order_druid",
      "count": 4
     },
     {
@@ -889,7 +905,7 @@
    "name": "the Chantry",
    "title": "Naya Lifegain (R G W)",
    "archetype": "midrange",
-   "source": "S64 seed (the planner's, built by the implementer): the archived Ford's shape — Vitalist ×4, the Fordkeeper, Soul Warden, Sacred Helix, Bolt and Char (Lightning Helix is not in the pool) — with Peasant's new white: two Karmic Mentors (they return Wardens and Gladeharts) and two Dazzling Angels, for the Rage Cobras, two Spirit Links and two lands. Named the Chantry in the plane's register (S65; it was Naya Lifegain).",
+   "source": "S64 seed (the planner's, built by the implementer): the archived Ford's shape — Vitalist ×4, the Fordkeeper, Soul Warden, Sacred Helix, Bolt and Char (Lightning Helix is not in the pool) — with Peasant's new white: two Karmic Mentors (they return Wardens and Gladeharts) and two Dazzling Angels, for the Rage Cobras, two Spirit Links and two lands. Named the Chantry in the plane's register (S65; it was Naya Lifegain). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.",
    "poolAt": 283,
    "decklist": [
     {
@@ -913,8 +929,12 @@
      "count": 2
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "plains",
-     "count": 2
+     "count": 1
     },
     {
      "cardId": "mountain",

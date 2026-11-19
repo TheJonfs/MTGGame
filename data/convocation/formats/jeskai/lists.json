@@ -417,8 +417,12 @@
      "count": 4
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "plains",
-     "count": 5
+     "count": 4
     },
     {
      "cardId": "mountain",
@@ -485,7 +489,7 @@
      "count": 1
     }
    ],
-   "source": "S67 seed (the planner's): Mardu's Watch whole (with its Vigil Keepers).",
+   "source": "S67 seed (the planner's): Mardu's Watch whole (with its Vigil Keepers). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.",
    "poolAt": 286,
    "portOf": "mardu:watch"
   },
@@ -504,8 +508,12 @@
      "count": 4
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "plains",
-     "count": 8
+     "count": 7
     },
     {
      "cardId": "mountain",
@@ -572,7 +580,7 @@
      "count": 4
     }
    ],
-   "source": "S67 seed (the planner's): the Open's Muster whole, with S67's three Vigil Keepers for three Fencing Aces (Part 1).",
+   "source": "S67 seed (the planner's): the Open's Muster whole, with S67's three Vigil Keepers for three Fencing Aces (Part 1). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.",
    "poolAt": 286,
    "portOf": "open:muster"
   },
@@ -591,8 +599,12 @@
      "count": 4
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "mountain",
-     "count": 12
+     "count": 11
     },
     {
      "cardId": "plains",
@@ -655,7 +667,7 @@
      "count": 2
     }
    ],
-   "source": "S67 seed (the planner's): the Open's Warband whole.",
+   "source": "S67 seed (the planner's): the Open's Warband whole. S73a (ADR-201, the High Grounds): 1 hearthspire for 1 mountain.",
    "poolAt": 286,
    "portOf": "open:warband"
   },
@@ -790,7 +802,7 @@
    "name": "Jeskai Sweepers (working name)",
    "title": "Jeskai Control (U W r)",
    "archetype": "control",
-   "source": "S67 seed (the planner's): built by the implementer — the sweeper control the Open never got: Wrath, Pyroclasm and the Wave behind Counterspell, Absorb and Swords; Control Magic and the Kavu; Serra Angels to finish.",
+   "source": "S67 seed (the planner's): built by the implementer — the sweeper control the Open never got: Wrath, Pyroclasm and the Wave behind Counterspell, Absorb and Swords; Control Magic and the Kavu; Serra Angels to finish. S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.",
    "poolAt": 286,
    "decklist": [
     {
@@ -894,8 +906,12 @@
      "count": 4
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "plains",
-     "count": 4
+     "count": 3
     }
    ],
    "sideboard": [
@@ -934,7 +950,7 @@
    "name": "Jeskai Theft (working name)",
    "title": "Jeskai Theft (W R u)",
    "archetype": "midrange",
-   "source": "S67 seed (the planner's): built by the implementer — the S60 theft shell with a sweeper behind it (the brief): Lumen, Restoration Angel, Protocol and Control Magic; the Altar to spend what is borrowed; Wrath. S67 (the lord read, ADR-168): two Man-o'-Wars for two Bailiffs (+4.6 ± 1.0).",
+   "source": "S67 seed (the planner's): built by the implementer — the S60 theft shell with a sweeper behind it (the brief): Lumen, Restoration Angel, Protocol and Control Magic; the Altar to spend what is borrowed; Wrath. S67 (the lord read, ADR-168): two Man-o'-Wars for two Bailiffs (+4.6 ± 1.0). S73a (ADR-201, the High Grounds): 1 hearthspire for 1 plains.",
    "poolAt": 286,
    "decklist": [
     {
@@ -1030,8 +1046,12 @@
      "count": 1
     },
     {
+     "cardId": "hearthspire",
+     "count": 1
+    },
+    {
      "cardId": "plains",
-     "count": 3
+     "count": 2
     },
     {
      "cardId": "island",

@@ -1,0 +1,108 @@
+## jeskai:urcontrol tallyflame (island:1:tallyflame_court) seed 91
+matches 23.4 -> 26.3  +3.0 +/- 1.5   | game one 31.1 -> 34.1  +3.0 +/- 1.4   | later 30.3 -> 32.1  +1.8 +/- 2.6 (unpaired)   | n 1760
+by opponent: skies 11->21 (+10), kiln 16->26 (+10), tally 33->43 (+9), muster 40->49 (+9), minefield 16->23 (+8), warband 37->44 (+7), watch 16->21 (+5), rabble 5->6 (+1), theft 10->11 (+1), locks 9->4 (-6), sweepers 65->44 (-21)
+pairings lost clear of error: locks -6+/-5, sweepers -21+/-8
+ADR-168: CLEARS (estimate +3.0, lower bound +1.5); second seed owed
+
+## grixis:clio tallyflame (island:1:tallyflame_court) seed 91
+matches 55.5 -> 58.5  +2.9 +/- 1.0   | game one 55.2 -> 56.8  +1.6 +/- 0.9   | later 53.5 -> 55.9  +2.4 +/- 2.6 (unpaired)   | n 1920
+by opponent: rabble 14->19 (+5), tempo 67->72 (+5), mbclio 39->43 (+4), massacrats 61->64 (+4), mbc 77->80 (+3), kindling 53->56 (+3), br 56->59 (+3), ashen 63->66 (+3), writ 66->68 (+2), kiln 54->56 (+2), tally 40->41 (+1), undertow 79->79 (+1)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +2.9, lower bound +1.9); second seed owed
+
+## nothing-dear:tally notallyflame (tallyflame_court:1:mountain) seed 91
+matches 37.1 -> 33.9  -3.2 +/- 1.1   | game one 43.4 -> 40.3  -3.1 +/- 0.9   | later 39.6 -> 37.2  -2.3 +/- 2.6 (unpaired)   | n 1920
+by opponent: undertow 86->87 (+1), minefield 5->5 (+0), hexaura 14->13 (-1), massocrafts 52->50 (-2), marducontrol 43->41 (-2), levy 55->52 (-2), rabble 17->13 (-3), thicket 14->10 (-4), emeraldsnakes 28->24 (-4), muster 44->39 (-5), br 23->18 (-5), mbclio 64->54 (-10)
+pairings lost clear of error: br -5+/-4, emeraldsnakes -4+/-4, mbclio -10+/-5, muster -5+/-3, rabble -3+/-3, thicket -4+/-3
+ADR-168: below (estimate -3.2, lower bound -4.3)
+
+## sultai:mill wrackroot (island:1:wrackroot) seed 91
+matches 51.2 -> 53.8  +2.6 +/- 1.1   | game one 48.8 -> 49.9  +1.1 +/- 0.9   | later 52.3 -> 54.6  +2.3 +/- 2.8 (unpaired)   | n 1600
+by opponent: mbc 30->36 (+6), writ 42->47 (+5), depths 59->63 (+4), bfh 45->49 (+4), reeve 34->38 (+3), massocrafts 60->62 (+2), undertow 76->77 (+1), tempo 52->53 (+1), wurmspeaker 66->66 (+0), auras 49->49 (+0)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +2.6, lower bound +1.5); second seed owed
+
+## temur:ramp nowrackroot (wrackroot:1:forest) seed 91
+matches 62.1 -> 58.2  -3.9 +/- 1.2   | game one 58.2 -> 55.4  -2.8 +/- 1.0   | later 58.6 -> 56.0  -2.7 +/- 2.8 (unpaired)   | n 1600
+by opponent: reaper 66->66 (+0), rabble 70->70 (-1), unwinder 66->64 (-2), kindling 83->81 (-2), tally 68->66 (-2), kiln 62->59 (-2), emeraldsnakes 47->44 (-2), stompy 65->58 (-7), wurmspeaker 49->42 (-8), temurcontrol 45->32 (-13)
+pairings lost clear of error: stompy -7+/-4, temurcontrol -13+/-5, wurmspeaker -8+/-4
+ADR-168: below (estimate -3.9, lower bound -5.1)
+
+## bant:sower nowrackroot (wrackroot:1:island) seed 91
+matches 72.2 -> 61.4  -10.8 +/- 1.9   | game one 63.2 -> 56.1  -7.1 +/- 1.4   | later 67.2 -> 58.4  -8.8 +/- 2.8 (unpaired)   | n 1600
+by opponent: hexaura 60->59 (-1), wurmspeaker 84->77 (-7), sourworms 71->64 (-7), thicket 76->68 (-8), locks 74->66 (-8), auras 64->54 (-9), uwskies 73->62 (-11), wskies 88->72 (-16), skies 54->34 (-19), countersnake 79->58 (-22)
+pairings lost clear of error: auras -9+/-6, countersnake -22+/-7, skies -19+/-7, sourworms -7+/-5, thicket -8+/-5, uwskies -11+/-6, wskies -16+/-6, wurmspeaker -7+/-4
+ADR-168: below (estimate -10.8, lower bound -12.7)
+
+## naya:lifegain shevelport (plains:1:shevelport) seed 91
+matches 44.1 -> 44.6  +0.5 +/- 0.5   | game one 46.2 -> 46.4  +0.3 +/- 0.5   | later 46.2 -> 46.6  +0.4 +/- 2.7 (unpaired)   | n 1760
+by opponent: minefield 26->28 (+2), wurms 55->56 (+1), tollgate 49->49 (+1), tokens 53->53 (+1), snakes 39->40 (+1), rabble 37->38 (+1), emeraldsnakes 35->36 (+1), warband 48->48 (+0), muster 59->59 (+0), auras 48->48 (+0), stompy 36->35 (-1)
+pairings lost clear of error: none
+ADR-168: below (estimate +0.5, lower bound +0.1)
+
+## abzan:warden shevelport (plains:1:shevelport) seed 91
+matches 37.6 -> 38.2  +0.6 +/- 0.5   | game one 47.1 -> 47.4  +0.4 +/- 0.4   | later 39.1 -> 39.4  +0.3 +/- 2.8 (unpaired)   | n 1600
+by opponent: wskies 55->57 (+2), bfh 34->36 (+2), roll 31->31 (+1), chancel 12->12 (+1), bw 44->44 (+1), auras 49->49 (+1), abzantokens 38->39 (+1), thicket 40->40 (+0), bwmassacrats 38->38 (+0), levy 36->36 (-1)
+pairings lost clear of error: none
+ADR-168: below (estimate +0.6, lower bound +0.2)
+
+## abzan:abzantokens shevelport (plains:1:shevelport) seed 91
+matches 44.5 -> 46.4  +1.9 +/- 0.9   | game one 49.5 -> 49.8  +0.2 +/- 0.6   | later 44.5 -> 46.3  +1.8 +/- 2.8 (unpaired)   | n 1600
+by opponent: chancel 34->38 (+4), levy 41->45 (+4), roll 36->38 (+2), warden 62->64 (+2), thicket 51->52 (+2), wskies 45->46 (+1), bfh 57->58 (+1), auras 36->37 (+1), bwmassacrats 36->37 (+1), bw 48->49 (+1)
+pairings lost clear of error: none
+ADR-168: below (estimate +1.9, lower bound +1.1)
+
+## abzan:bw obsidian (swamp:1:obsidian_observatory) seed 91
+matches 50.4 -> 52.6  +2.2 +/- 1.2   | game one 45.6 -> 48.4  +2.8 +/- 1.0   | later 52.4 -> 53.4  +1.0 +/- 2.9 (unpaired)   | n 1600
+by opponent: bfh 64->71 (+7), wskies 61->64 (+3), roll 42->45 (+3), auras 61->64 (+3), warden 56->59 (+2), chancel 26->28 (+2), thicket 40->41 (+1), levy 29->30 (+1), bwmassacrats 73->72 (-1), abzantokens 52->51 (-1)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +2.2, lower bound +1.0); second seed owed
+
+## abzan:warden obsidian (plains:1:obsidian_observatory) seed 91
+matches 37.6 -> 41.2  +3.7 +/- 1.2   | game one 47.1 -> 50.1  +3.0 +/- 1.1   | later 39.1 -> 41.3  +2.2 +/- 2.8 (unpaired)   | n 1600
+by opponent: bfh 34->41 (+7), wskies 55->61 (+6), bw 44->49 (+5), chancel 12->16 (+4), auras 49->52 (+4), thicket 40->43 (+3), roll 31->33 (+2), levy 36->39 (+2), abzantokens 38->41 (+2), bwmassacrats 38->39 (+1)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +3.7, lower bound +2.5); second seed owed
+
+## nothing-dear:levy noobsidian (obsidian_observatory:1:plains) seed 91
+matches 38.8 -> 36.7  -2.1 +/- 1.8   | game one 43.2 -> 42.1  -1.1 +/- 0.8   | later 42.1 -> 40.6  -1.6 +/- 2.5 (unpaired)   | n 1920
+by opponent: thicket 56->59 (+3), rabble 29->31 (+2), massocrafts 50->52 (+2), muster 38->39 (+1), hexaura 46->45 (-1), minefield 29->27 (-2), mbclio 48->45 (-3), br 39->36 (-4), marducontrol 24->19 (-5), tally 45->39 (-6), emeraldsnakes 16->11 (-6), undertow 44->38 (-6)
+pairings lost clear of error: emeraldsnakes -6+/-5
+ADR-168: below (estimate -2.1, lower bound -3.9)
+
+## grixis:br cairnbrand (swamp:1:cairnbrand) seed 91
+matches 51.9 -> 55.1  +3.2 +/- 1.0   | game one 49.3 -> 52.1  +2.7 +/- 0.8   | later 52.2 -> 54.0  +1.8 +/- 2.6 (unpaired)   | n 1920
+by opponent: ashen 44->51 (+7), writ 44->50 (+6), tempo 58->62 (+5), undertow 71->76 (+4), kindling 71->75 (+4), clio 44->48 (+4), kiln 66->68 (+2), rabble 33->35 (+2), mbc 66->68 (+2), mbclio 26->28 (+1), tally 70->71 (+1), massacrats 30->30 (+0)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +3.2, lower bound +2.2); second seed owed
+
+## mardu:chancel cairnbrand (swamp:1:cairnbrand) seed 91
+matches 47.7 -> 50.7  +3.0 +/- 0.9   | game one 48.8 -> 50.1  +1.3 +/- 0.7   | later 48.2 -> 50.6  +2.4 +/- 2.7 (unpaired)   | n 1760
+by opponent: brremoval 57->64 (+7), witch 49->54 (+4), roll 59->62 (+4), muster 55->59 (+4), rabble 34->37 (+3), watch 42->44 (+2), warband 49->52 (+2), marducontrol 29->31 (+2), burn 52->54 (+2), levy 64->64 (+1), pall 36->36 (+0)
+pairings lost clear of error: none
+ADR-168: CLEARS (estimate +3.0, lower bound +2.0); second seed owed
+
+## grixis:ashen nocairnbrand (cairnbrand:1:swamp) seed 91
+matches 47.2 -> 45.8  -1.4 +/- 1.0   | game one 50.5 -> 48.9  -1.6 +/- 0.8   | later 47.4 -> 46.8  -0.6 +/- 2.6 (unpaired)   | n 1920
+by opponent: massacrats 32->32 (+1), kindling 45->46 (+1), br 56->57 (+1), mbclio 24->24 (+0), kiln 49->49 (+0), clio 37->37 (-1), rabble 24->23 (-1), mbc 66->65 (-1), undertow 72->70 (-2), tally 55->53 (-2), writ 41->37 (-4), tempo 65->58 (-7)
+pairings lost clear of error: tempo -7+/-5, writ -4+/-3
+ADR-168: below (estimate -1.4, lower bound -2.4)
+
+## naya:stompy burnfallow (forest:1:burnfallow) seed 91
+matches 57.4 -> 55.3  -2.1 +/- 1.1   | game one 53.9 -> 52.8  -1.1 +/- 1.0   | later 55.3 -> 53.8  -1.6 +/- 2.7 (unpaired)   | n 1760
+by opponent: tollgate 61->61 (+0), rabble 40->40 (+0), auras 63->63 (+0), warband 54->54 (-1), wurms 55->54 (-1), emeraldsnakes 48->46 (-2), tokens 53->51 (-2), minefield 59->56 (-3), lifegain 64->61 (-3), muster 69->65 (-4), snakes 63->57 (-6)
+pairings lost clear of error: muster -4+/-4, snakes -6+/-4
+ADR-168: below (estimate -2.1, lower bound -3.2)
+
+## temur:ramp burnfallow (forest:1:burnfallow) seed 91
+matches 62.1 -> 62.9  +0.8 +/- 1.1   | game one 58.2 -> 58.6  +0.4 +/- 0.9   | later 58.6 -> 59.1  +0.4 +/- 2.8 (unpaired)   | n 1600
+by opponent: unwinder 66->69 (+3), temurcontrol 45->48 (+3), rabble 70->73 (+3), tally 68->70 (+2), kindling 83->84 (+1), stompy 65->66 (+1), kiln 62->62 (+0), wurmspeaker 49->48 (-1), reaper 66->64 (-1), emeraldsnakes 47->44 (-2)
+pairings lost clear of error: none
+ADR-168: below (estimate +0.8, lower bound -0.3)
+
+## naya:tollgate burnfallow (mountain:1:burnfallow) seed 91
+matches 44.3 -> 44.2  -0.1 +/- 1.4   | game one 45.6 -> 46.9  +1.3 +/- 1.3   | later 46.3 -> 45.4  -0.8 +/- 2.8 (unpaired)   | n 1760
+by opponent: warband 71->76 (+4), tokens 47->49 (+2), rabble 73->74 (+1), muster 84->84 (+1), minefield 0->1 (+1), emeraldsnakes 28->28 (+1), stompy 39->39 (-1), auras 25->24 (-1), wurms 32->31 (-2), snakes 37->34 (-2), lifegain 51->48 (-4)
+pairings lost clear of error: none
+ADR-168: below (estimate -0.1, lower bound -1.5)
+

@@ -1,0 +1,97 @@
+{
+ "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
+ "when": "2026-11-01",
+ "matchesAPairing": 60,
+ "byList": {
+  "br": {
+   "matches": 61.4,
+   "gameOne": 58.1,
+   "later": 58,
+   "n": 840
+  },
+  "brdjinn": {
+   "matches": 60.8,
+   "gameOne": 55.8,
+   "later": 58.1,
+   "n": 840
+  },
+  "bw": {
+   "matches": 55.4,
+   "gameOne": 57,
+   "later": 52.9,
+   "n": 840
+  },
+  "elder": {
+   "matches": 68.3,
+   "gameOne": 61.8,
+   "later": 63.7,
+   "n": 840
+  },
+  "mbc": {
+   "matches": 48,
+   "gameOne": 47.5,
+   "later": 49.1,
+   "n": 840
+  },
+  "muster": {
+   "matches": 41.4,
+   "gameOne": 44.1,
+   "later": 45,
+   "n": 840
+  },
+  "naya": {
+   "matches": 39.9,
+   "gameOne": 44.7,
+   "later": 41.9,
+   "n": 840
+  },
+  "rabble": {
+   "matches": 50.7,
+   "gameOne": 50.2,
+   "later": 50.2,
+   "n": 840
+  },
+  "skies": {
+   "matches": 56.8,
+   "gameOne": 52.9,
+   "later": 54.9,
+   "n": 840
+  },
+  "skieswall": {
+   "matches": 46.3,
+   "gameOne": 50.1,
+   "later": 46.6,
+   "n": 840
+  },
+  "stompy": {
+   "matches": 49.3,
+   "gameOne": 45.4,
+   "later": 51.3,
+   "n": 840
+  },
+  "tokens": {
+   "matches": 50.4,
+   "gameOne": 50.7,
+   "later": 49.5,
+   "n": 840
+  },
+  "urcontrol": {
+   "matches": 31,
+   "gameOne": 31,
+   "later": 39.5,
+   "n": 840
+  },
+  "wbbasilisk": {
+   "matches": 29.5,
+   "gameOne": 37.6,
+   "later": 33.5,
+   "n": 840
+  },
+  "wskies": {
+   "matches": 61,
+   "gameOne": 63.1,
+   "later": 55.5,
+   "n": 840
+  }
+ }
+}

@@ -6,18 +6,18 @@
 - **{{NLISTS}} active lists** were given a vintage. **{{NTRIALLED}}** have trial rows ({{NROWS}} rows), **{{NCONTRIB}}** are Chris's or ports of his and are reported to him, and **{{NOWED}}** are owed.
 - **{{NCLEAR}} rows clear ADR-168's bar.** They are six findings, not {{NCLEAR}}:
   1. **The planner's lists never got their High Grounds.** All fourteen Hearthspire rows and the one Nightbower row clear (+5.2 to +30.2), each a single land for a land. Chris's ruling (2026-11-18): the High Grounds are Power-class, and a list in the pair needs a reason not to play its own. The census below lists every planner list still without one.
-  2. **Order Druid belongs in the Wurmspeaker's ramp slot** (for Rampant Growth): +10.3 to +13.9 in all seven formats the list is in. S72's study had it in the Gaean Wurm's slot and read −1.5.
+  2. **Order Druid belongs in the Wurmspeaker's ramp slot** (for Rampant Growth): +5.4 to +10.2 in all seven formats the list is in (re-run in S73a on the fixed pilot; the first run read +10.3 to +13.9 while book 175 priced Rampant Growth at no credit). S72's study had it in the Gaean Wurm's slot and read −1.5.
   3. **Clutch Guard beats Elvish Visionary and Wall of Blossoms in every Snake list it is legal in** (four rows, +8.5 to +15.3). All four lists are Chris's or ports of his.
   4. **Daunting Terror for Child of Night in BR Removal**: +16.9 in Nothing Dear, +12.8 in Grixis. For Centaur Courser in Bodies' Stampede: +5.3 pooled over two seeds.
-  5. **Nyxathid's clean home is Peasant's Mono-Black Removal** (+10.8 for the Gallows Djinn). In the Barrow it clears pooled over two seeds (+3.0 ± 1.8). In BR Removal it gains against the field and loses the Tally in both formats: conditional.
-  6. **Two smaller clears held on a second seed**: Storm Shaman in the Kindling (pooled +5.0 ± 1.6) and in the Tally's Ponder slot (+2.6 ± 1.2); Dawnwing Marshal for the Muster's Hawks and Ace (+3.2 ± 1.1).
+  5. **Nyxathid's clean home is Peasant's Mono-Black Removal** (+10.8 for the Gallows Djinn). In the Barrow it reads +3.0 ± 1.8 pooled over two seeds: a hold under the bar read strictly (brief 73a: the gain less its error is at least +2). In BR Removal it gains against the field and loses the Tally in both formats: conditional.
+  6. **Two smaller clears held on a second seed**: Storm Shaman in the Kindling (pooled +5.0 ± 1.6) and Dawnwing Marshal for the Muster's Hawks and Ace (+3.2 ± 1.1). Storm Shaman in the Tally's Ponder slot (+2.6 ± 1.2) is a hold under the strict bar.
 - **Banishing Cleric has no home by the bar**, as Chris expects of it: five hosts, best +2.3 ± 2.3.
 - **The Undertow and the Levy took nothing** from the cards added since they were seeded.
 - **Silt Spirit beyond Sultai Mill**: level in the Undertow; +3.1 in UR Pyroclasm Control with two pairings lost.
 - **Four hybrid rows were confounded** by a defect in the field's sideboard builder. It is fixed and the rows are re-run (below); one of them, Daunting Terror in the Stampede, now clears.
 
 ## The trial rows
-160 matches a pairing against the format's whole field, seed 91, paired match by match. The gain is in matches; game one is beside it. "Pairings lost" are those lost clear of their own error.
+160 matches a pairing against the format's whole field, seed 91, paired match by match. The bar is read strictly (brief 73a): a row clears when its gain less its error is at least +2, and a gain under +5 is read on two seeds pooled (ADR-202). A hold is a row over +2 on the estimate that does not clear strictly. The gain is in matches; game one is beside it. "Pairings lost" are those lost clear of their own error.
 
 {{ROWS}}
 
