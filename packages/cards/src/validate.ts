@@ -658,7 +658,10 @@ const EFFECT_SHAPE: Record<Effect["type"], (e: Record<string, unknown>, err: (m:
     }
     if (!Number.isInteger(e.target) && !Number.isInteger(e.targetSpec)) err(`"tapTarget" needs "target", "targetSpec" or "scope"`);
   },
-  untapTarget: needTargetIndex,
+  untapTarget: (e, err) => {
+    if (e.scope !== undefined) { needScope(e, err); return; } // S73a (R-134): the mass form
+    needTargetIndex(e, err);
+  },
   returnFromGraveyard: (e, err) => {
     // A10 (S22): the targetSpec form fans out over a range spec's picks (Graceful Restoration mode 2).
     if (!Number.isInteger(e.targetSpec)) needTargetOrScope(e, err);

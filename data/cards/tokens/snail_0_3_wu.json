@@ -1,0 +1,24 @@
+{
+  "id": "snail_0_3_wu",
+  "name": "Snail Token",
+  "source": "custom",
+  "isTokenDef": true,
+  "manaCost": "",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Snail"
+  ],
+  "colors": [
+    "W",
+    "U"
+  ],
+  "power": 0,
+  "toughness": 3,
+  "text": "",
+  "art": {
+    "asset": "/custom-art/snail_0_3_wu.png",
+    "fallback": "rendered"
+  }
+}

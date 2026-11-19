@@ -1,133 +1,137 @@
 {
  "_comment": "S73 (ADR-199): when each card of the pool was added — the date of the commit that first held its def, and the pool's size once that commit landed (the loader's count, tokens and laws included). A list's poolAt is read against `pool`: every card with a larger number came after the list. A new card gets a row here (packages/world/src/vintage.test.ts checks it).",
  "cards": {
-  "boomerang": {
-   "added": "2026-08-19",
-   "pool": 20
+  "abrade": {
+   "added": "2026-08-25",
+   "pool": 166
   },
-  "brute_force": {
-   "added": "2026-08-19",
-   "pool": 20
+  "absorb": {
+   "added": "2026-09-19",
+   "pool": 240
   },
-  "cloudkin_seer": {
-   "added": "2026-08-19",
-   "pool": 20
+  "abyssalume": {
+   "added": "2026-11-19",
+   "pool": 326
   },
-  "counterspell": {
-   "added": "2026-08-19",
-   "pool": 20
+  "aether_channeler": {
+   "added": "2026-08-23",
+   "pool": 109
   },
-  "divination": {
-   "added": "2026-08-19",
-   "pool": 20
+  "aether_mutation": {
+   "added": "2026-08-25",
+   "pool": 166
   },
-  "goblin_piker": {
-   "added": "2026-08-19",
-   "pool": 20
+  "aetherbolt": {
+   "added": "2026-08-25",
+   "pool": 166
   },
-  "gray_ogre": {
-   "added": "2026-08-19",
-   "pool": 20
+  "air_elemental": {
+   "added": "2026-08-23",
+   "pool": 109
   },
-  "hill_giant": {
-   "added": "2026-08-19",
-   "pool": 20
+  "airship_crash": {
+   "added": "2026-08-23",
+   "pool": 109
   },
-  "island": {
-   "added": "2026-08-19",
-   "pool": 20
+  "altar_of_dementia": {
+   "added": "2026-09-05",
+   "pool": 197
   },
-  "lightning_bolt": {
-   "added": "2026-08-19",
-   "pool": 20
+  "angel_of_the_ruins": {
+   "added": "2026-09-09",
+   "pool": 211
   },
-  "man_o_war": {
-   "added": "2026-08-19",
-   "pool": 20
+  "angelic_destiny": {
+   "added": "2026-09-30",
+   "pool": 254
   },
-  "mountain": {
-   "added": "2026-08-19",
-   "pool": 20
+  "arc_mage": {
+   "added": "2026-09-05",
+   "pool": 197
   },
-  "pacifism": {
-   "added": "2026-08-19",
-   "pool": 20
+  "arcane_collector": {
+   "added": "2026-09-09",
+   "pool": 211
   },
-  "plains": {
-   "added": "2026-08-19",
-   "pool": 20
+  "arcanis_the_omnipotent": {
+   "added": "2026-08-24",
+   "pool": 147
   },
-  "raging_goblin": {
-   "added": "2026-08-19",
-   "pool": 20
+  "artisan_of_kozilek": {
+   "added": "2026-09-07",
+   "pool": 205
   },
-  "savannah_lions": {
-   "added": "2026-08-19",
-   "pool": 20
+  "aven_fisher": {
+   "added": "2026-08-23",
+   "pool": 109
   },
-  "serra_angel": {
-   "added": "2026-08-19",
-   "pool": 20
+  "badlands": {
+   "added": "2026-08-24",
+   "pool": 121
   },
-  "shock": {
-   "added": "2026-08-19",
-   "pool": 20
+  "balance": {
+   "added": "2026-10-29",
+   "pool": 296
   },
-  "suntail_hawk": {
-   "added": "2026-08-19",
-   "pool": 20
+  "banishing_cleric": {
+   "added": "2026-11-18",
+   "pool": 320
   },
-  "wind_drake": {
-   "added": "2026-08-19",
-   "pool": 20
+  "barren_moor": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "baru_wurmspeaker": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "basilisk_collar": {
+   "added": "2026-10-13",
+   "pool": 279
+  },
+  "bayou": {
+   "added": "2026-08-24",
+   "pool": 121
+  },
+  "bear_2_2": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "beast_4_4_g": {
+   "added": "2026-09-30",
+   "pool": 254
+  },
+  "bird_1_1_flying": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "birds_of_paradise": {
+   "added": "2026-09-04",
+   "pool": 190
+  },
+  "bitterblossom": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "black_lotus": {
+   "added": "2026-08-21",
+   "pool": 70
+  },
+  "blanchwood_armor": {
+   "added": "2026-09-05",
+   "pool": 197
   },
   "blaze": {
    "added": "2026-08-19",
    "pool": 32
   },
-  "centaur_courser": {
-   "added": "2026-08-19",
-   "pool": 32
+  "blood_artist": {
+   "added": "2026-08-23",
+   "pool": 109
   },
-  "elvish_visionary": {
-   "added": "2026-08-19",
-   "pool": 32
-  },
-  "forest": {
-   "added": "2026-08-19",
-   "pool": 32
-  },
-  "giant_growth": {
-   "added": "2026-08-19",
-   "pool": 32
-  },
-  "glorious_anthem": {
-   "added": "2026-08-19",
-   "pool": 32
-  },
-  "grizzly_bears": {
-   "added": "2026-08-19",
-   "pool": 32
-  },
-  "pelakka_wurm": {
-   "added": "2026-08-19",
-   "pool": 32
-  },
-  "raise_the_alarm": {
-   "added": "2026-08-19",
-   "pool": 32
-  },
-  "rumbling_baloth": {
-   "added": "2026-08-19",
-   "pool": 32
-  },
-  "soldier_1_1": {
-   "added": "2026-08-19",
-   "pool": 32
-  },
-  "timberland_guide": {
-   "added": "2026-08-19",
-   "pool": 32
+  "blood_crypt": {
+   "added": "2026-08-24",
+   "pool": 131
   },
   "blurred_mongoose": {
    "added": "2026-08-19",
@@ -141,209 +145,313 @@
    "added": "2026-08-19",
    "pool": 44
   },
-  "darksteel_myr": {
+  "boomerang": {
    "added": "2026-08-19",
-   "pool": 44
+   "pool": 20
   },
-  "deadly_recluse": {
+  "brainstorm": {
+   "added": "2026-09-04",
+   "pool": 190
+  },
+  "breeding_pool": {
+   "added": "2026-08-24",
+   "pool": 131
+  },
+  "brute_force": {
    "added": "2026-08-19",
-   "pool": 44
+   "pool": 20
   },
-  "fencing_ace": {
-   "added": "2026-08-19",
-   "pool": 44
+  "buried_alive": {
+   "added": "2026-09-06",
+   "pool": 203
   },
-  "gladecover_scout": {
-   "added": "2026-08-19",
-   "pool": 44
+  "burnfallow": {
+   "added": "2026-10-29",
+   "pool": 292
   },
-  "goblin_1_1": {
-   "added": "2026-08-19",
-   "pool": 44
+  "burnfallow_exuberant": {
+   "added": "2026-10-30",
+   "pool": 302
   },
-  "loxodon_warhammer": {
-   "added": "2026-08-19",
-   "pool": 44
+  "cairnbrand": {
+   "added": "2026-09-19",
+   "pool": 240
   },
-  "mind_stone": {
-   "added": "2026-08-19",
-   "pool": 44
-  },
-  "prey_upon": {
-   "added": "2026-08-19",
-   "pool": 44
-  },
-  "siege_gang_commander": {
-   "added": "2026-08-19",
-   "pool": 44
-  },
-  "child_of_night": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "curiosity": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "doom_blade": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "duress": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "goblin_chieftain": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "hymn_to_tourach": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "mind_rot": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "nekrataal": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "phyrexian_rager": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "pyroclasm": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "swamp": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "swords_to_plowshares": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "terror": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "typhoid_rats": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "vampire_nighthawk": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "wrath_of_god": {
-   "added": "2026-08-19",
-   "pool": 60
-  },
-  "control_magic": {
-   "added": "2026-08-19",
-   "pool": 66
-  },
-  "drana_kalastria_bloodchief": {
-   "added": "2026-08-19",
-   "pool": 66
-  },
-  "gravedigger": {
-   "added": "2026-08-19",
-   "pool": 66
-  },
-  "mystic_snake": {
-   "added": "2026-08-19",
-   "pool": 66
-  },
-  "rancor": {
-   "added": "2026-08-19",
-   "pool": 66
-  },
-  "zombify": {
-   "added": "2026-08-19",
-   "pool": 66
-  },
-  "cunning_tactician": {
-   "added": "2026-08-20",
-   "pool": 67
-  },
-  "black_lotus": {
-   "added": "2026-08-21",
-   "pool": 70
-  },
-  "demonic_tutor": {
-   "added": "2026-08-21",
-   "pool": 70
-  },
-  "rampant_growth": {
-   "added": "2026-08-21",
-   "pool": 70
+  "captain_of_the_watch": {
+   "added": "2026-10-12",
+   "pool": 276
   },
   "cathartic_adept": {
    "added": "2026-08-23",
    "pool": 72
   },
-  "llanowar_elves": {
-   "added": "2026-08-23",
-   "pool": 72
+  "centaur_courser": {
+   "added": "2026-08-19",
+   "pool": 32
   },
-  "aether_channeler": {
-   "added": "2026-08-23",
-   "pool": 109
+  "char": {
+   "added": "2026-09-19",
+   "pool": 240
   },
-  "air_elemental": {
-   "added": "2026-08-23",
-   "pool": 109
+  "child_of_night": {
+   "added": "2026-08-19",
+   "pool": 60
   },
-  "airship_crash": {
-   "added": "2026-08-23",
-   "pool": 109
+  "clio_lady_of_the_depths": {
+   "added": "2026-09-01",
+   "pool": 184
   },
-  "aven_fisher": {
-   "added": "2026-08-23",
-   "pool": 109
+  "cloudkin_seer": {
+   "added": "2026-08-19",
+   "pool": 20
   },
-  "baru_wurmspeaker": {
-   "added": "2026-08-23",
-   "pool": 109
+  "clutch_guard": {
+   "added": "2026-11-11",
+   "pool": 309
   },
-  "bear_2_2": {
-   "added": "2026-08-23",
-   "pool": 109
+  "command_of_the_depths": {
+   "added": "2026-11-12",
+   "pool": 315
   },
-  "bird_1_1_flying": {
-   "added": "2026-08-23",
-   "pool": 109
+  "confession": {
+   "added": "2026-11-03",
+   "pool": 305
   },
-  "bitterblossom": {
-   "added": "2026-08-23",
-   "pool": 109
+  "control_magic": {
+   "added": "2026-08-19",
+   "pool": 66
   },
-  "blood_artist": {
-   "added": "2026-08-23",
-   "pool": 109
+  "corontzasol": {
+   "added": "2026-11-19",
+   "pool": 326
+  },
+  "correspondence": {
+   "added": "2026-11-11",
+   "pool": 309
+  },
+  "counterspell": {
+   "added": "2026-08-19",
+   "pool": 20
+  },
+  "cunning_tactician": {
+   "added": "2026-08-20",
+   "pool": 67
+  },
+  "curiosity": {
+   "added": "2026-08-19",
+   "pool": 60
   },
   "dark_ritual": {
    "added": "2026-08-23",
    "pool": 109
   },
+  "darksteel_myr": {
+   "added": "2026-08-19",
+   "pool": 44
+  },
+  "daunting_terror": {
+   "added": "2026-11-12",
+   "pool": 312
+  },
+  "dawnwing_marshal": {
+   "added": "2026-10-12",
+   "pool": 276
+  },
+  "dazzling_angel": {
+   "added": "2026-10-13",
+   "pool": 278
+  },
+  "deadly_recluse": {
+   "added": "2026-08-19",
+   "pool": 44
+  },
+  "demonic_tutor": {
+   "added": "2026-08-21",
+   "pool": 70
+  },
+  "den_of_vipers": {
+   "added": "2026-10-30",
+   "pool": 302
+  },
+  "diabolic_edict": {
+   "added": "2026-09-07",
+   "pool": 207
+  },
+  "discontinuous_flash": {
+   "added": "2026-11-12",
+   "pool": 312
+  },
   "disenchant": {
    "added": "2026-08-23",
    "pool": 109
+  },
+  "divination": {
+   "added": "2026-08-19",
+   "pool": 20
+  },
+  "domain_pouncer": {
+   "added": "2026-11-11",
+   "pool": 309
+  },
+  "doom_blade": {
+   "added": "2026-08-19",
+   "pool": 60
+  },
+  "dragon_fodder": {
+   "added": "2026-10-01",
+   "pool": 260
+  },
+  "dragon_mage": {
+   "added": "2026-09-30",
+   "pool": 248
+  },
+  "drakonyx": {
+   "added": "2026-11-19",
+   "pool": 322
+  },
+  "drakuseth_maw_of_flames": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "drana_kalastria_bloodchief": {
+   "added": "2026-08-19",
+   "pool": 66
+  },
+  "dread_presence": {
+   "added": "2026-09-30",
+   "pool": 248
+  },
+  "dungrove_elder": {
+   "added": "2026-10-12",
+   "pool": 276
+  },
+  "duress": {
+   "added": "2026-08-19",
+   "pool": 60
+  },
+  "earthrise": {
+   "added": "2026-10-29",
+   "pool": 297
+  },
+  "elemental_1_1_r": {
+   "added": "2026-09-05",
+   "pool": 197
+  },
+  "elemental_5_3_g": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "elvish_visionary": {
+   "added": "2026-08-19",
+   "pool": 32
+  },
+  "emeria_angel": {
+   "added": "2026-09-30",
+   "pool": 248
+  },
+  "entomb": {
+   "added": "2026-09-30",
+   "pool": 254
   },
   "essence_scatter": {
    "added": "2026-08-23",
    "pool": 109
   },
+  "evolving_wilds": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "experimental_overload": {
+   "added": "2026-08-25",
+   "pool": 166
+  },
+  "faerie_1_1_u": {
+   "added": "2026-08-23",
+   "pool": 111
+  },
+  "faerie_formation": {
+   "added": "2026-08-23",
+   "pool": 111
+  },
+  "faerie_macabre": {
+   "added": "2026-10-05",
+   "pool": 262
+  },
   "faerie_rogue_1_1_flying": {
    "added": "2026-08-23",
    "pool": 109
   },
+  "faldor_the_muster": {
+   "added": "2026-09-01",
+   "pool": 184
+  },
+  "fencing_ace": {
+   "added": "2026-08-19",
+   "pool": 44
+  },
+  "flametongue_kavu": {
+   "added": "2026-10-01",
+   "pool": 260
+  },
+  "forest": {
+   "added": "2026-08-19",
+   "pool": 32
+  },
+  "forgotten_cave": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "foxglove_dose": {
+   "added": "2026-10-16",
+   "pool": 284
+  },
+  "frondland_felidar": {
+   "added": "2026-08-25",
+   "pool": 166
+  },
+  "furnace_whelp": {
+   "added": "2026-10-01",
+   "pool": 260
+  },
   "gaean_wurm": {
    "added": "2026-08-23",
    "pool": 109
+  },
+  "gallows_djinn": {
+   "added": "2026-08-27",
+   "pool": 174
+  },
+  "giant_growth": {
+   "added": "2026-08-19",
+   "pool": 32
+  },
+  "gladecover_scout": {
+   "added": "2026-08-19",
+   "pool": 44
+  },
+  "glare_of_subdual": {
+   "added": "2026-08-25",
+   "pool": 166
+  },
+  "glimpse_the_unthinkable": {
+   "added": "2026-09-19",
+   "pool": 240
+  },
+  "glorious_anthem": {
+   "added": "2026-08-19",
+   "pool": 32
+  },
+  "glory_hound": {
+   "added": "2026-11-12",
+   "pool": 315
+  },
+  "goblin_1_1": {
+   "added": "2026-08-19",
+   "pool": 44
+  },
+  "goblin_chieftain": {
+   "added": "2026-08-19",
+   "pool": 60
   },
   "goblin_grenade": {
    "added": "2026-08-23",
@@ -353,13 +461,77 @@
    "added": "2026-08-23",
    "pool": 109
   },
+  "goblin_piker": {
+   "added": "2026-08-19",
+   "pool": 20
+  },
+  "godless_shrine": {
+   "added": "2026-08-24",
+   "pool": 131
+  },
+  "graceful_restoration": {
+   "added": "2026-08-25",
+   "pool": 166
+  },
+  "gravedigger": {
+   "added": "2026-08-19",
+   "pool": 66
+  },
   "gravitational_shift": {
    "added": "2026-08-23",
    "pool": 109
   },
+  "gray_ogre": {
+   "added": "2026-08-19",
+   "pool": 20
+  },
+  "grazing_gladehart": {
+   "added": "2026-09-07",
+   "pool": 205
+  },
+  "grizzly_bears": {
+   "added": "2026-08-19",
+   "pool": 32
+  },
+  "guttersnipe": {
+   "added": "2026-09-30",
+   "pool": 248
+  },
+  "hallowed_fountain": {
+   "added": "2026-08-24",
+   "pool": 131
+  },
+  "harmonize": {
+   "added": "2026-10-12",
+   "pool": 276
+  },
+  "hearthspire": {
+   "added": "2026-10-29",
+   "pool": 292
+  },
+  "hedron_crab": {
+   "added": "2026-09-05",
+   "pool": 197
+  },
+  "highland_ritual": {
+   "added": "2026-10-31",
+   "pool": 303
+  },
+  "hill_giant": {
+   "added": "2026-08-19",
+   "pool": 20
+  },
   "hordeling_outburst": {
    "added": "2026-08-23",
    "pool": 109
+  },
+  "hydroilaur": {
+   "added": "2026-11-19",
+   "pool": 322
+  },
+  "hymn_to_tourach": {
+   "added": "2026-08-19",
+   "pool": 60
   },
   "hypnotic_specter": {
    "added": "2026-08-23",
@@ -373,297 +545,21 @@
    "added": "2026-08-23",
    "pool": 109
   },
-  "little_bear": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "master_decoy": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "mist_raven": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "moss_viper": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "mother_bear": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "restoration_angel": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "scepter_of_dominance": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "skirk_prospector": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "tendrils_of_corruption": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "treetop_snarespinner": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "waste_not": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "waterfront_bouncer": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "werebear": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "wurm_4_4": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "youthful_valkyrie": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "zombie_2_2": {
-   "added": "2026-08-23",
-   "pool": 109
-  },
-  "faerie_1_1_u": {
-   "added": "2026-08-23",
-   "pool": 111
-  },
-  "faerie_formation": {
-   "added": "2026-08-23",
-   "pool": 111
-  },
-  "badlands": {
-   "added": "2026-08-24",
-   "pool": 121
-  },
-  "bayou": {
-   "added": "2026-08-24",
-   "pool": 121
-  },
-  "plateau": {
-   "added": "2026-08-24",
-   "pool": 121
-  },
-  "savannah": {
-   "added": "2026-08-24",
-   "pool": 121
-  },
-  "scrubland": {
-   "added": "2026-08-24",
-   "pool": 121
-  },
-  "taiga": {
-   "added": "2026-08-24",
-   "pool": 121
-  },
-  "tropical_island": {
-   "added": "2026-08-24",
-   "pool": 121
-  },
-  "tundra": {
-   "added": "2026-08-24",
-   "pool": 121
-  },
-  "underground_sea": {
-   "added": "2026-08-24",
-   "pool": 121
-  },
-  "volcanic_island": {
-   "added": "2026-08-24",
-   "pool": 121
-  },
-  "blood_crypt": {
-   "added": "2026-08-24",
-   "pool": 131
-  },
-  "breeding_pool": {
-   "added": "2026-08-24",
-   "pool": 131
-  },
-  "godless_shrine": {
-   "added": "2026-08-24",
-   "pool": 131
-  },
-  "hallowed_fountain": {
-   "added": "2026-08-24",
-   "pool": 131
-  },
-  "overgrown_tomb": {
-   "added": "2026-08-24",
-   "pool": 131
-  },
-  "sacred_foundry": {
-   "added": "2026-08-24",
-   "pool": 131
-  },
-  "steam_vents": {
-   "added": "2026-08-24",
-   "pool": 131
-  },
-  "stomping_ground": {
-   "added": "2026-08-24",
-   "pool": 131
-  },
-  "temple_garden": {
-   "added": "2026-08-24",
-   "pool": 131
-  },
-  "watery_grave": {
-   "added": "2026-08-24",
-   "pool": 131
-  },
-  "arcanis_the_omnipotent": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "barren_moor": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "drakuseth_maw_of_flames": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "elemental_5_3_g": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "evolving_wilds": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "forgotten_cave": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "lonely_sandbar": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "mox_emerald": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "mox_jet": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "mox_pearl": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "mox_ruby": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "mox_sapphire": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "reya_dawnbringer": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "secluded_steppe": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "titania_protector_of_argoth": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "tranquil_thicket": {
-   "added": "2026-08-24",
-   "pool": 147
-  },
-  "abrade": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "aether_mutation": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "aetherbolt": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "experimental_overload": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "frondland_felidar": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "glare_of_subdual": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "graceful_restoration": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "phyrexian_purge": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "saproling_1_1_g": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "sphinx_4_4_wu": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "tainted_phoenix": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "temporal_spring": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "the_sower": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "the_stoker": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "the_unwinder": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "the_usher": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "the_warden": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "vindicate": {
-   "added": "2026-08-25",
-   "pool": 166
-  },
-  "weird_x_x_ur": {
-   "added": "2026-08-25",
-   "pool": 166
+  "intuitive_mastery": {
+   "added": "2026-11-12",
+   "pool": 315
+  },
+  "isaura_the_levy": {
+   "added": "2026-09-19",
+   "pool": 240
+  },
+  "island": {
+   "added": "2026-08-19",
+   "pool": 20
+  },
+  "karmic_mentor": {
+   "added": "2026-10-15",
+   "pool": 283
   },
   "law_intake": {
    "added": "2026-08-25",
@@ -685,189 +581,129 @@
    "added": "2026-08-25",
    "pool": 171
   },
-  "gallows_djinn": {
-   "added": "2026-08-27",
-   "pool": 174
+  "library_of_alexandria": {
+   "added": "2026-09-09",
+   "pool": 211
   },
-  "thundersnake": {
-   "added": "2026-08-27",
-   "pool": 174
+  "lightning_bolt": {
+   "added": "2026-08-19",
+   "pool": 20
   },
-  "traumatizer": {
-   "added": "2026-08-27",
-   "pool": 174
+  "little_bear": {
+   "added": "2026-08-23",
+   "pool": 109
   },
-  "the_emerald_keeper": {
-   "added": "2026-08-30",
-   "pool": 179
+  "llanowar_elves": {
+   "added": "2026-08-23",
+   "pool": 72
   },
-  "the_jet_witch": {
-   "added": "2026-08-30",
-   "pool": 179
+  "lonely_sandbar": {
+   "added": "2026-08-24",
+   "pool": 147
   },
-  "the_pearl_cleric": {
-   "added": "2026-08-30",
-   "pool": 179
+  "longbow_archer": {
+   "added": "2026-10-12",
+   "pool": 276
   },
-  "the_ruby_tyrant": {
-   "added": "2026-08-30",
-   "pool": 179
-  },
-  "the_sapphire_sage": {
-   "added": "2026-08-30",
-   "pool": 179
-  },
-  "clio_lady_of_the_depths": {
-   "added": "2026-09-01",
-   "pool": 184
-  },
-  "faldor_the_muster": {
-   "added": "2026-09-01",
-   "pool": 184
+  "loxodon_warhammer": {
+   "added": "2026-08-19",
+   "pool": 44
   },
   "lumen_the_hearth_fire": {
    "added": "2026-09-01",
    "pool": 184
   },
-  "seraphina_the_initiative": {
-   "added": "2026-09-01",
-   "pool": 184
+  "man_o_war": {
+   "added": "2026-08-19",
+   "pool": 20
   },
-  "yuloke_the_animus": {
-   "added": "2026-09-01",
-   "pool": 184
+  "manaba": {
+   "added": "2026-10-10",
+   "pool": 265
   },
-  "the_manafleur": {
-   "added": "2026-09-02",
-   "pool": 185
-  },
-  "birds_of_paradise": {
-   "added": "2026-09-04",
-   "pool": 190
-  },
-  "brainstorm": {
-   "added": "2026-09-04",
-   "pool": 190
-  },
-  "orcish_lumberjack": {
-   "added": "2026-09-04",
-   "pool": 190
-  },
-  "spirit_link": {
-   "added": "2026-09-04",
-   "pool": 190
-  },
-  "unearth": {
-   "added": "2026-09-04",
-   "pool": 190
-  },
-  "altar_of_dementia": {
-   "added": "2026-09-05",
-   "pool": 197
-  },
-  "arc_mage": {
-   "added": "2026-09-05",
-   "pool": 197
-  },
-  "blanchwood_armor": {
-   "added": "2026-09-05",
-   "pool": 197
-  },
-  "elemental_1_1_r": {
-   "added": "2026-09-05",
-   "pool": 197
-  },
-  "hedron_crab": {
-   "added": "2026-09-05",
-   "pool": 197
-  },
-  "soul_warden": {
-   "added": "2026-09-05",
-   "pool": 197
-  },
-  "young_pyromancer": {
-   "added": "2026-09-05",
-   "pool": 197
-  },
-  "buried_alive": {
-   "added": "2026-09-06",
-   "pool": 203
-  },
-  "reassembling_skeleton": {
-   "added": "2026-09-06",
-   "pool": 203
-  },
-  "thought_scour": {
-   "added": "2026-09-06",
-   "pool": 203
-  },
-  "wall_of_air": {
-   "added": "2026-09-06",
-   "pool": 203
-  },
-  "wall_of_blossoms": {
-   "added": "2026-09-06",
-   "pool": 203
-  },
-  "wood_elves": {
-   "added": "2026-09-06",
-   "pool": 203
-  },
-  "artisan_of_kozilek": {
-   "added": "2026-09-07",
-   "pool": 205
-  },
-  "grazing_gladehart": {
-   "added": "2026-09-07",
-   "pool": 205
-  },
-  "diabolic_edict": {
-   "added": "2026-09-07",
-   "pool": 207
-  },
-  "plumecreed_escort": {
-   "added": "2026-09-07",
-   "pool": 207
-  },
-  "angel_of_the_ruins": {
-   "added": "2026-09-09",
-   "pool": 211
-  },
-  "arcane_collector": {
-   "added": "2026-09-09",
-   "pool": 211
-  },
-  "library_of_alexandria": {
-   "added": "2026-09-09",
-   "pool": 211
-  },
-  "thawing_glaciers": {
-   "added": "2026-09-09",
-   "pool": 211
-  },
-  "absorb": {
-   "added": "2026-09-19",
-   "pool": 240
-  },
-  "cairnbrand": {
-   "added": "2026-09-19",
-   "pool": 240
-  },
-  "char": {
-   "added": "2026-09-19",
-   "pool": 240
-  },
-  "glimpse_the_unthinkable": {
-   "added": "2026-09-19",
-   "pool": 240
-  },
-  "isaura_the_levy": {
-   "added": "2026-09-19",
-   "pool": 240
+  "master_decoy": {
+   "added": "2026-08-23",
+   "pool": 109
   },
   "meliyan_the_torment": {
    "added": "2026-09-19",
    "pool": 240
+  },
+  "mentor_of_the_meek": {
+   "added": "2026-10-15",
+   "pool": 282
+  },
+  "mind_rot": {
+   "added": "2026-08-19",
+   "pool": 60
+  },
+  "mind_stone": {
+   "added": "2026-08-19",
+   "pool": 44
+  },
+  "mist_raven": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "moaning_wall": {
+   "added": "2026-10-12",
+   "pool": 276
+  },
+  "molten_rain": {
+   "added": "2026-11-03",
+   "pool": 304
+  },
+  "moss_viper": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "mother_bear": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "mountain": {
+   "added": "2026-08-19",
+   "pool": 20
+  },
+  "mox_emerald": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "mox_jet": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "mox_pearl": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "mox_ruby": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "mox_sapphire": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "mystic_snake": {
+   "added": "2026-08-19",
+   "pool": 66
+  },
+  "nekrataal": {
+   "added": "2026-08-19",
+   "pool": 60
+  },
+  "nightbower": {
+   "added": "2026-10-29",
+   "pool": 292
+  },
+  "notion_flayer": {
+   "added": "2026-10-30",
+   "pool": 302
+  },
+  "nyxathid": {
+   "added": "2026-11-18",
+   "pool": 320
   },
   "obsidian_observatory": {
    "added": "2026-09-19",
@@ -877,29 +713,193 @@
    "added": "2026-09-19",
    "pool": 240
   },
+  "orcish_lumberjack": {
+   "added": "2026-09-04",
+   "pool": 190
+  },
+  "order_druid": {
+   "added": "2026-11-18",
+   "pool": 320
+  },
+  "overgrown_tomb": {
+   "added": "2026-08-24",
+   "pool": 131
+  },
   "ovna_the_enchantress": {
    "added": "2026-09-19",
    "pool": 240
+  },
+  "pacifism": {
+   "added": "2026-08-19",
+   "pool": 20
+  },
+  "pelakka_wurm": {
+   "added": "2026-08-19",
+   "pool": 32
+  },
+  "penumbra_wurm": {
+   "added": "2026-10-12",
+   "pool": 276
+  },
+  "phyrexian_purge": {
+   "added": "2026-08-25",
+   "pool": 166
+  },
+  "phyrexian_rager": {
+   "added": "2026-08-19",
+   "pool": 60
+  },
+  "plains": {
+   "added": "2026-08-19",
+   "pool": 20
+  },
+  "plateau": {
+   "added": "2026-08-24",
+   "pool": 121
+  },
+  "plumecreed_escort": {
+   "added": "2026-09-07",
+   "pool": 207
   },
   "poison_tip_archer": {
    "added": "2026-09-19",
    "pool": 240
   },
+  "ponder": {
+   "added": "2026-09-30",
+   "pool": 254
+  },
   "powerstone_minefield": {
    "added": "2026-09-19",
    "pool": 240
+  },
+  "prey_upon": {
+   "added": "2026-08-19",
+   "pool": 44
+  },
+  "protocol": {
+   "added": "2026-10-06",
+   "pool": 263
   },
   "putrefy": {
    "added": "2026-09-19",
    "pool": 240
   },
+  "pyroclasm": {
+   "added": "2026-08-19",
+   "pool": 60
+  },
+  "rage_cobra": {
+   "added": "2026-10-01",
+   "pool": 260
+  },
+  "raging_goblin": {
+   "added": "2026-08-19",
+   "pool": 20
+  },
+  "raise_the_alarm": {
+   "added": "2026-08-19",
+   "pool": 32
+  },
+  "rampaging_baloths": {
+   "added": "2026-09-30",
+   "pool": 254
+  },
+  "rampant_growth": {
+   "added": "2026-08-21",
+   "pool": 70
+  },
+  "rancor": {
+   "added": "2026-08-19",
+   "pool": 66
+  },
+  "ranksmere": {
+   "added": "2026-10-29",
+   "pool": 292
+  },
+  "reapers_forerunner": {
+   "added": "2026-10-09",
+   "pool": 264
+  },
+  "reassembling_skeleton": {
+   "added": "2026-09-06",
+   "pool": 203
+  },
+  "restoration_angel": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "retribution_of_the_meek": {
+   "added": "2026-10-14",
+   "pool": 281
+  },
+  "revivalist": {
+   "added": "2026-11-11",
+   "pool": 310
+  },
+  "reya_dawnbringer": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "rumbling_baloth": {
+   "added": "2026-08-19",
+   "pool": 32
+  },
+  "sacred_foundry": {
+   "added": "2026-08-24",
+   "pool": 131
+  },
   "sacred_helix": {
    "added": "2026-09-19",
    "pool": 240
   },
+  "saproling_1_1_g": {
+   "added": "2026-08-25",
+   "pool": 166
+  },
+  "sapwell_dryad": {
+   "added": "2026-10-30",
+   "pool": 302
+  },
   "savage_twister": {
    "added": "2026-09-19",
    "pool": 240
+  },
+  "savannah": {
+   "added": "2026-08-24",
+   "pool": 121
+  },
+  "savannah_lions": {
+   "added": "2026-08-19",
+   "pool": 20
+  },
+  "scepter_of_dominance": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "scrubland": {
+   "added": "2026-08-24",
+   "pool": 121
+  },
+  "seasoned_pyromancer": {
+   "added": "2026-10-01",
+   "pool": 260
+  },
+  "secluded_steppe": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "seedborn_muse": {
+   "added": "2026-09-30",
+   "pool": 248
+  },
+  "seraphina_the_initiative": {
+   "added": "2026-09-01",
+   "pool": 184
+  },
+  "serra_angel": {
+   "added": "2026-08-19",
+   "pool": 20
   },
   "shadow_summoning": {
    "added": "2026-09-19",
@@ -909,33 +909,161 @@
    "added": "2026-09-19",
    "pool": 240
   },
+  "shevelport_quartermaster": {
+   "added": "2026-10-30",
+   "pool": 302
+  },
+  "shock": {
+   "added": "2026-08-19",
+   "pool": 20
+  },
+  "shocking_sharpshooter": {
+   "added": "2026-10-01",
+   "pool": 260
+  },
+  "siege_gang_commander": {
+   "added": "2026-08-19",
+   "pool": 44
+  },
+  "sign_in_blood": {
+   "added": "2026-10-12",
+   "pool": 276
+  },
+  "silt_spirit": {
+   "added": "2026-11-18",
+   "pool": 320
+  },
+  "skirk_prospector": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "snail_0_3_wu": {
+   "added": "2026-11-19",
+   "pool": 324
+  },
   "snake_1_1_g": {
    "added": "2026-09-19",
    "pool": 240
+  },
+  "soldier_1_1": {
+   "added": "2026-08-19",
+   "pool": 32
+  },
+  "soul_warden": {
+   "added": "2026-09-05",
+   "pool": 197
+  },
+  "sphinx_4_4_wu": {
+   "added": "2026-08-25",
+   "pool": 166
   },
   "spirit_1_1_w_flying": {
    "added": "2026-09-19",
    "pool": 240
   },
+  "spirit_link": {
+   "added": "2026-09-04",
+   "pool": 190
+  },
   "static_sphere": {
    "added": "2026-09-19",
    "pool": 240
+  },
+  "steam_vents": {
+   "added": "2026-08-24",
+   "pool": 131
+  },
+  "stomping_ground": {
+   "added": "2026-08-24",
+   "pool": 131
+  },
+  "storm_shaman": {
+   "added": "2026-11-18",
+   "pool": 320
+  },
+  "suntail_hawk": {
+   "added": "2026-08-19",
+   "pool": 20
+  },
+  "swamp": {
+   "added": "2026-08-19",
+   "pool": 60
+  },
+  "swords_to_plowshares": {
+   "added": "2026-08-19",
+   "pool": 60
+  },
+  "taiga": {
+   "added": "2026-08-24",
+   "pool": 121
+  },
+  "tainted_phoenix": {
+   "added": "2026-08-25",
+   "pool": 166
   },
   "tallyflame_court": {
    "added": "2026-09-19",
    "pool": 240
   },
+  "temple_garden": {
+   "added": "2026-08-24",
+   "pool": 131
+  },
+  "temporal_spring": {
+   "added": "2026-08-25",
+   "pool": 166
+  },
+  "tendrils_of_corruption": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "terrain_collapse": {
+   "added": "2026-11-11",
+   "pool": 309
+  },
+  "terror": {
+   "added": "2026-08-19",
+   "pool": 60
+  },
+  "thawing_glaciers": {
+   "added": "2026-09-09",
+   "pool": 211
+  },
   "the_bailiff": {
    "added": "2026-09-19",
    "pool": 240
+  },
+  "the_cinquefont": {
+   "added": "2026-09-21",
+   "pool": 242
   },
   "the_dredger": {
    "added": "2026-09-19",
    "pool": 240
   },
+  "the_emerald_keeper": {
+   "added": "2026-08-30",
+   "pool": 179
+  },
   "the_fordkeeper": {
    "added": "2026-09-19",
    "pool": 240
+  },
+  "the_jet_witch": {
+   "added": "2026-08-30",
+   "pool": 179
+  },
+  "the_manafleur": {
+   "added": "2026-09-02",
+   "pool": 185
+  },
+  "the_meathook_massacre": {
+   "added": "2026-10-21",
+   "pool": 287
+  },
+  "the_pearl_cleric": {
+   "added": "2026-08-30",
+   "pool": 179
   },
   "the_reaper": {
    "added": "2026-09-19",
@@ -945,341 +1073,237 @@
    "added": "2026-09-19",
    "pool": 240
   },
-  "undermine": {
-   "added": "2026-09-19",
-   "pool": 240
+  "the_ruby_tyrant": {
+   "added": "2026-08-30",
+   "pool": 179
   },
-  "voracious_cobra": {
-   "added": "2026-09-19",
-   "pool": 240
+  "the_sapphire_sage": {
+   "added": "2026-08-30",
+   "pool": 179
   },
-  "wrackroot": {
-   "added": "2026-09-19",
-   "pool": 240
+  "the_sower": {
+   "added": "2026-08-25",
+   "pool": 166
   },
-  "zinnia_the_undertow": {
-   "added": "2026-09-19",
-   "pool": 240
+  "the_stoker": {
+   "added": "2026-08-25",
+   "pool": 166
   },
-  "the_cinquefont": {
-   "added": "2026-09-21",
-   "pool": 242
+  "the_unwinder": {
+   "added": "2026-08-25",
+   "pool": 166
   },
-  "time_walk": {
-   "added": "2026-09-21",
-   "pool": 242
+  "the_usher": {
+   "added": "2026-08-25",
+   "pool": 166
   },
-  "dragon_mage": {
-   "added": "2026-09-30",
-   "pool": 248
-  },
-  "dread_presence": {
-   "added": "2026-09-30",
-   "pool": 248
-  },
-  "emeria_angel": {
-   "added": "2026-09-30",
-   "pool": 248
-  },
-  "guttersnipe": {
-   "added": "2026-09-30",
-   "pool": 248
-  },
-  "seedborn_muse": {
-   "added": "2026-09-30",
-   "pool": 248
-  },
-  "tidewall": {
-   "added": "2026-09-30",
-   "pool": 248
-  },
-  "angelic_destiny": {
-   "added": "2026-09-30",
-   "pool": 254
-  },
-  "beast_4_4_g": {
-   "added": "2026-09-30",
-   "pool": 254
-  },
-  "entomb": {
-   "added": "2026-09-30",
-   "pool": 254
-  },
-  "ponder": {
-   "added": "2026-09-30",
-   "pool": 254
-  },
-  "rampaging_baloths": {
-   "added": "2026-09-30",
-   "pool": 254
-  },
-  "vitalist": {
-   "added": "2026-09-30",
-   "pool": 254
-  },
-  "dragon_fodder": {
-   "added": "2026-10-01",
-   "pool": 260
-  },
-  "flametongue_kavu": {
-   "added": "2026-10-01",
-   "pool": 260
-  },
-  "furnace_whelp": {
-   "added": "2026-10-01",
-   "pool": 260
-  },
-  "rage_cobra": {
-   "added": "2026-10-01",
-   "pool": 260
-  },
-  "seasoned_pyromancer": {
-   "added": "2026-10-01",
-   "pool": 260
-  },
-  "shocking_sharpshooter": {
-   "added": "2026-10-01",
-   "pool": 260
-  },
-  "faerie_macabre": {
-   "added": "2026-10-05",
-   "pool": 262
-  },
-  "tormods_crypt": {
-   "added": "2026-10-05",
-   "pool": 262
-  },
-  "protocol": {
-   "added": "2026-10-06",
-   "pool": 263
-  },
-  "reapers_forerunner": {
-   "added": "2026-10-09",
-   "pool": 264
-  },
-  "manaba": {
-   "added": "2026-10-10",
-   "pool": 265
-  },
-  "captain_of_the_watch": {
-   "added": "2026-10-12",
-   "pool": 276
-  },
-  "dawnwing_marshal": {
-   "added": "2026-10-12",
-   "pool": 276
-  },
-  "dungrove_elder": {
-   "added": "2026-10-12",
-   "pool": 276
-  },
-  "harmonize": {
-   "added": "2026-10-12",
-   "pool": 276
-  },
-  "longbow_archer": {
-   "added": "2026-10-12",
-   "pool": 276
-  },
-  "moaning_wall": {
-   "added": "2026-10-12",
-   "pool": 276
-  },
-  "penumbra_wurm": {
-   "added": "2026-10-12",
-   "pool": 276
-  },
-  "sign_in_blood": {
-   "added": "2026-10-12",
-   "pool": 276
-  },
-  "tome_scour": {
-   "added": "2026-10-12",
-   "pool": 276
-  },
-  "wave_of_reckoning": {
-   "added": "2026-10-12",
-   "pool": 276
-  },
-  "wurm_6_6_b_trample": {
-   "added": "2026-10-12",
-   "pool": 276
-  },
-  "dazzling_angel": {
-   "added": "2026-10-13",
-   "pool": 278
-  },
-  "wall_of_reverence": {
-   "added": "2026-10-13",
-   "pool": 278
-  },
-  "basilisk_collar": {
-   "added": "2026-10-13",
-   "pool": 279
-  },
-  "wall_of_razors": {
-   "added": "2026-10-14",
-   "pool": 280
-  },
-  "retribution_of_the_meek": {
-   "added": "2026-10-14",
-   "pool": 281
-  },
-  "mentor_of_the_meek": {
-   "added": "2026-10-15",
-   "pool": 282
-  },
-  "karmic_mentor": {
-   "added": "2026-10-15",
-   "pool": 283
-  },
-  "foxglove_dose": {
-   "added": "2026-10-16",
-   "pool": 284
-  },
-  "tidal_shackle": {
-   "added": "2026-10-16",
-   "pool": 285
-  },
-  "vigil_keeper": {
-   "added": "2026-10-17",
-   "pool": 286
-  },
-  "the_meathook_massacre": {
-   "added": "2026-10-21",
-   "pool": 287
-  },
-  "burnfallow": {
-   "added": "2026-10-29",
-   "pool": 292
-  },
-  "hearthspire": {
-   "added": "2026-10-29",
-   "pool": 292
-  },
-  "nightbower": {
-   "added": "2026-10-29",
-   "pool": 292
-  },
-  "ranksmere": {
-   "added": "2026-10-29",
-   "pool": 292
-  },
-  "volmaw": {
-   "added": "2026-10-29",
-   "pool": 292
+  "the_warden": {
+   "added": "2026-08-25",
+   "pool": 166
   },
   "thought_replacement": {
    "added": "2026-10-29",
    "pool": 294
   },
+  "thought_scour": {
+   "added": "2026-09-06",
+   "pool": 203
+  },
+  "thundersnake": {
+   "added": "2026-08-27",
+   "pool": 174
+  },
+  "tidal_shackle": {
+   "added": "2026-10-16",
+   "pool": 285
+  },
+  "tidewall": {
+   "added": "2026-09-30",
+   "pool": 248
+  },
+  "timberland_guide": {
+   "added": "2026-08-19",
+   "pool": 32
+  },
+  "time_walk": {
+   "added": "2026-09-21",
+   "pool": 242
+  },
+  "titania_protector_of_argoth": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "tome_scour": {
+   "added": "2026-10-12",
+   "pool": 276
+  },
+  "tormods_crypt": {
+   "added": "2026-10-05",
+   "pool": 262
+  },
+  "tranquil_thicket": {
+   "added": "2026-08-24",
+   "pool": 147
+  },
+  "traumatizer": {
+   "added": "2026-08-27",
+   "pool": 174
+  },
+  "treetop_snarespinner": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "tropical_island": {
+   "added": "2026-08-24",
+   "pool": 121
+  },
+  "tundra": {
+   "added": "2026-08-24",
+   "pool": 121
+  },
+  "typhoid_rats": {
+   "added": "2026-08-19",
+   "pool": 60
+  },
+  "underground_sea": {
+   "added": "2026-08-24",
+   "pool": 121
+  },
+  "undermine": {
+   "added": "2026-09-19",
+   "pool": 240
+  },
+  "unearth": {
+   "added": "2026-09-04",
+   "pool": 190
+  },
   "valakut_the_molten_pinnacle": {
    "added": "2026-10-29",
    "pool": 294
   },
-  "balance": {
+  "vampire_nighthawk": {
+   "added": "2026-08-19",
+   "pool": 60
+  },
+  "vigil_keeper": {
+   "added": "2026-10-17",
+   "pool": 286
+  },
+  "vindicate": {
+   "added": "2026-08-25",
+   "pool": 166
+  },
+  "vitalist": {
+   "added": "2026-09-30",
+   "pool": 254
+  },
+  "volcanic_island": {
+   "added": "2026-08-24",
+   "pool": 121
+  },
+  "volmaw": {
    "added": "2026-10-29",
-   "pool": 296
+   "pool": 292
+  },
+  "voracious_cobra": {
+   "added": "2026-09-19",
+   "pool": 240
+  },
+  "wall_of_air": {
+   "added": "2026-09-06",
+   "pool": 203
+  },
+  "wall_of_blossoms": {
+   "added": "2026-09-06",
+   "pool": 203
+  },
+  "wall_of_razors": {
+   "added": "2026-10-14",
+   "pool": 280
+  },
+  "wall_of_reverence": {
+   "added": "2026-10-13",
+   "pool": 278
+  },
+  "waste_not": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "waterfront_bouncer": {
+   "added": "2026-08-23",
+   "pool": 109
+  },
+  "watery_grave": {
+   "added": "2026-08-24",
+   "pool": 131
+  },
+  "wave_of_reckoning": {
+   "added": "2026-10-12",
+   "pool": 276
+  },
+  "weird_x_x_ur": {
+   "added": "2026-08-25",
+   "pool": 166
+  },
+  "werebear": {
+   "added": "2026-08-23",
+   "pool": 109
   },
   "wheel_of_fortune": {
    "added": "2026-10-29",
    "pool": 296
   },
-  "earthrise": {
-   "added": "2026-10-29",
-   "pool": 297
+  "whelkin": {
+   "added": "2026-11-19",
+   "pool": 324
   },
-  "burnfallow_exuberant": {
-   "added": "2026-10-30",
-   "pool": 302
+  "wind_drake": {
+   "added": "2026-08-19",
+   "pool": 20
   },
-  "den_of_vipers": {
-   "added": "2026-10-30",
-   "pool": 302
+  "wood_elves": {
+   "added": "2026-09-06",
+   "pool": 203
   },
-  "notion_flayer": {
-   "added": "2026-10-30",
-   "pool": 302
+  "wrackroot": {
+   "added": "2026-09-19",
+   "pool": 240
   },
-  "sapwell_dryad": {
-   "added": "2026-10-30",
-   "pool": 302
+  "wrath_of_god": {
+   "added": "2026-08-19",
+   "pool": 60
   },
-  "shevelport_quartermaster": {
-   "added": "2026-10-30",
-   "pool": 302
+  "wurm_4_4": {
+   "added": "2026-08-23",
+   "pool": 109
   },
-  "highland_ritual": {
-   "added": "2026-10-31",
-   "pool": 303
+  "wurm_6_6_b_trample": {
+   "added": "2026-10-12",
+   "pool": 276
   },
-  "molten_rain": {
-   "added": "2026-11-03",
-   "pool": 304
+  "young_pyromancer": {
+   "added": "2026-09-05",
+   "pool": 197
   },
-  "confession": {
-   "added": "2026-11-03",
-   "pool": 305
+  "youthful_valkyrie": {
+   "added": "2026-08-23",
+   "pool": 109
   },
-  "clutch_guard": {
-   "added": "2026-11-11",
-   "pool": 309
+  "yuloke_the_animus": {
+   "added": "2026-09-01",
+   "pool": 184
   },
-  "correspondence": {
-   "added": "2026-11-11",
-   "pool": 309
+  "zinnia_the_undertow": {
+   "added": "2026-09-19",
+   "pool": 240
   },
-  "domain_pouncer": {
-   "added": "2026-11-11",
-   "pool": 309
+  "zombie_2_2": {
+   "added": "2026-08-23",
+   "pool": 109
   },
-  "terrain_collapse": {
-   "added": "2026-11-11",
-   "pool": 309
-  },
-  "revivalist": {
-   "added": "2026-11-11",
-   "pool": 310
-  },
-  "daunting_terror": {
-   "added": "2026-11-12",
-   "pool": 312
-  },
-  "discontinuous_flash": {
-   "added": "2026-11-12",
-   "pool": 312
-  },
-  "command_of_the_depths": {
-   "added": "2026-11-12",
-   "pool": 315
-  },
-  "glory_hound": {
-   "added": "2026-11-12",
-   "pool": 315
-  },
-  "intuitive_mastery": {
-   "added": "2026-11-12",
-   "pool": 315
-  },
-  "banishing_cleric": {
-   "added": "2026-11-18",
-   "pool": 320
-  },
-  "nyxathid": {
-   "added": "2026-11-18",
-   "pool": 320
-  },
-  "order_druid": {
-   "added": "2026-11-18",
-   "pool": 320
-  },
-  "silt_spirit": {
-   "added": "2026-11-18",
-   "pool": 320
-  },
-  "storm_shaman": {
-   "added": "2026-11-18",
-   "pool": 320
+  "zombify": {
+   "added": "2026-08-19",
+   "pool": 66
   }
  }
 }

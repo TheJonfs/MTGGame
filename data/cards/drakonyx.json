@@ -1,0 +1,109 @@
+{
+  "id": "drakonyx",
+  "name": "Drakonyx",
+  "source": "custom",
+  "manaCost": "{R}{R}{R/G}{R/G}{G}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Dragon"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "power": 5,
+  "toughness": 5,
+  "keywords": [
+    "haste"
+  ],
+  "text": "Haste\nWhen this creature enters or attacks, choose one —\n• Search your library for a land card, put it onto the battlefield tapped, then shuffle.\n• Creatures you control get +1/+0 and gain trample until end of turn.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [],
+      "optional": false,
+      "modes": [
+        {
+          "label": "Search your library for a land card, put it onto the battlefield tapped, then shuffle",
+          "effects": [
+            {
+              "type": "searchLibrary",
+              "predicate": "landCard",
+              "to": "battlefield",
+              "entersTapped": true
+            }
+          ]
+        },
+        {
+          "label": "Creatures you control get +1/+0 and gain trample until end of turn",
+          "effects": [
+            {
+              "type": "modifyPT",
+              "power": 1,
+              "toughness": 0,
+              "scope": "creaturesYouControl",
+              "duration": "UNTIL_END_OF_TURN"
+            },
+            {
+              "type": "grantKeyword",
+              "keyword": "trample",
+              "scope": "creaturesYouControl",
+              "duration": "UNTIL_END_OF_TURN"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "triggered",
+      "event": "ATTACKS",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [],
+      "optional": false,
+      "modes": [
+        {
+          "label": "Search your library for a land card, put it onto the battlefield tapped, then shuffle",
+          "effects": [
+            {
+              "type": "searchLibrary",
+              "predicate": "landCard",
+              "to": "battlefield",
+              "entersTapped": true
+            }
+          ]
+        },
+        {
+          "label": "Creatures you control get +1/+0 and gain trample until end of turn",
+          "effects": [
+            {
+              "type": "modifyPT",
+              "power": 1,
+              "toughness": 0,
+              "scope": "creaturesYouControl",
+              "duration": "UNTIL_END_OF_TURN"
+            },
+            {
+              "type": "grantKeyword",
+              "keyword": "trample",
+              "scope": "creaturesYouControl",
+              "duration": "UNTIL_END_OF_TURN"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "prizeOnly": true,
+  "art": {
+    "asset": "/custom-art/drakonyx.png",
+    "fallback": "rendered"
+  },
+  "printedAsset": "drakonyx.jpg"
+}

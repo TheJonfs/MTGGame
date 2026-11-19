@@ -7242,6 +7242,21 @@
         }
       }
     },
+    "token-snail": {
+      "canonical": "canonical",
+      "descriptor_hash": "sha256:3749e92a3b53372cd9190ea2fd2c7cafdb183b2f4638ded2412e56642bc13eab",
+      "renders": {
+        "canonical": {
+          "conditioned_on": null,
+          "descriptor_hash": "sha256:3749e92a3b53372cd9190ea2fd2c7cafdb183b2f4638ded2412e56642bc13eab",
+          "model": "gemini-3.1-flash-image",
+          "path": "assets/images/token-snail/canonical.png",
+          "rendered_at": "2026-11-19T21:37:43+00:00",
+          "thumb": "assets/thumbs/token-snail/canonical.png",
+          "variant_prompt": null
+        }
+      }
+    },
     "token-snake-green": {
       "canonical": "canonical",
       "descriptor_hash": "sha256:0daf26872619f8ecb921d433481d942dbdc06f3a85dcacb2042d187b3f3c8073",

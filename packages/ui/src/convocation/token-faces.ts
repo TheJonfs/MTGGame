@@ -14,6 +14,7 @@ export const TOKEN_FACES: readonly { portrait: string; colors: string }[] = [
   { portrait: "token-faerie-rogue", colors: "B" }, // Faerie Rogue Token (faerie_rogue_1_1_flying)
   { portrait: "token-goblin", colors: "R" }, // Goblin Token (goblin_1_1)
   { portrait: "token-saproling", colors: "G" }, // Saproling Token (saproling_1_1_g)
+  { portrait: "token-snail", colors: "WU" }, // Snail Token (snail_0_3_wu; S73a, Whelkin's)
   { portrait: "token-snake-green", colors: "G" }, // Snake Token (snake_1_1_g)
   { portrait: "token-soldier", colors: "W" }, // Soldier Token (soldier_1_1)
   { portrait: "token-sphinx", colors: "WU" }, // Sphinx Token (sphinx_4_4_wu)

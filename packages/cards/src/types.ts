@@ -343,7 +343,8 @@ export type EffectBase =
   /** A10 (S22): `targetSpec` fans out (the Warden's "tap up to two target creatures"). */
   /** S40 (R-097, Static Sphere): the MASS form — `scope` (+ `withCounter`: only objects holding a counter of that kind). */
   | { type: "tapTarget"; target?: number; targetSpec?: number; scope?: Scope; withCounter?: CounterKind }
-  | { type: "untapTarget"; target: number }
+  /** S73a (R-134, Whelkin): the MASS form — `scope` ("untap each creature you control"), as `tapTarget` has it. */
+  | { type: "untapTarget"; target?: number; scope?: Scope }
   /** S23 (ADR-084): sacrifice the ability's own SOURCE — A10 word 3's internal delayed-sac path
    * surfaced as an effect word (the Thundersnake's end-step exit). Self-only v1 (validator-confined);
    * a no-op if the source already left the battlefield. A sacrifice: no destroy, no indestructible

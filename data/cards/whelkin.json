@@ -1,0 +1,91 @@
+{
+  "id": "whelkin",
+  "name": "Whelkin",
+  "source": "custom",
+  "manaCost": "{W}{W}{W/U}{W/U}{U}{U}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Snail"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "power": 5,
+  "toughness": 5,
+  "keywords": [
+    "vigilance"
+  ],
+  "text": "Vigilance\nWhen this creature enters or attacks, choose one —\n• Create two 0/3 white and blue Snail creature tokens.\n• Untap each creature you control.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [],
+      "optional": false,
+      "modes": [
+        {
+          "label": "Create two 0/3 white and blue Snail creature tokens",
+          "effects": [
+            {
+              "type": "createToken",
+              "tokenId": "snail_0_3_wu",
+              "count": 2,
+              "who": "you"
+            }
+          ]
+        },
+        {
+          "label": "Untap each creature you control",
+          "effects": [
+            {
+              "type": "untapTarget",
+              "scope": "creaturesYouControl"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "triggered",
+      "event": "ATTACKS",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [],
+      "optional": false,
+      "modes": [
+        {
+          "label": "Create two 0/3 white and blue Snail creature tokens",
+          "effects": [
+            {
+              "type": "createToken",
+              "tokenId": "snail_0_3_wu",
+              "count": 2,
+              "who": "you"
+            }
+          ]
+        },
+        {
+          "label": "Untap each creature you control",
+          "effects": [
+            {
+              "type": "untapTarget",
+              "scope": "creaturesYouControl"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "prizeOnly": true,
+  "art": {
+    "asset": "/custom-art/whelkin.png",
+    "fallback": "rendered"
+  },
+  "printedAsset": "whelkin.jpg"
+}

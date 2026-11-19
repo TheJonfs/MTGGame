@@ -1,0 +1,112 @@
+{
+  "id": "corontzasol",
+  "name": "Corontzasol",
+  "source": "custom",
+  "manaCost": "{R}{R}{R/W}{R/W}{W}{W}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Angel",
+    "Snake"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "power": 5,
+  "toughness": 5,
+  "keywords": [
+    "flying"
+  ],
+  "text": "Flying\nWhen this creature enters or attacks, choose one —\n• Put two +1/+1 counters on it.\n• This creature deals damage equal to its power to target creature.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [],
+      "optional": false,
+      "modes": [
+        {
+          "label": "Put two +1/+1 counters on it",
+          "effects": [
+            {
+              "type": "addCounters",
+              "kind": "+1/+1",
+              "count": 2,
+              "scope": "self"
+            }
+          ]
+        },
+        {
+          "label": "This creature deals damage equal to its power to target creature",
+          "targets": [
+            {
+              "count": 1,
+              "predicate": "creature",
+              "zone": "battlefield"
+            }
+          ],
+          "effects": [
+            {
+              "type": "damage",
+              "amount": {
+                "ref": "sourcePower"
+              },
+              "target": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "triggered",
+      "event": "ATTACKS",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [],
+      "optional": false,
+      "modes": [
+        {
+          "label": "Put two +1/+1 counters on it",
+          "effects": [
+            {
+              "type": "addCounters",
+              "kind": "+1/+1",
+              "count": 2,
+              "scope": "self"
+            }
+          ]
+        },
+        {
+          "label": "This creature deals damage equal to its power to target creature",
+          "targets": [
+            {
+              "count": 1,
+              "predicate": "creature",
+              "zone": "battlefield"
+            }
+          ],
+          "effects": [
+            {
+              "type": "damage",
+              "amount": {
+                "ref": "sourcePower"
+              },
+              "target": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "prizeOnly": true,
+  "art": {
+    "asset": "/custom-art/corontzasol.png",
+    "fallback": "rendered"
+  },
+  "printedAsset": "corontzasol.jpg"
+}

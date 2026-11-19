@@ -87,6 +87,26 @@ Brief `docs/briefs/session-73a-brief.md`, all seven parts. The record is `docs/d
 
 **How to run (73a)**: `zsh analysis/s73/record2-run.sh` (the tables; a tag is used once, so point it at a new scratch folder first); `zsh analysis/s73/rating/rebuild-177.sh` then `forced-run-177.sh` (the rating rebuild; rename the runs for a new pilot); `python3 analysis/s73/grounds-pool.py`; `python3 analysis/s73/before-after.py`; `npx tsx analysis/s73/minefield/ramp-probe.mts --vs marducontrol --games 120 --out f.json` then `--report f.json`; `pnpm sideboard:show --format <id> --list <key> [--rating file]`.
 
+## After 73a — Chris's five High Ground legends (2026-11-19; uncommitted)
+Five legends for phase three's High Ground bosses, **all taken as printed and in the pool** (326 cards with the Snail token), `prizeOnly`, in no list. Each is six coloured pips (two firm of each colour, two hybrid), a legendary 5/5 with a keyword, and "When this creature enters or attacks, choose one —". `docs/decision-updates/s73.md` has the last sections; the studies are in `analysis/s73/legends/`.
+
+| legend | pair | modes | study |
+|---|---|---|---|
+| Hydroilaur | BG, deathtouch | fights; returns a card from the graveyard | the Time Walk loop starts in 31.8% of games when played for and wins 91.3% of them; on turn 6.2 on average. Chris: safe as written |
+| Drakonyx | RG, haste | a land onto the battlefield; +1/+0 and trample | in his RGb Valakut list: +4.8 ± 5.3 over a Baloths when played for, the goldfish 0.3 turns sooner. Not an engine |
+| Whelkin | WU, vigilance | two 0/3 Snail tokens; untap each creature you control | 1/3 against 0/3 Snails is level (+1.0 ± 1.4, +0.8 ± 1.5). Cast in two games of five, on turn 8.5 |
+| Corontzasol | RW, flying | two +1/+1 counters; damage equal to its power to a creature | none |
+| Abyssalume | UB, menace | other creatures −1/−1; bounce a nonland permanent | none |
+
+- **Two new words**: R-134 (the mass untap) and R-135 (a resolved mass P/T change that spares its source). Both verified against the CR of 2026-11-06.
+- **Art**: printed faces and art crops for all five from Chris's files; the Snail token has house-style art and is a Convocation face.
+- **Tests**: 1,396 passed, 2 skipped (`analysis/s73/test-five.log`). The legends' fuzz is 900 games.
+- **Concern 88 — the pilot plays none of the five well, and books are owed for all**: it reads Hydroilaur's graveyard return as a bounce (`modeChoice` keys on the word "return"); it takes Drakonyx's land every time (playing the trigger is worth +7.5 ± 3.3); it never takes Whelkin's untap, so the mill-twice line beside Silt Spirit is unmeasured; it never takes Corontzasol's damage; and Corontzasol's damage can be aimed at itself and kill it.
+- **Concern 89**: Order Druid puts a green creature into play for four mana, so Drakonyx's and Hydroilaur's six coloured pips do not hold in a list that plays it.
+- **Concern 90**: Order Druid never searches against a goldfish (its book waits for an end step in which nothing happens), so a goldfish understates any list that plays it.
+- **Concern 91**: no table of record includes a legend, and the rating table has no row measured for any of them (they read their tier's prior).
+- Chris has a Whelkin list in mind; the Pinnacle is not the list for Drakonyx (it casts it in 46% of games).
+
 ## Session 73, Part 1 — the vintage audit (2026-11-18; the fresh session, commit 2f172a8)
 The brief's Part 1, then Part 0's code items (the section after this one). Parts 2, 3, 4 and 5 are owed. `docs/decision-updates/s73.md` is the record; `docs/reference/vintage-audit-s73.md` is the table. **No list was edited**: every row is a trial.
 

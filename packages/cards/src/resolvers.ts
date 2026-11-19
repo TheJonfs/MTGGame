@@ -241,7 +241,11 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
     // P/T deltas may reference X, positively or negated (Drana: -0/-X and +X/+0).
     const pt = (v: PTAmount): number =>
       v === "X" ? ctx.amount("X") : v === "-X" ? -ctx.amount("X") : typeof v === "number" ? v : ctx.amount(v);
-    for (const t of targeted(e, ctx)) {
+    // S73a (R-135, Abyssalume's "other creatures get -1/-1 until end of turn"): the RESOLVED mass form honours the scope's
+    // filters as the static form does — `other` spares the source. The set is fixed as the effect resolves (611.2c).
+    const filtered = e.target === undefined && e.scope !== undefined && (e.other || e.subtype || e.cardType);
+    const objs = filtered ? ctx.objectsInScope(e.scope!, { ...(e.subtype ? { subtype: e.subtype } : {}), ...(e.cardType ? { cardType: e.cardType } : {}), ...(e.other ? { other: true } : {}) }).map((id) => ({ kind: "object" as const, id })) : targeted(e, ctx);
+    for (const t of objs) {
       if (t.kind !== "object") continue;
       ctx.addContinuousEffect({
         kind: "modifyPT",
@@ -477,7 +481,9 @@ const implemented: Partial<Record<EffectType, EffectResolver>> = {
 
   untapTarget: (e, ctx) => {
     if (e.type !== "untapTarget") throw new Error("resolver mismatch");
-    // First user: Little Bear (S17). Untap by effect (CR 701.21a): no-op if already untapped or gone.
+    // First user: Little Bear (S17). Untap by effect (CR 701.26b in the rules of 2026-11-06): no-op if already untapped or gone.
+    // S73a (R-134, Whelkin): the mass form — every object in scope. An attacker untapped this way stays in combat (506.4b).
+    if (e.scope !== undefined) { for (const id of ctx.objectsInScope(e.scope, {})) ctx.untap(id); return; }
     for (const t of targeted(e, ctx)) {
       if (t.kind === "object") ctx.untap(t.id);
     }

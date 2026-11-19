@@ -1,0 +1,119 @@
+{
+  "id": "hydroilaur",
+  "name": "Hydroilaur",
+  "source": "custom",
+  "manaCost": "{B}{B}{B/G}{B/G}{G}{G}",
+  "types": [
+    "Creature"
+  ],
+  "subtypes": [
+    "Hydra"
+  ],
+  "supertypes": [
+    "Legendary"
+  ],
+  "power": 5,
+  "toughness": 5,
+  "keywords": [
+    "deathtouch"
+  ],
+  "text": "Deathtouch\nWhen this creature enters or attacks, choose one —\n• It fights target creature you don't control.\n• Return target card from your graveyard to your hand.",
+  "abilities": [
+    {
+      "kind": "triggered",
+      "event": "ENTERS_BATTLEFIELD",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [],
+      "optional": false,
+      "modes": [
+        {
+          "label": "It fights target creature you don't control",
+          "targets": [
+            {
+              "count": 1,
+              "predicate": "creatureYouDontControl",
+              "zone": "battlefield"
+            }
+          ],
+          "effects": [
+            {
+              "type": "fight",
+              "self": true,
+              "target": 0
+            }
+          ]
+        },
+        {
+          "label": "Return target card from your graveyard to your hand",
+          "targets": [
+            {
+              "count": 1,
+              "predicate": "cardInYourGraveyard",
+              "zone": "graveyard"
+            }
+          ],
+          "effects": [
+            {
+              "type": "returnFromGraveyard",
+              "target": 0,
+              "to": "hand"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "triggered",
+      "event": "ATTACKS",
+      "condition": {
+        "source": "self"
+      },
+      "effects": [],
+      "optional": false,
+      "modes": [
+        {
+          "label": "It fights target creature you don't control",
+          "targets": [
+            {
+              "count": 1,
+              "predicate": "creatureYouDontControl",
+              "zone": "battlefield"
+            }
+          ],
+          "effects": [
+            {
+              "type": "fight",
+              "self": true,
+              "target": 0
+            }
+          ]
+        },
+        {
+          "label": "Return target card from your graveyard to your hand",
+          "targets": [
+            {
+              "count": 1,
+              "predicate": "cardInYourGraveyard",
+              "zone": "graveyard"
+            }
+          ],
+          "effects": [
+            {
+              "type": "returnFromGraveyard",
+              "target": 0,
+              "to": "hand"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "prizeOnly": true,
+  "art": {
+    "asset": "/custom-art/hydroilaur.png",
+    "fallback": "rendered"
+  },
+  "printedAsset": "hydroilaur.jpg"
+}

@@ -1009,7 +1009,11 @@ function applyEffect(
       return total;
     }
     case "untapTarget": {
-      const o = objAt(e.target);
+      if (e.scope !== undefined) { // S73a (R-134): the mass form — our creatures stand up again; no credit taken here (a book's to price)
+        for (const b of view.battlefield) if (b.controller === me && b.power !== null && (e.scope === "creaturesYouControl" || e.scope === "allCreatures")) b.tapped = false;
+        return 0;
+      }
+      const o = objAt(e.target!);
       const land = !!o && o.tapped && !!defs.get(o.cardId)?.types.includes("Land"); // post-S70 (book 156): the land is another use this turn
       if (o) o.tapped = false;
       return land ? 0.5 : 0;
