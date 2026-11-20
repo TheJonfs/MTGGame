@@ -87,7 +87,10 @@ Brief `docs/briefs/session-73a-brief.md`, all seven parts. The record is `docs/d
 
 **How to run (73a)**: `zsh analysis/s73/record2-run.sh` (the tables; a tag is used once, so point it at a new scratch folder first); `zsh analysis/s73/rating/rebuild-177.sh` then `forced-run-177.sh` (the rating rebuild; rename the runs for a new pilot); `python3 analysis/s73/grounds-pool.py`; `python3 analysis/s73/before-after.py`; `npx tsx analysis/s73/minefield/ramp-probe.mts --vs marducontrol --games 120 --out f.json` then `--report f.json`; `pnpm sideboard:show --format <id> --list <key> [--rating file]`.
 
-## After 73a — Chris's five High Ground legends (2026-11-19; uncommitted)
+## After 73a — the labels of activated abilities (2026-11-20)
+Chris: a Manaba beside a Silt Spirit offered "Ability 1" and "Ability 2". The "Activate which ability?" menu found an ability's line of text by a cost of mana and {T} only, and only among the card's own printed abilities. `ui/src/play/ability-label.ts` now labels every activated ability: its own line of rules text (the def's text or a real card's oracle text; for a granted ability, the quoted text of the granting card, marked "(from <card>)"), matched by the shape of the whole cost; else a line written from its data. Two mana abilities printed on one line are told apart; Equip and typed cycling read as keywords. All 164 activated abilities of the pool get a label (`ability-label.test.ts`, seven tests, one in a match). The engine exports `abilitiesOf` for it. Not clicked through in the running app: the menu's rendering is unchanged and the controller test covers the labels.
+
+## After 73a — Chris's five High Ground legends (2026-11-19; commit f3a7eab)
 Five legends for phase three's High Ground bosses, **all taken as printed and in the pool** (326 cards with the Snail token), `prizeOnly`, in no list. Each is six coloured pips (two firm of each colour, two hybrid), a legendary 5/5 with a keyword, and "When this creature enters or attacks, choose one —". `docs/decision-updates/s73.md` has the last sections; the studies are in `analysis/s73/legends/`.
 
 | legend | pair | modes | study |

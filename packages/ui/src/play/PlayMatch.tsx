@@ -942,6 +942,7 @@ export function PlayMatch({
   onGameOver: () => void;
 }) {
   const [, force] = useState(0);
+  c.rulesText = (id) => oracle[id]?.oracle_text; // post-S73a: a real card's ability labels read its oracle text
   const [inspected, setInspected] = useState<string | null>(null);
   const [printed, setPrinted] = useState(true); // S10 playtest: default to the printed card
   const [zoneOpen, setZoneOpen] = useState<{ player: PlayerId; zone: "graveyard" | "exile" } | null>(null);

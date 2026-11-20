@@ -13,6 +13,7 @@ export * from "./combat.js";
 export * from "./effect-context.js";
 export * from "./triggers.js";
 export * from "./enumerator.js";
+export * from "./granted.js"; // post-S73a: the play screen labels a granted ability by the card that grants it
 export * from "./view.js";
 export * from "./agent.js";
 export * from "./game.js";

@@ -6,6 +6,7 @@ import { LoopRecorder, REPEAT_ENABLED, REPEAT_MAX_CYCLES, describeAction, finger
 import {
   DEFAULT_RULES,
   Game,
+  abilitiesOf,
   blockerChoices,
   canBlock,
   characteristics,
@@ -35,6 +36,7 @@ import {
   type Difficulty,
 } from "@shandalar/agents";
 import { autoAimAction } from "./auto-aim.js";
+import { abilityLabels, type AbilityLabelSource } from "./ability-label.js";
 import { DECKS, DECK_ARCHETYPES, type DeckKey } from "@shandalar/sim/decks";
 
 /**
@@ -1383,7 +1385,7 @@ export class MatchController {
     // cards (and a click on the opponent's graveyard chose "mill the opponent"). Choose the ability, then its targets.
     const indices = [...new Set(variants.filter((v) => v.type === "activateAbility").map((v) => (v as { abilityIndex: number }).abilityIndex))];
     if (indices.length > 1 && variants.every((v) => v.type === "activateAbility")) {
-      this.phase = { kind: "chooseAbility", sourceObjectId, options: indices.sort((a, b) => a - b).map((abilityIndex) => ({ abilityIndex, label: this.abilityLabel(sourceObjectId, abilityIndex), variants: variants.filter((v) => (v as { abilityIndex: number }).abilityIndex === abilityIndex) })) };
+      this.phase = { kind: "chooseAbility", sourceObjectId, options: this.abilityOptions(sourceObjectId, indices.sort((a, b) => a - b)).map((o) => ({ ...o, variants: variants.filter((v) => (v as { abilityIndex: number }).abilityIndex === o.abilityIndex) })) };
       this.emit();
       return;
     }
@@ -1431,13 +1433,22 @@ export class MatchController {
     if (!o) return;
     this.beginCast(this.phase.sourceObjectId, o.variants);
   }
-  /** An ability's line of the card's rules text (its cost then its effect), found by its cost; the cost alone if none. */
-  private abilityLabel(objectId: string, abilityIndex: number): string {
-    const o = this.game.state.objects[objectId], d = o ? this.pool.get(o.cardId) : undefined, ab = d?.abilities?.[abilityIndex];
-    if (!ab || ab.kind !== "activated") return `Ability ${abilityIndex + 1}`;
-    const cost = [ab.cost.mana, ab.cost.tap ? "{T}" : null].filter(Boolean).join(", ");
-    const line = (d!.text ?? "").split("\n").map((l) => l.trim()).find((l) => cost && l.startsWith(`${cost}:`));
-    return line ?? (cost ? `${cost}: ability ${abilityIndex + 1}` : `Ability ${abilityIndex + 1}`);
+  /** A real card's rules text (its oracle text), which a def does not carry — the play screen sets it. */
+  rulesText: (cardId: string) => string | undefined = () => undefined;
+  /** Post-S73a (Chris): each ability on offer with a label that says what it is — its line of rules text, or one written
+   * from its data; an ability another permanent grants (Silt Spirit's mill) is found by the engine's own list of the
+   * object's abilities and marked with the granting card. See ability-label.ts. */
+  private abilityOptions(objectId: string, indices: number[]): { abilityIndex: number; label: string }[] {
+    const o = this.game.state.objects[objectId], d = o ? this.pool.get(o.cardId) : undefined;
+    const entries = abilitiesOf(this.game.ctx, objectId);
+    const textsOf = (cardId: string | undefined) => (cardId ? [this.pool.get(cardId)?.text, this.rulesText(cardId)] : []);
+    const known = indices.map((abilityIndex) => ({ abilityIndex, entry: entries[abilityIndex] })).filter((x) => x.entry?.ability.kind === "activated");
+    const sources: AbilityLabelSource[] = known.map(({ entry }) => {
+      const by = entry!.grantedBy ? this.game.state.objects[entry!.grantedBy]?.cardId : undefined;
+      return { ability: entry!.ability as AbilityLabelSource["ability"], texts: textsOf(d?.id), ...(by ? { grantedBy: { name: this.pool.get(by)?.name ?? by, texts: textsOf(by) } } : {}) };
+    });
+    const labels = abilityLabels(sources), byIndex = new Map(known.map((k, n) => [k.abilityIndex, labels[n]!]));
+    return indices.map((abilityIndex) => ({ abilityIndex, label: byIndex.get(abilityIndex) ?? `Ability ${abilityIndex + 1}` }));
   }
 
   chooseColor(color: "W" | "U" | "B" | "R" | "G"): void {
