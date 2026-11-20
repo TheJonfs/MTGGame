@@ -3012,3 +3012,130 @@ describe("book of shame 176 (post-S72 — the Silt Spirit, R-133)", () => {
     expect(a.scorePriorityAction(end, mill("wa", 0))).toBeGreaterThan(a.scorePriorityAction(end, mill("ss", 1)));
   });
 });
+
+/**
+ * Books 178–182 (post-S73a — Chris's five High Ground legends: "When this creature enters or attacks, choose one —").
+ * The pilot had no book for any of them: it read Hydroilaur's graveyard return as a bounce (the label holds "return"),
+ * took Drakonyx's land every time, never took Whelkin's untap or Corontzasol's damage. Each pair of modes is now read
+ * by its shape (`pairedModeChoice`). Studies: analysis/s73/legends.
+ */
+describe("books of shame 178–182 (post-S73a — the five High Ground legends' modes)", () => {
+  const modesOf = (cardId: string) => { const ab = pool.get(cardId)!.abilities!.find((a) => a.kind === "triggered" && a.modes)!; return (ab as { modes: { label: string; effects: unknown[] }[] }).modes; };
+  const req = (cardId: string, offered: number[] = [0, 1]) => ({ player: 0 as const, purpose: "chooseMode" as const, source: { cardId, effects: offered.flatMap((m) => modesOf(cardId)[m]!.effects) }, actions: offered.map((m) => ({ type: "chooseMode" as const, mode: m, label: modesOf(cardId)[m]!.label })) }) as never;
+  const mode = (a: HeuristicAgent, v: GameView, cardId: string) => (a.modeChoice(v, req(cardId)) as { mode: number }).mode;
+  const offAgent = (off: string) => new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, off: [off] });
+  const yard = (v: GameView, cards: string[]): GameView => ({ ...v, graveyardObjects: [cards.map((c, i) => ({ objectId: `g${i}`, cardId: c })), []], graveyards: [cards, []] });
+
+  it("book of shame 178 (yardmode, Hydroilaur): it fights a creature worth killing; with Time Walk in the graveyard it returns it — and aims the return at Time Walk", () => {
+    const a = agent(), hy: Obj = { id: "hy", cardId: "hydroilaur", controller: 0 };
+    const angel = mkView({ battlefield: [hy, { id: "sa", cardId: "serra_angel", controller: 1 }] });
+    expect(mode(a, yard(angel, ["llanowar_elves"]), "hydroilaur")).toBe(0); // the fight: the label rule took the "return" here
+    expect(mode(offAgent("yardmode"), yard(angel, ["llanowar_elves"]), "hydroilaur")).toBe(1); // the old pilot: a bounce that is not one
+    expect(mode(a, yard(angel, ["llanowar_elves", "time_walk"]), "hydroilaur")).toBe(1); // the loop before the kill
+    expect(mode(a, yard(mkView({ battlefield: [hy] }), ["llanowar_elves"]), "hydroilaur")).toBe(1); // nothing to fight
+    const v = yard(angel, ["rampaging_baloths", "time_walk", "demonic_tutor"]);
+    const pick = a.chooseAction(v, { player: 0, purpose: "chooseTarget", source: { cardId: "hydroilaur", effects: modesOf("hydroilaur")[1]!.effects }, actions: [0, 1, 2].map((i) => ({ type: "chooseTriggerTargets", targets: [{ kind: "object", id: `g${i}` }] })) } as never);
+    return expect(pick).resolves.toEqual({ type: "chooseTriggerTargets", targets: [{ kind: "object", id: "g1" }] });
+  });
+
+  it("book of shame 179 (landmode, Drakonyx): the land, unless the attackers already declared are lethal a point larger — then the pump", () => {
+    const a = agent(), dk: Obj = { id: "dk", cardId: "drakonyx", controller: 0 }, gb: Obj = { id: "gb", cardId: "grizzly_bears", controller: 0 };
+    expect(mode(a, mkView({ battlefield: [dk] }), "drakonyx")).toBe(0); // entering: no attackers
+    const swing = (life: number) => mkView({ battlefield: [dk, gb], life: [20, life], step: "DECLARE_ATTACKERS", combat: { attackers: ["dk", "gb"], blocks: [] } });
+    expect(mode(a, swing(9), "drakonyx")).toBe(1); // five and two, each a point larger: nine
+    expect(mode(a, swing(10), "drakonyx")).toBe(0);
+    expect(mode(offAgent("landmode"), swing(9), "drakonyx")).toBe(0); // the old pilot: the land every time
+  });
+
+  it("book of shame 179 (landmode): a search for any land takes a Valakut while it holds fewer than two and the list feeds it, then a basic Mountain", () => {
+    const a = agent(), search = (bf: Obj[], lib: string[]) => {
+      const v = { ...mkView({ battlefield: [{ id: "dk", cardId: "drakonyx", controller: 0 }, ...bf] }), librarySizes: [lib.length, 20] } as GameView;
+      const cardsHere = ["valakut_the_molten_pinnacle", "mountain", "taiga", "forest"];
+      const r = { player: 0, purpose: "searchLibrary", source: { cardId: "drakonyx", effects: modesOf("drakonyx")[0]!.effects }, revealed: cardsHere.map((c, i) => ({ objectId: `l${i}`, cardId: c })), actions: [{ type: "declineSearch" }, ...cardsHere.map((_, i) => ({ type: "searchPick", objectId: `l${i}` }))] } as never;
+      const ag = new HeuristicAgent(1, pool, { archetype: "midrange", opponentDecklist: [{ cardId: "swamp", count: 17 }], temperature: 0.35, decklist: [{ cardId: "mountain", count: 6 }, { cardId: "valakut_the_molten_pinnacle", count: 4 }, { cardId: "taiga", count: 4 }, { cardId: "forest", count: 2 }, ...bf.map((o) => ({ cardId: o.cardId, count: 1 }))] } as never);
+      void lib; void a;
+      return (ag.searchChoice(v, r) as { objectId?: string }).objectId;
+    };
+    expect(search([], [])).toBe("l0"); // a Valakut first
+    expect(search([{ id: "v1", cardId: "valakut_the_molten_pinnacle", controller: 0 }, { id: "v2", cardId: "valakut_the_molten_pinnacle", controller: 0 }], [])).toBe("l1"); // two held: a basic Mountain
+  });
+
+  it("book of shame 180 (untapmode, Whelkin): the tokens, unless two or more of our other creatures are tapped — then the untap; and a mill is not held for the end step when Whelkin can attack and untap it", () => {
+    const a = agent(), wk: Obj = { id: "wk", cardId: "whelkin", controller: 0 };
+    const walls = (tapped: boolean): Obj[] => [{ id: "ss", cardId: "silt_spirit", controller: 0, tapped }, { id: "wa", cardId: "wall_of_air", controller: 0, tapped }];
+    expect(mode(a, mkView({ battlefield: [wk, ...walls(false)] }), "whelkin")).toBe(0);
+    expect(mode(a, mkView({ battlefield: [wk, ...walls(true)] }), "whelkin")).toBe(1);
+    expect(mode(offAgent("untapmode"), mkView({ battlefield: [wk, ...walls(true)] }), "whelkin")).toBe(0);
+    const mill = (id: string, idx: number) => ({ type: "activateAbility" as const, objectId: id, abilityIndex: idx, targets: [{ kind: "player" as const, player: 1 as const }] });
+    const main = mkView({ battlefield: [wk, ...walls(false)], step: "MAIN1" });
+    expect(a.tapMillTimingGated(main, mill("wa", 0))).toBe(false); // mill now: Whelkin attacks, untaps, and the Wall mills again
+    expect(a.tapMillTimingGated(main, mill("wk", 2))).toBe(true); // Whelkin itself keeps its attack (its granted mill sits after its two triggers)
+    expect(offAgent("untapmode").tapMillTimingGated(main, mill("wa", 0))).toBe(true);
+    expect(a.tapMillTimingGated(mkView({ battlefield: [{ ...wk, summoningSick: true }, ...walls(false)], step: "MAIN1" }), mill("wa", 0))).toBe(true); // it cannot attack yet
+    expect(a.tapMillTimingGated(mkView({ battlefield: [wk, ...walls(false), { id: "bw", cardId: "rampaging_baloths", controller: 1 }], step: "MAIN1" }), mill("wa", 0))).toBe(true); // a 6/6 would eat it: no attack to count on
+  });
+
+  it("book of shame 183 (rebuy, Whelkin — Chris's Bant Silt run): the untap is bought only by tapped creatures with a tap ability worth using again; and a second Whelkin is cast as the untap once they have used it", () => {
+    const a = agent(), wk: Obj = { id: "wk", cardId: "whelkin", controller: 0 };
+    const mana = (tapped: boolean): Obj[] => [{ id: "bp", cardId: "birds_of_paradise", controller: 0, tapped }, { id: "le", cardId: "llanowar_elves", controller: 0, tapped }];
+    const ss = (tapped: boolean): Obj => ({ id: "ss", cardId: "silt_spirit", controller: 0, tapped });
+    // round four, game two, turn six: Manaba and Birds tapped for Whelkin, no Spirit of ours — the Snails
+    expect(mode(a, mkView({ battlefield: [wk, ...mana(true)] }), "whelkin")).toBe(0);
+    expect(mode(offAgent("rebuy"), mkView({ battlefield: [wk, ...mana(true)] }), "whelkin")).toBe(1); // book 180 as it was
+    // beside the Spirit the same two have milled: the untap
+    expect(mode(a, mkView({ battlefield: [wk, ss(false), ...mana(true)] }), "whelkin")).toBe(1);
+    // the second copy: six untapped lands, Whelkin out, the team tapped from milling
+    const lands: Obj[] = Array.from({ length: 6 }, (_, i) => ({ id: `t${i}`, cardId: "tundra", controller: 0 }));
+    const hand = [{ objectId: "h_w", cardId: "whelkin" }], cast = { type: "castSpell" as const, objectId: "h_w", targets: [] };
+    const milled = mkView({ hand, battlefield: [...lands, wk, ss(true), ...mana(true)], step: "MAIN1" });
+    expect(a.untapSpellInHand(milled)).toBe("h_w");
+    expect(a.legendDuplicateGated(milled, cast)).toBe(false);
+    expect(a.untapSpellBonus(milled, cast)).toBeGreaterThan(0);
+    expect(offAgent("rebuy").legendDuplicateGated(milled, cast)).toBe(true);
+    // before they have milled: the copy waits, and the mills are not held for the end step
+    const fresh = mkView({ hand, battlefield: [...lands, { ...wk, summoningSick: true }, ss(false), ...mana(false)], step: "MAIN1" });
+    expect(a.legendDuplicateGated(fresh, cast)).toBe(true);
+    const mill = { type: "activateAbility" as const, objectId: "le", abilityIndex: 1, targets: [{ kind: "player" as const, player: 1 as const }] };
+    expect(a.tapMillTimingGated(fresh, mill)).toBe(false);
+    expect(offAgent("rebuy").tapMillTimingGated(fresh, mill)).toBe(true);
+    // five lands: the copy cannot be paid for, so nothing changes
+    expect(a.untapSpellInHand(mkView({ hand, battlefield: [...lands.slice(1), wk, ss(true), ...mana(true)], step: "MAIN1" }))).toBeNull();
+    // no Whelkin of ours out: the first copy is an ordinary cast
+    expect(a.untapSpellInHand(mkView({ hand, battlefield: [...lands, ss(true), ...mana(true)], step: "MAIN1" }))).toBeNull();
+  });
+
+  it("book of shame 184 (endtap — Chris: an end-step tap that spends no card and no permanent is rarely wrong): at the opponent's end step a {T}-and-mana ability of ours is not charged for its tap, and one that beats passing is sure; a mana ability is not", () => {
+    const a = agent(), off = offAgent("endtap");
+    const bf: Obj[] = [{ id: "ss", cardId: "silt_spirit", controller: 0 }, { id: "tw", cardId: "tidewall", controller: 0 }, { id: "bp", cardId: "birds_of_paradise", controller: 0 }, { id: "ga", cardId: "grizzly_bears", controller: 1 }];
+    const end = mkView({ battlefield: bf, step: "END", activePlayer: 1, librarySizes: [40, 30] });
+    const mill = (id: string, idx: number) => ({ type: "activateAbility" as const, objectId: id, abilityIndex: idx, targets: [{ kind: "player" as const, player: 1 as const }] });
+    const pass = { type: "pass" as const };
+    // the Tidewall's granted mill (index 1, after its printed trigger): two points and more clear of a pass; before the book, a fraction
+    expect(a.scorePriorityAction(end, mill("tw", 1)) - a.scorePriorityAction(end, pass)).toBeGreaterThan(2);
+    expect(off.scorePriorityAction(end, mill("tw", 1)) - off.scorePriorityAction(end, pass)).toBeLessThan(2);
+    // the smallest mill too: the Birds' one card (index 5, after its five colours)
+    expect(a.scorePriorityAction(end, mill("bp", 5)) - a.scorePriorityAction(end, pass)).toBeGreaterThan(2);
+    // a mill at ourselves is still never the play
+    expect(a.scorePriorityAction(end, { ...mill("tw", 1), targets: [{ kind: "player", player: 0 }] })).toBeLessThan(a.scorePriorityAction(end, pass));
+    // not on our own turn, not a mana ability
+    const own = mkView({ battlefield: bf, step: "MAIN1", activePlayer: 0, librarySizes: [40, 30] });
+    expect(a.endStepTapBonus(own, mill("tw", 1), own, 0)).toBe(0);
+    expect(a.endStepTapBonus(end, { type: "activateAbility", objectId: "bp", abilityIndex: 0 } as never, end, 0)).toBe(0);
+  });
+
+  it("book of shame 181 (powermode, Corontzasol): the damage when it kills a creature worth a card, else the counters; never the damage with only our side to hit", () => {
+    const a = agent(), co: Obj = { id: "co", cardId: "corontzasol", controller: 0 };
+    expect(mode(a, mkView({ battlefield: [co, { id: "sa", cardId: "serra_angel", controller: 1 }] }), "corontzasol")).toBe(1);
+    expect(mode(a, mkView({ battlefield: [co, { id: "bw", cardId: "rampaging_baloths", controller: 1 }] }), "corontzasol")).toBe(0); // a 6/6 survives five: grow
+    expect(mode(a, mkView({ battlefield: [co] }), "corontzasol")).toBe(0); // its only target would be itself
+    expect(mode(offAgent("powermode"), mkView({ battlefield: [co, { id: "sa", cardId: "serra_angel", controller: 1 }] }), "corontzasol")).toBe(0); // the old pilot: counters every time
+  });
+
+  it("book of shame 182 (sweepmode, Abyssalume): the -1/-1 into a board of small creatures; the bounce at one large one; and not the sweep when it kills more of ours", () => {
+    const a = agent(), ab: Obj = { id: "ab", cardId: "abyssalume", controller: 0 };
+    const elves = (controller: 0 | 1, n: number): Obj[] => Array.from({ length: n }, (_, i) => ({ id: `e${controller}${i}`, cardId: "llanowar_elves", controller }));
+    expect(mode(a, mkView({ battlefield: [ab, ...elves(1, 3)] }), "abyssalume")).toBe(0);
+    expect(mode(a, mkView({ battlefield: [ab, { id: "sa", cardId: "serra_angel", controller: 1 }] }), "abyssalume")).toBe(1);
+    expect(mode(a, mkView({ battlefield: [ab, ...elves(0, 3), ...elves(1, 1), { id: "sa", cardId: "serra_angel", controller: 1 }] }), "abyssalume")).toBe(1);
+  });
+});

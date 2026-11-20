@@ -392,7 +392,7 @@ export class HeuristicAgent implements Agent {
     }
     if (this.misfireGated(view, action, pred.view)) return -Infinity; // post-S65 (book 137): a spell that leaves its target of theirs alive and no worse is not cast
     const hosted = this.equipOnHost(view, action, pred.view);
-    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - (hosted ? 0.25 : 0) - misaim + this.wheelSpendBonus(view, action) + this.harvestSwingBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.hallowAnswerBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.lockStealBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.holdKeptBonus(view, action) + this.landHitBonus(view, action);
+    return evaluate(pred.view, this.profile, this.defs) + pred.adjustment - (hosted ? 0.25 : 0) - misaim + this.wheelSpendBonus(view, action) + this.harvestSwingBonus(view, action) + this.lifegainPayoffBonus(view, action) + this.hallowAnswerBonus(view, action) + this.entersKillBonus(view, action) + this.entersModesBonus(view, action) + this.lockStealBonus(view, action) + this.planBonus(view, action) + this.againstPlanBonus(view, action) + this.loopCastBonus(view, action) + this.untapSpellBonus(view, action) + this.holdKeptBonus(view, action) + this.landHitBonus(view, action) + this.endStepTapBonus(view, action, pred.view, pred.adjustment);
   }
 
   /** S46 (Vitalist — the brief's "a term, not a rule"): while we control a LIFE_GAINED payoff (the shape: a trigger on
@@ -1052,6 +1052,8 @@ export class HeuristicAgent implements Agent {
   modeChoice(view: GameView, request: ActionRequest): Action {
     const modes = request.actions.filter((a) => a.type === "chooseMode") as Extract<Action, { type: "chooseMode" }>[];
     if (modes.length <= 1) return modes[0] ?? request.actions[0]!;
+    const legend = this.pairedModeChoice(view, request, modes);
+    if (legend) return legend;
     const me = view.you;
     const labelOf = (m: (typeof modes)[number]) => m.label.toLowerCase();
     const bounce = modes.find((m) => labelOf(m).includes("return"));
@@ -1081,6 +1083,76 @@ export class HeuristicAgent implements Agent {
     }
     if (draw) return draw;
     return token ?? modes[0]!;
+  }
+
+  /**
+   * Books 178–182 (post-S73a, Chris's five High Ground legends — "When this creature enters or attacks, choose one —"):
+   * a modal trigger read by the SHAPE of its two modes, not by its card or the words of its label (the label rule read
+   * Hydroilaur's "Return target card from your graveyard" as a bounce). Null when the pair is none of these.
+   *  178 `yardmode`  — a self-fight beside a return from our graveyard to hand: the return when an extra-turn spell
+   *       lies there (each attack buys the next turn); else the fight when it is worth having (book 114's read); else
+   *       the return.
+   *  179 `landmode`  — a land onto the battlefield beside a team pump until end of turn: the pump when the attackers
+   *       already declared, each a point larger, are lethal; else the land.
+   *  180 `untapmode` — tokens beside "untap each creature you control": the untap when two or more of our other
+   *       creatures are tapped (they have milled, made mana or attacked, and will do it or block again); else the tokens.
+   *       Book 183 (Chris's Bant Silt run, 23 choices read): the tapped creatures counted are those holding a {T}-only
+   *       ability that is not mana — the Spirit's mill — so mana creatures and attackers alone never buy the untap.
+   *  181 `powermode` — counters on itself beside damage equal to its power to a creature: the damage when it kills an
+   *       opposing creature worth a card; else the counters. Never the damage with only our own side to aim at.
+   *  182 `sweepmode` — a mass -N/-N that spares the source beside a bounce: the sweep when what dies across the table,
+   *       less what dies on our side, is worth a card and more than the best thing the bounce would lift; else the bounce
+   *       when the opponent has a nonland permanent; else the sweep if it costs us nothing.
+   * Exposed for the books.
+   */
+  pairedModeChoice(view: GameView, request: ActionRequest, modes: Extract<Action, { type: "chooseMode" }>[]): Action | null {
+    const d = request.source ? this.def(request.source.cardId) : undefined, off = this.profile.off ?? [];
+    const ab = (d?.abilities ?? []).find((a) => a.kind === "triggered" && (a.modes ?? []).length > 0);
+    if (!d || !ab || ab.kind !== "triggered") return null;
+    const fx = (m: (typeof modes)[number]) => ab.modes?.[m.mode]?.effects ?? [];
+    const withFx = (test: (e: Effect) => boolean) => modes.find((m) => fx(m).some(test));
+    const me = view.you, opp = (1 - me) as 0 | 1;
+    const src = view.battlefield.find((o) => o.controller === me && o.cardId === d.id);
+    const val = (o: GameView["battlefield"][number]) => objectValue(this.defs, o, this.C);
+    const isLand = (o: GameView["battlefield"][number]) => this.def(o.cardId)?.types.includes("Land") ?? false;
+
+    const yard = withFx((e) => e.type === "returnFromGraveyard" && e.to === "hand" && e.target !== undefined), fight = withFx((e) => e.type === "fight" && !!e.self);
+    if (yard && fight && !off.includes("yardmode")) {
+      const extra = view.graveyardObjects[me].some((g) => (this.def(g.cardId)?.spellEffect ?? []).some((e) => e.type === "extraTurn"));
+      if (extra) return yard;
+      return this.entersModesRead(view, d.id).fight > 0 ? fight : yard;
+    }
+    const land = withFx((e) => e.type === "searchLibrary" && e.to === "battlefield" && (e.predicate === "landCard" || e.predicate === "basicLand"));
+    const pump = withFx((e) => e.type === "modifyPT" && e.scope === "creaturesYouControl" && e.duration === "UNTIL_END_OF_TURN" && typeof e.power === "number" && e.power > 0);
+    if (land && pump && !off.includes("landmode")) {
+      const mine = view.combat.attackers.map((id) => view.battlefield.find((o) => o.id === id)).filter((o): o is NonNullable<typeof o> => !!o && o.controller === me);
+      const each = fx(pump).reduce((n, e) => n + (e.type === "modifyPT" && typeof e.power === "number" ? e.power : 0), 0);
+      const swing = mine.reduce((n, o) => n + Math.max(0, o.power ?? 0) + each, 0);
+      return mine.length > 0 && swing >= view.life[opp] ? pump : land;
+    }
+    const tokens = withFx((e) => e.type === "createToken"), untap = withFx((e) => e.type === "untapTarget" && e.scope === "creaturesYouControl");
+    if (tokens && untap && !off.includes("untapmode")) {
+      // Book 183: only a tapped creature with a tap ability worth using again counts (a mill; not mana, not an attacker)
+      const tapped = off.includes("rebuy") ? view.battlefield.filter((o) => o.controller === me && o.power !== null && o.tapped && o.id !== src?.id).length : this.tapRebuys(view, src?.id, true);
+      return tapped >= 2 ? untap : tokens;
+    }
+    const counters = withFx((e) => e.type === "addCounters" && e.scope === "self"), dmg = withFx((e) => e.type === "damage" && typeof e.amount === "object" && (e.amount as { ref?: string }).ref === "sourcePower" && e.target !== undefined);
+    if (counters && dmg && !off.includes("powermode")) {
+      const p = Math.max(0, src?.power ?? d.power ?? 0);
+      const kill = Math.max(0, ...view.battlefield.filter((o) => o.controller === opp && o.toughness !== null && !o.keywords.includes("indestructible") && o.toughness - o.damage <= p).map(val));
+      return kill >= 1 ? dmg : counters;
+    }
+    const sweep = withFx((e) => e.type === "modifyPT" && e.scope === "allCreatures" && typeof e.toughness === "number" && e.toughness < 0), bounce = withFx((e) => e.type === "bounce" && e.target !== undefined);
+    if (sweep && bounce && !off.includes("sweepmode")) {
+      const n = -fx(sweep).reduce((m, e) => m + (e.type === "modifyPT" && typeof e.toughness === "number" ? e.toughness : 0), 0);
+      const dies = (o: GameView["battlefield"][number]) => o.toughness !== null && o.id !== src?.id && o.toughness - o.damage <= n;
+      const net = view.battlefield.reduce((s, o) => s + (dies(o) ? (o.controller === opp ? val(o) : -val(o)) : 0), 0);
+      const lift = Math.max(0, ...view.battlefield.filter((o) => o.controller === opp && !isLand(o)).map((o) => val(o) * ((o as { token?: boolean }).token ? 1 : 0.6)));
+      if (net >= 1 && net >= lift) return sweep;
+      if (lift > 0) return bounce;
+      return net >= 0 ? sweep : bounce;
+    }
+    return null;
   }
 
   /** Book 114 (Reaper's Forerunner): a creature whose ENTERS trigger is modal with a self-fight mode and/or a
@@ -1276,6 +1348,81 @@ export class HeuristicAgent implements Agent {
     });
   }
 
+  /** Book 180 (Whelkin): in our first main phase we control an untapped creature, free to attack, whose attack trigger can
+   * untap each creature we control, and nothing across the table would kill it in a block — so a tap ability used now by
+   * ANOTHER creature is used again after the attack. Off: "untapmode". Exposed. */
+  untapSwingReady(view: GameView, tapperId: string): boolean {
+    if (this.profile.off?.includes("untapmode") || view.activePlayer !== view.you || view.step !== "MAIN1" || view.stack.length !== 0) return false;
+    const opp = (1 - view.you) as 0 | 1;
+    return view.battlefield.some((o) => {
+      if (o.controller !== view.you || o.id === tapperId || o.tapped || o.summoningSick || o.cantAttack || o.power === null || o.toughness === null) return false;
+      const d = this.def(o.cardId);
+      if (!(d?.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "ATTACKS" && (a.modes ?? []).some((m) => m.effects.some((e) => e.type === "untapTarget" && e.scope === "creaturesYouControl")))) return false;
+      const left = o.toughness - o.damage;
+      return !view.battlefield.some((b) => b.controller === opp && !b.tapped && !b.cantBlock && b.power !== null && (b.power >= left || (b.power > 0 && b.keywords.includes("deathtouch"))));
+    });
+  }
+
+  /** Book 183: does this creature of ours hold a {T}-only activated ability that is not a mana ability (printed or
+   * granted — the Silt Spirit's mill)? */
+  private holdsRebuy(view: GameView, objectId: string): boolean {
+    for (let i = 0; i < 16; i++) {
+      const ab = viewAbilityAt(view, this.defs, objectId, i);
+      if (!ab) return false;
+      if (ab.kind === "activated" && ab.cost.tap && !ab.cost.mana && !ab.cost.sacrifice && ab.effects.length > 0 && !ab.effects.some((e) => e.type === "addMana")) return true;
+    }
+    return false;
+  }
+  /** Book 183: our creatures other than `exceptId`, tapped (or untapped), that hold such an ability. Exposed. */
+  tapRebuys(view: GameView, exceptId: string | undefined, tapped: boolean): number {
+    return view.battlefield.filter((o) => o.controller === view.you && o.power !== null && o.tapped === tapped && o.id !== exceptId && this.holdsRebuy(view, o.id)).length;
+  }
+  /** Book 183 (Chris's Bant Silt run, round four game two: everything tapped for the mill, the second Whelkin cast, one
+   * kept, each creature untapped and tapped again — the last eleven cards): the card in our hand that is a second copy
+   * of a legend we control whose ENTER trigger can untap each creature we control, and that our untapped lands and
+   * artifacts could pay for (a count against its mana value; colours unread) — a six-mana "untap everything". Our main
+   * phase, an empty stack. Off: "rebuy". Exposed. */
+  untapSpellInHand(view: GameView): string | null {
+    if (this.profile.off?.includes("rebuy") || this.profile.off?.includes("untapmode") || view.activePlayer !== view.you || (view.step !== "MAIN1" && view.step !== "MAIN2") || view.stack.length !== 0) return null;
+    const sources = view.battlefield.filter((o) => o.controller === view.you && !o.tapped && o.power === null && (this.def(o.cardId)?.abilities ?? []).some((a) => a.kind === "activated" && a.effects.some((e) => e.type === "addMana"))).length;
+    for (const c of view.hand) {
+      const d = this.def(c.cardId);
+      if (!d || !(d.supertypes ?? []).includes("Legendary") || !view.battlefield.some((o) => o.controller === view.you && o.cardId === d.id)) continue;
+      if (!(d.abilities ?? []).some((a) => a.kind === "triggered" && a.event === "ENTERS_BATTLEFIELD" && (a.modes ?? []).some((m) => m.effects.some((e) => e.type === "untapTarget" && e.scope === "creaturesYouControl")))) continue;
+      if (sources >= manaValue(parseManaCost(d.manaCost))) return c.objectId;
+    }
+    return null;
+  }
+
+  /** Book 183: that cast, once two or more creatures are tapped for it, is worth their abilities over again — three
+   * quarters of a card each (an interim weight; the prediction sees only a second body the legend rule removes). */
+  untapSpellBonus(view: GameView, action: Action): number {
+    if (action.type !== "castSpell" || this.untapSpellInHand(view) !== action.objectId) return 0;
+    const n = this.tapRebuys(view, undefined, true);
+    return n >= 2 ? 0.75 * n : 0;
+  }
+
+  /** Book 184 (`endtap` — Chris, reading the pilot's Bant Silt losses: 47 of 225 free end-step mills left unused, Wrackroot
+   * used 7 times in 44 games): at the opponent's end step, an ability of a permanent we control whose cost is only {T}
+   * and mana spends nothing — what it taps untaps in our untap step, before it could block or pay again. The scorer
+   * charged the tap as lost defence, so a mill read a tenth of a point over a pass and the softmax passed one window in
+   * five. Here the charge is given back (the position read with our permanents untapped, for the action and for the
+   * pass alike), and an activation that then reads better than passing is taken as sure (two points: no softmax climbs
+   * it). Not a mana ability (mana empties with the step), not a cost that discards, sacrifices, returns or exiles.
+   * Off: "endtap". Exposed. */
+  endStepTapBonus(view: GameView, action: Action, predView: GameView, adjustment: number): number {
+    if (action.type !== "activateAbility" || this.profile.off?.includes("endtap") || view.activePlayer === view.you || view.step !== "END") return 0;
+    const src = view.battlefield.find((o) => o.id === action.objectId);
+    const ab = viewAbilityAt(view, this.defs, action.objectId, action.abilityIndex);
+    if (!src || src.controller !== view.you || !ab || ab.kind !== "activated" || ab.effects.some((e) => e.type === "addMana")) return 0;
+    if (Object.keys(ab.cost).some((k) => k !== "tap" && k !== "mana" && (ab.cost as Record<string, unknown>)[k] !== undefined)) return 0;
+    const untap = (v: GameView): GameView => ({ ...v, battlefield: v.battlefield.map((o) => (o.controller === view.you && o.tapped ? { ...o, tapped: false } : o)) });
+    const ev = (v: GameView) => evaluate(v, this.profile, this.defs);
+    const refund = (ev(untap(predView)) - ev(predView)) - (ev(untap(view)) - ev(view));
+    const gain = ev(untap(predView)) + adjustment - ev(untap(view));
+    return Math.max(0, refund) + (gain > 0 ? 2 : 0);
+  }
+
   /** Book 176 (R-133, the Silt Spirit): a creature's {T}-only mill (no mana in the cost) at a player is spent at the
    * opponent's end step — the creature untaps in our untap step, so it costs no block and no attack — or at once when the
    * creature may not live to use it (an opposing threat on the stack), or when the mill empties the target's library.
@@ -1287,6 +1434,8 @@ export class HeuristicAgent implements Agent {
     const src = view.battlefield.find((o) => o.id === action.objectId);
     if (!src || src.power === null) return false; // a land's or an artifact's tap: the S40/S70 rules
     if (view.activePlayer !== view.you && view.step === "END" && view.stack.length === 0) return false;
+    if (this.untapSwingReady(view, action.objectId)) return false; // book 180: mill now, attack, untap, mill again
+    if (this.untapSpellInHand(view)) return false; // book 183: mill now, cast the second copy, untap, mill again
     if (this.sourceThreatened(view, action.objectId)) return false;
     const t = ((action as { targets?: ResolvedTarget[] }).targets ?? [])[0];
     const who = t?.kind === "player" ? t.player : 1 - view.you;
@@ -1307,6 +1456,28 @@ export class HeuristicAgent implements Agent {
       const ok = picks.filter((a) => !legendHeld(cardOf.get(a.objectId) ?? ""));
       const w = (a: (typeof picks)[number]) => reanimationWorth(this.def(cardOf.get(a.objectId) ?? ""));
       if (ok.length) return [...ok].sort((a, b) => w(b) - w(a) || (cardOf.get(a.objectId) ?? "").localeCompare(cardOf.get(b.objectId) ?? ""))[0]!;
+    }
+    // Book 179 (Drakonyx; Earthrise reads it too): a search for ANY land onto the battlefield, in a list with an ENGINE
+    // land — one that triggers when a land of a subtype enters (Valakut and its Mountains): the engine land while we
+    // control fewer than two and the list can feed it (five of the subtype between the battlefield and the library);
+    // then a land of that subtype, a basic first. Off: "landmode".
+    if (!this.profile.off?.includes("landmode") && (request.source?.effects ?? []).some((e) => e.type === "searchLibrary" && e.to === "battlefield" && e.predicate === "landCard")) {
+      const feeds = (c: string): string | undefined => { for (const a of this.def(c)?.abilities ?? []) if (a.kind === "triggered" && a.event === "LAND_ENTERS_UNDER_YOUR_CONTROL") { const s = (a.condition as { subtype?: string[] } | undefined)?.subtype?.[0]; if (s) return s; } return undefined; };
+      const mineLands = view.battlefield.filter((o) => o.controller === view.you && this.def(o.cardId)?.types.includes("Land"));
+      const sub = picks.map((a) => feeds(cardOf.get(a.objectId) ?? "")).find(Boolean) ?? mineLands.map((o) => feeds(o.cardId)).find(Boolean);
+      if (sub) {
+        const has = (c: string) => (this.def(c)?.subtypes ?? []).includes(sub);
+        const engines = mineLands.filter((o) => feeds(o.cardId) === sub).length;
+        const lib = this.remainingLibrary(view); // unknown list: a land of the subtype on offer is taken as enough
+        const fed = lib ? mineLands.filter((o) => has(o.cardId)).length + lib.filter(has).length : picks.some((x) => has(cardOf.get(x.objectId) ?? "")) ? 5 : 0;
+        const engine = picks.find((a) => feeds(cardOf.get(a.objectId) ?? "") === sub);
+        if (engine && engines < 2 && fed >= 5) return engine;
+        if (engines > 0) {
+          const typed = picks.filter((a) => has(cardOf.get(a.objectId) ?? ""));
+          const basic = typed.find((a) => (this.def(cardOf.get(a.objectId) ?? "")?.supertypes ?? []).includes("Basic"));
+          if (basic ?? typed[0]) return (basic ?? typed[0])!;
+        }
+      }
     }
     const me = view.you;
     const myLands = view.battlefield.filter((o) => o.controller === me && this.def(o.cardId)?.types.includes("Land"));
@@ -3030,6 +3201,9 @@ export class HeuristicAgent implements Agent {
     // S61 (book 124, the Hearth game): a cast whose enter trigger would have NOTHING to return but its own copy starts a
     // loop nobody can stop — when that loop is a bad one, the card stays in hand
     if (loop < 0 && !this.profile.off?.includes("loopnet") && this.loopForced(view, d)) return true;
+    // Book 183: the second copy of a legend whose entering untaps each creature we control is that untap, once two or
+    // more of our creatures have used a tap ability worth using again
+    if (this.untapSpellInHand(view) === action.objectId && this.tapRebuys(view, undefined, true) >= 2) return false;
     return view.battlefield.some((o) => o.controller === view.you && o.cardId === d.id);
   }
   /** Would `d`'s enter trigger have only copies of `d` to return? (The yards its trigger reaches hold no other creature card.) */
@@ -4180,7 +4354,9 @@ export class HeuristicAgent implements Agent {
     // S50 (book 89, Flametongue Kavu): a harmful NUMERIC damage aims at the best creature it KILLS before the most
     // valuable one it only wounds; and when every legal target is our own (an empty table across), at the one that
     // survives it, else the one we lose least by.
-    const dmgAmount = (request.source?.effects ?? []).reduce((n, e) => n + (e.type === "damage" && typeof e.amount === "number" && "target" in e && e.target !== undefined ? e.amount : 0), 0);
+    // Book 181 (Corontzasol): "damage equal to its power" is a number once the source is found on the battlefield.
+    const srcPower = this.profile.off?.includes("powermode") || !request.source ? 0 : Math.max(0, view.battlefield.find((o) => o.controller === view.you && o.cardId === request.source!.cardId)?.power ?? 0);
+    const dmgAmount = (request.source?.effects ?? []).reduce((n, e) => n + (e.type === "damage" && "target" in e && e.target !== undefined ? (typeof e.amount === "number" ? e.amount : (e.amount as { ref?: string }).ref === "sourcePower" ? srcPower : 0) : 0), 0);
     const diesTo = (id: string) => { const o = view.battlefield.find((b) => b.id === id); return !!o && o.toughness !== null && dmgAmount > 0 && dmgAmount >= o.toughness - o.damage; };
     const allOurs = cls === "harmful" && variants.every((a) => ((a as { targets?: { kind: string; id?: string }[] }).targets ?? []).every((t) => t.kind === "object" && view.battlefield.some((b) => b.id === t.id && b.controller === view.you)));
     if (allOurs && dmgAmount > 0) {
@@ -4229,7 +4405,8 @@ export class HeuristicAgent implements Agent {
           const g = view.graveyardObjects[view.you].find((o) => o.objectId === t.id) ?? view.graveyardObjects[(1 - view.you) as 0 | 1].find((o) => o.objectId === t.id); // S40: the Reeve reaches either yard
           const gd = g ? this.def(g.cardId) : undefined;
           // S45 (the Tidewall): a SPELL back to hand is worth its mana value, a counter half again — the dearest comes back.
-          if (gd && (gd.types.includes("Instant") || gd.types.includes("Sorcery"))) s += manaValue(parseManaCost(gd.manaCost)) + (gd.spellEffect?.some((e) => e.type === "counter") ? 0.5 : 0);
+          if (gd && (gd.types.includes("Instant") || gd.types.includes("Sorcery"))) s += manaValue(parseManaCost(gd.manaCost)) + (gd.spellEffect?.some((e) => e.type === "counter") ? 0.5 : 0)
+            + (!returnsToBattlefield && !this.profile.off?.includes("yardmode") && gd.spellEffect?.some((e) => e.type === "extraTurn") ? 50 : 0); // book 178: the extra turn comes back first
           // Post-S65 (R-114): an Aura back to the battlefield is worth its best host (nothing, without one).
           else if (gd && returnsToBattlefield && (gd.subtypes ?? []).includes("Aura")) s += this.auraReturnWorth(view, gd.id);
           else s += reanimationWorth(gd) + (returnsToBattlefield ? this.loopWorth(view, gd, t.id) : 0); // S31: the one valuation (evaluator.reanimationWorth); book 99: the loop

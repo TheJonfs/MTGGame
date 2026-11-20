@@ -1,0 +1,54 @@
+# The Open's round-robin (S46) — 6600 games, master both, 20 life, no entrances; the ROW's win rate
+
+| | skies | thicket | uwskies | countersnake | auras | wurmspeaker | wskies | locks | sower | hexaura | sourworms | silt | **mean** |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| **skies** | — | 62 | 63 | 46 | 56 | 66 | 63 | 53 | 48 | 55 | 57 | 66 | **58** |
+| **thicket** | 38 | — | 45 | 44 | 42 | 37 | 40 | 57 | 35 | 51 | 31 | 65 | **44** |
+| **uwskies** | 37 | 55 | — | 35 | 52 | 54 | 46 | 37 | 38 | 41 | 39 | 66 | **45** |
+| **countersnake** | 54 | 56 | 65 | — | 60 | 63 | 68 | 59 | 32 | 49 | 48 | 53 | **55** |
+| **auras** | 44 | 58 | 48 | 40 | — | 41 | 37 | 54 | 49 | 64 | 45 | 76 | **51** |
+| **wurmspeaker** | 34 | 63 | 46 | 37 | 59 | — | 37 | 23 | 24 | 49 | 46 | 75 | **45** |
+| **wskies** | 37 | 60 | 54 | 32 | 63 | 63 | — | 27 | 16 | 55 | 44 | 37 | **44** |
+| **locks** | 47 | 43 | 63 | 41 | 46 | 77 | 73 | — | 35 | 49 | 42 | 64 | **53** |
+| **sower** | 52 | 65 | 62 | 68 | 51 | 76 | 84 | 65 | — | 54 | 60 | 75 | **65** |
+| **hexaura** | 45 | 49 | 59 | 51 | 36 | 51 | 45 | 51 | 46 | — | 45 | 76 | **50** |
+| **sourworms** | 43 | 69 | 61 | 52 | 55 | 54 | 56 | 58 | 40 | 55 | — | 79 | **57** |
+| **silt** | 34 | 35 | 34 | 47 | 24 | 25 | 63 | 36 | 25 | 24 | 21 | — | **33** |
+
+Solvable (a list over 65% against the field): none. Under 35%: silt.
+Muster vs Warband: the Muster 0% (0 games).
+
+## Staples (ADR-170)
+
+In more than half of the 12 lists: Swords to Plowshares (7 lists, 26 copies). The most played: Swords to Plowshares 7 · Birds of Paradise 6 · Restoration Angel 5 · Counterspell 5 · Wave of Reckoning 5 · Reaper's Forerunner 4 · The Sower 4 · Karmic Mentor 4.
+
+## Restricted cards — % of the list's games in which it was cast (or, a land, played)
+
+- **skies**: black_lotus 29% · mox_pearl 30% · mox_sapphire 29%
+- **thicket**: shevelport 26% · black_lotus 27% · mox_emerald 25% · mox_pearl 26%
+- **countersnake**: wrackroot 34% · black_lotus 36% · mox_emerald 38% · mox_pearl 32% · mox_sapphire 35% · shevelport 32% · time_walk 34%
+- **wurmspeaker**: black_lotus 26% · mox_emerald 27%
+- **locks**: library_of_alexandria 39% · black_lotus 36% · mox_sapphire 36% · mox_pearl 36% · time_walk 39%
+- **sower**: black_lotus 36% · mox_pearl 34% · mox_sapphire 34% · mox_emerald 35% · time_walk 32% · shevelport 35% · wrackroot 37%
+- **hexaura**: black_lotus 30% · mox_emerald 28% · mox_pearl 29% · shevelport 25%
+- **sourworms**: black_lotus 25% · mox_emerald 25% · mox_pearl 29% · mox_sapphire 27% · time_walk 28% · library_of_alexandria 27% · shevelport 27% · wrackroot 26%
+- **silt**: black_lotus 26% · mox_emerald 26% · mox_pearl 28% · mox_sapphire 27% · wrackroot 25% · library_of_alexandria 26% · ranksmere 26% · shevelport 29% · earthrise 27% · time_walk 26%
+
+## Key pieces — % of the list's games in which each was cast (a weak pilot reads apart from a weak list)
+
+- **skies**: 
+- **thicket**: 
+- **uwskies**: 
+- **countersnake**: 
+- **auras**: 
+- **wurmspeaker**: seedborn_muse 59% · rampaging_baloths 33% · gaean_wurm 55%
+- **wskies**: 
+- **locks**: the_dredger 0% · counterspell 65% · wrath_of_god 46%
+- **sower**: 
+- **hexaura**: 
+- **sourworms**: 
+- **silt**: 
+
+## The Loop — the Usher + an Altar on the battlefield with a Restoration Angel in hand or play
+
+Assembled by turn ten in 0 of 0 games (0%); ever: 0. Altar activations per game: 0.00.

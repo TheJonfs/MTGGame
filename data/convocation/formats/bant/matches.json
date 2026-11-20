@@ -1,86 +1,96 @@
 {
  "_comment": "The Open in matches (ADR-171): the table of record's match, game-one and games-two-and-three columns by list. Written by `pnpm open:rr --matches-report <shards> --record` — do not edit by hand. docs/reference/open-lists.md is generated from it.",
- "when": "2026-11-19",
+ "when": "2026-11-20",
  "matchesAPairing": 60,
  "byList": {
   "auras": {
-   "matches": 48,
-   "gameOne": 48.7,
-   "later": 47.9,
-   "n": 600
+   "matches": 48.5,
+   "gameOne": 48.3,
+   "later": 49.1,
+   "n": 660
   },
   "countersnake": {
-   "matches": 49.9,
-   "gameOne": 55.3,
-   "later": 46.9,
-   "n": 600
+   "matches": 51.4,
+   "gameOne": 56.1,
+   "later": 48.4,
+   "n": 660
   },
   "hexaura": {
-   "matches": 46.7,
-   "gameOne": 49.3,
-   "later": 46.9,
-   "n": 600
+   "matches": 49.5,
+   "gameOne": 50.6,
+   "later": 49.7,
+   "n": 660
   },
   "locks": {
-   "matches": 54.8,
-   "gameOne": 54.2,
-   "later": 53.6,
-   "n": 600
+   "matches": 55.9,
+   "gameOne": 52.4,
+   "later": 55,
+   "n": 660
+  },
+  "silt": {
+   "matches": 24.8,
+   "gameOne": 32.4,
+   "later": 34.4,
+   "n": 660
   },
   "skies": {
-   "matches": 62.3,
-   "gameOne": 55,
-   "later": 59.5,
-   "n": 600
+   "matches": 63.9,
+   "gameOne": 55.9,
+   "later": 60.7,
+   "n": 660
   },
   "sourworms": {
-   "matches": 52.5,
-   "gameOne": 49,
-   "later": 53.2,
-   "n": 600
+   "matches": 55,
+   "gameOne": 52.5,
+   "later": 53.5,
+   "n": 660
   },
   "sower": {
-   "matches": 71.8,
-   "gameOne": 61.8,
-   "later": 67.6,
-   "n": 600
+   "matches": 72.6,
+   "gameOne": 63,
+   "later": 67.5,
+   "n": 660
   },
   "thicket": {
-   "matches": 39.8,
-   "gameOne": 43.5,
-   "later": 43.3,
-   "n": 600
+   "matches": 44.8,
+   "gameOne": 45.5,
+   "later": 46.6,
+   "n": 660
   },
   "uwskies": {
-   "matches": 44.2,
-   "gameOne": 42.7,
-   "later": 47.8,
-   "n": 600
+   "matches": 43.6,
+   "gameOne": 45.5,
+   "later": 45.4,
+   "n": 660
   },
   "wskies": {
-   "matches": 40.2,
-   "gameOne": 43.3,
-   "later": 42.9,
-   "n": 600
+   "matches": 45,
+   "gameOne": 49.8,
+   "later": 44.4,
+   "n": 660
   },
   "wurmspeaker": {
-   "matches": 39.8,
-   "gameOne": 47.3,
-   "later": 40.4,
-   "n": 600
+   "matches": 44.8,
+   "gameOne": 47.9,
+   "later": 45.8,
+   "n": 660
   }
  },
  "byPair": {
   "auras|countersnake": {
-   "w": 30,
+   "w": 37,
    "n": 60
   },
   "auras|hexaura": {
-   "w": 36,
+   "w": 31,
    "n": 60
   },
   "auras|locks": {
-   "w": 37,
+   "w": 32,
+   "n": 60
+  },
+  "auras|silt": {
+   "w": 53,
    "n": 60
   },
   "auras|skies": {
@@ -88,63 +98,67 @@
    "n": 60
   },
   "auras|sourworms": {
-   "w": 29,
+   "w": 16,
    "n": 60
   },
   "auras|sower": {
-   "w": 22,
+   "w": 19,
    "n": 60
   },
   "auras|thicket": {
-   "w": 36,
+   "w": 35,
    "n": 60
   },
   "auras|uwskies": {
-   "w": 29,
-   "n": 60
-  },
-  "auras|wskies": {
-   "w": 18,
-   "n": 60
-  },
-  "auras|wurmspeaker": {
-   "w": 25,
-   "n": 60
-  },
-  "countersnake|auras": {
-   "w": 30,
-   "n": 60
-  },
-  "countersnake|hexaura": {
-   "w": 24,
-   "n": 60
-  },
-  "countersnake|locks": {
-   "w": 37,
-   "n": 60
-  },
-  "countersnake|skies": {
    "w": 27,
    "n": 60
   },
+  "auras|wskies": {
+   "w": 20,
+   "n": 60
+  },
+  "auras|wurmspeaker": {
+   "w": 24,
+   "n": 60
+  },
+  "countersnake|auras": {
+   "w": 23,
+   "n": 60
+  },
+  "countersnake|hexaura": {
+   "w": 31,
+   "n": 60
+  },
+  "countersnake|locks": {
+   "w": 34,
+   "n": 60
+  },
+  "countersnake|silt": {
+   "w": 32,
+   "n": 60
+  },
+  "countersnake|skies": {
+   "w": 28,
+   "n": 60
+  },
   "countersnake|sourworms": {
-   "w": 14,
+   "w": 20,
    "n": 60
   },
   "countersnake|sower": {
-   "w": 11.5,
+   "w": 9,
    "n": 60
   },
   "countersnake|thicket": {
-   "w": 30,
+   "w": 33,
    "n": 60
   },
   "countersnake|uwskies": {
-   "w": 40,
+   "w": 44,
    "n": 60
   },
   "countersnake|wskies": {
-   "w": 50,
+   "w": 49,
    "n": 60
   },
   "countersnake|wurmspeaker": {
@@ -152,15 +166,19 @@
    "n": 60
   },
   "hexaura|auras": {
-   "w": 24,
+   "w": 29,
    "n": 60
   },
   "hexaura|countersnake": {
-   "w": 36,
+   "w": 29,
    "n": 60
   },
   "hexaura|locks": {
-   "w": 28,
+   "w": 29,
+   "n": 60
+  },
+  "hexaura|silt": {
+   "w": 54,
    "n": 60
   },
   "hexaura|skies": {
@@ -168,19 +186,19 @@
    "n": 60
   },
   "hexaura|sourworms": {
-   "w": 32,
+   "w": 27,
    "n": 60
   },
   "hexaura|sower": {
-   "w": 21,
+   "w": 22,
    "n": 60
   },
   "hexaura|thicket": {
-   "w": 40,
+   "w": 34,
    "n": 60
   },
   "hexaura|uwskies": {
-   "w": 30,
+   "w": 31,
    "n": 60
   },
   "hexaura|wskies": {
@@ -188,19 +206,23 @@
    "n": 60
   },
   "hexaura|wurmspeaker": {
-   "w": 27,
+   "w": 30,
    "n": 60
   },
   "locks|auras": {
-   "w": 23,
+   "w": 28,
    "n": 60
   },
   "locks|countersnake": {
-   "w": 23,
+   "w": 26,
    "n": 60
   },
   "locks|hexaura": {
-   "w": 32,
+   "w": 31,
+   "n": 60
+  },
+  "locks|silt": {
+   "w": 47,
    "n": 60
   },
   "locks|skies": {
@@ -208,7 +230,7 @@
    "n": 60
   },
   "locks|sourworms": {
-   "w": 22,
+   "w": 23,
    "n": 60
   },
   "locks|sower": {
@@ -216,19 +238,63 @@
    "n": 60
   },
   "locks|thicket": {
-   "w": 32,
+   "w": 26,
    "n": 60
   },
   "locks|uwskies": {
-   "w": 39,
+   "w": 41,
    "n": 60
   },
   "locks|wskies": {
-   "w": 54,
+   "w": 51,
    "n": 60
   },
   "locks|wurmspeaker": {
-   "w": 50,
+   "w": 42,
+   "n": 60
+  },
+  "silt|auras": {
+   "w": 7,
+   "n": 60
+  },
+  "silt|countersnake": {
+   "w": 28,
+   "n": 60
+  },
+  "silt|hexaura": {
+   "w": 6,
+   "n": 60
+  },
+  "silt|locks": {
+   "w": 13,
+   "n": 60
+  },
+  "silt|skies": {
+   "w": 11,
+   "n": 60
+  },
+  "silt|sourworms": {
+   "w": 9,
+   "n": 60
+  },
+  "silt|sower": {
+   "w": 12,
+   "n": 60
+  },
+  "silt|thicket": {
+   "w": 17,
+   "n": 60
+  },
+  "silt|uwskies": {
+   "w": 12,
+   "n": 60
+  },
+  "silt|wskies": {
+   "w": 40,
+   "n": 60
+  },
+  "silt|wurmspeaker": {
+   "w": 9,
    "n": 60
   },
   "skies|auras": {
@@ -236,7 +302,7 @@
    "n": 60
   },
   "skies|countersnake": {
-   "w": 33,
+   "w": 32,
    "n": 60
   },
   "skies|hexaura": {
@@ -245,6 +311,10 @@
   },
   "skies|locks": {
    "w": 26,
+   "n": 60
+  },
+  "skies|silt": {
+   "w": 49,
    "n": 60
   },
   "skies|sourworms": {
@@ -272,19 +342,23 @@
    "n": 60
   },
   "sourworms|auras": {
-   "w": 31,
+   "w": 44,
    "n": 60
   },
   "sourworms|countersnake": {
-   "w": 46,
+   "w": 40,
    "n": 60
   },
   "sourworms|hexaura": {
-   "w": 28,
+   "w": 33,
    "n": 60
   },
   "sourworms|locks": {
-   "w": 38,
+   "w": 37,
+   "n": 60
+  },
+  "sourworms|silt": {
+   "w": 51,
    "n": 60
   },
   "sourworms|skies": {
@@ -292,39 +366,43 @@
    "n": 60
   },
   "sourworms|sower": {
-   "w": 17,
+   "w": 9,
    "n": 60
   },
   "sourworms|thicket": {
-   "w": 43,
+   "w": 41,
    "n": 60
   },
   "sourworms|uwskies": {
-   "w": 33,
-   "n": 60
-  },
-  "sourworms|wskies": {
-   "w": 28,
-   "n": 60
-  },
-  "sourworms|wurmspeaker": {
    "w": 37,
    "n": 60
   },
+  "sourworms|wskies": {
+   "w": 22,
+   "n": 60
+  },
+  "sourworms|wurmspeaker": {
+   "w": 35,
+   "n": 60
+  },
   "sower|auras": {
-   "w": 38,
+   "w": 41,
    "n": 60
   },
   "sower|countersnake": {
-   "w": 48.5,
+   "w": 51,
    "n": 60
   },
   "sower|hexaura": {
-   "w": 39,
+   "w": 38,
    "n": 60
   },
   "sower|locks": {
    "w": 40,
+   "n": 60
+  },
+  "sower|silt": {
+   "w": 48,
    "n": 60
   },
   "sower|skies": {
@@ -332,39 +410,43 @@
    "n": 60
   },
   "sower|sourworms": {
-   "w": 43,
-   "n": 60
-  },
-  "sower|thicket": {
-   "w": 48,
-   "n": 60
-  },
-  "sower|uwskies": {
-   "w": 43,
-   "n": 60
-  },
-  "sower|wskies": {
-   "w": 53,
-   "n": 60
-  },
-  "sower|wurmspeaker": {
    "w": 51,
    "n": 60
   },
+  "sower|thicket": {
+   "w": 42,
+   "n": 60
+  },
+  "sower|uwskies": {
+   "w": 45,
+   "n": 60
+  },
+  "sower|wskies": {
+   "w": 43,
+   "n": 60
+  },
+  "sower|wurmspeaker": {
+   "w": 53,
+   "n": 60
+  },
   "thicket|auras": {
-   "w": 24,
+   "w": 25,
    "n": 60
   },
   "thicket|countersnake": {
-   "w": 30,
+   "w": 27,
    "n": 60
   },
   "thicket|hexaura": {
-   "w": 20,
+   "w": 26,
    "n": 60
   },
   "thicket|locks": {
-   "w": 28,
+   "w": 34,
+   "n": 60
+  },
+  "thicket|silt": {
+   "w": 43,
    "n": 60
   },
   "thicket|skies": {
@@ -372,39 +454,43 @@
    "n": 60
   },
   "thicket|sourworms": {
-   "w": 17,
+   "w": 19,
    "n": 60
   },
   "thicket|sower": {
-   "w": 12,
+   "w": 18,
    "n": 60
   },
   "thicket|uwskies": {
-   "w": 25,
-   "n": 60
-  },
-  "thicket|wskies": {
-   "w": 27,
-   "n": 60
-  },
-  "thicket|wurmspeaker": {
-   "w": 30,
-   "n": 60
-  },
-  "uwskies|auras": {
    "w": 31,
    "n": 60
   },
+  "thicket|wskies": {
+   "w": 23,
+   "n": 60
+  },
+  "thicket|wurmspeaker": {
+   "w": 24,
+   "n": 60
+  },
+  "uwskies|auras": {
+   "w": 33,
+   "n": 60
+  },
   "uwskies|countersnake": {
-   "w": 20,
+   "w": 16,
    "n": 60
   },
   "uwskies|hexaura": {
-   "w": 30,
+   "w": 29,
    "n": 60
   },
   "uwskies|locks": {
-   "w": 21,
+   "w": 19,
+   "n": 60
+  },
+  "uwskies|silt": {
+   "w": 48,
    "n": 60
   },
   "uwskies|skies": {
@@ -412,31 +498,31 @@
    "n": 60
   },
   "uwskies|sourworms": {
-   "w": 27,
+   "w": 23,
    "n": 60
   },
   "uwskies|sower": {
-   "w": 17,
+   "w": 15,
    "n": 60
   },
   "uwskies|thicket": {
-   "w": 35,
+   "w": 29,
    "n": 60
   },
   "uwskies|wskies": {
-   "w": 34,
+   "w": 30,
    "n": 60
   },
   "uwskies|wurmspeaker": {
-   "w": 34,
+   "w": 30,
    "n": 60
   },
   "wskies|auras": {
-   "w": 42,
+   "w": 40,
    "n": 60
   },
   "wskies|countersnake": {
-   "w": 10,
+   "w": 11,
    "n": 60
   },
   "wskies|hexaura": {
@@ -444,7 +530,11 @@
    "n": 60
   },
   "wskies|locks": {
-   "w": 6,
+   "w": 9,
+   "n": 60
+  },
+  "wskies|silt": {
+   "w": 20,
    "n": 60
   },
   "wskies|skies": {
@@ -452,27 +542,27 @@
    "n": 60
   },
   "wskies|sourworms": {
-   "w": 32,
+   "w": 38,
    "n": 60
   },
   "wskies|sower": {
-   "w": 7,
+   "w": 17,
    "n": 60
   },
   "wskies|thicket": {
-   "w": 33,
+   "w": 37,
    "n": 60
   },
   "wskies|uwskies": {
-   "w": 26,
+   "w": 30,
    "n": 60
   },
   "wskies|wurmspeaker": {
-   "w": 27,
+   "w": 37,
    "n": 60
   },
   "wurmspeaker|auras": {
-   "w": 35,
+   "w": 36,
    "n": 60
   },
   "wurmspeaker|countersnake": {
@@ -480,11 +570,15 @@
    "n": 60
   },
   "wurmspeaker|hexaura": {
-   "w": 33,
+   "w": 30,
    "n": 60
   },
   "wurmspeaker|locks": {
-   "w": 10,
+   "w": 18,
+   "n": 60
+  },
+  "wurmspeaker|silt": {
+   "w": 51,
    "n": 60
   },
   "wurmspeaker|skies": {
@@ -492,23 +586,23 @@
    "n": 60
   },
   "wurmspeaker|sourworms": {
-   "w": 23,
+   "w": 25,
    "n": 60
   },
   "wurmspeaker|sower": {
-   "w": 9,
+   "w": 7,
    "n": 60
   },
   "wurmspeaker|thicket": {
-   "w": 30,
+   "w": 36,
    "n": 60
   },
   "wurmspeaker|uwskies": {
-   "w": 26,
+   "w": 30,
    "n": 60
   },
   "wurmspeaker|wskies": {
-   "w": 33,
+   "w": 23,
    "n": 60
   }
  }
